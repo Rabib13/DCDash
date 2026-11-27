@@ -12,7 +12,7 @@ Only sites where a source says the facility runs or is built for AI / GPU worklo
 
 ## Status
 
-Phase 0: data foundation. See `data/` and `scripts/validate-data.mjs`.
+Phase 0: data foundation. Each site card has tabs for Overview, Power & water, Environment, Jobs and Community. Anything without a source shows "Not disclosed yet". Job openings are a dated snapshot from the operator's own job board (or Indeed when the board can't be read), with a link to the live list.
 
 ## Run it
 

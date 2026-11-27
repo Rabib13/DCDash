@@ -1,12 +1,164 @@
 "use client";
 
-import { CONFIDENCE_LABEL, confidence, dataset, FACT_LABEL, sitePosition, stageGroup, STAGE_LABEL } from "@/lib/sites";
-import type { Site } from "@/lib/types";
+import { useEffect, useState } from "react";
+import {
+  CONFIDENCE_LABEL,
+  confidence,
+  dataset,
+  FACT_LABEL,
+  factSection,
+  SECTION_EXPECTED,
+  SECTION_LABEL,
+  sitePosition,
+  stageGroup,
+  STAGE_LABEL,
+  type Section,
+} from "@/lib/sites";
+import type { Fact, Site } from "@/lib/types";
+
+const SECTIONS: Section[] = ["overview", "power", "environment", "jobs", "community"];
+
+function FactRow({ name, fact }: { name: string; fact: Fact }) {
+  const c = confidence(fact);
+  return (
+    <div className="fact">
+      <dt>{FACT_LABEL[name] ?? name}</dt>
+      <dd>
+        <span>
+          {typeof fact.value === "number" ? fact.value.toLocaleString("en-US") : fact.value}
+          {fact.note ? <span className="muted"> ({fact.note})</span> : null}
+        </span>
+        {fact.quote && <q className="quote">{fact.quote}</q>}
+        <span className="fact__meta">
+          <span className={`tag tag--${c}`}>{CONFIDENCE_LABEL[c]}</span>
+          {fact.sources
+            .filter((id, i, all) => all.findIndex((o) => dataset.sources[o].publisher === dataset.sources[id].publisher) === i)
+            .map((id) => (
+              <a key={id} href={dataset.sources[id].url} target="_blank" rel="noopener noreferrer">
+                {dataset.sources[id].publisher}
+              </a>
+            ))}
+        </span>
+      </dd>
+    </div>
+  );
+}
+
+function MissingRow({ name }: { name: string }) {
+  return (
+    <div className="fact">
+      <dt>{FACT_LABEL[name] ?? name}</dt>
+      <dd>
+        <span className="tag tag--not_disclosed">Not disclosed yet</span>
+      </dd>
+    </div>
+  );
+}
+
+function jobSearchUrl(q: string, l: string) {
+  return `https://www.indeed.com/jobs?q=${encodeURIComponent(q)}&l=${encodeURIComponent(l)}`;
+}
+
+function JobsSection({ site, operator }: { site: Site; operator: string }) {
+  const op = dataset.operators[operator];
+  const near = (op?.openings?.items ?? []).filter((j) => j.location.startsWith(site.city) || isNearby(site.city, j.location));
+  const elsewhere = (op?.openings?.items ?? []).filter((j) => !near.includes(j));
+  return (
+    <>
+      <section>
+        <h3>Openings at {operator} near this site</h3>
+        {near.length > 0 ? (
+          <ul className="jobs">
+            {near.map((j) => (
+              <li key={j.url}>
+                <a href={j.url} target="_blank" rel="noopener noreferrer">
+                  {j.title}
+                </a>
+                <span className="muted">
+                  {j.location}
+                  {j.team ? ` · ${j.team}` : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="note">No openings near this site found on {operator}&apos;s job board when we last checked.</p>
+        )}
+        {elsewhere.length > 0 && <p className="muted">{elsewhere.length} more {operator} openings in other places.</p>}
+        {op?.openings && (
+          <p className="muted">
+            Checked {op.openings.checked}. Openings change often, so use the link below for the live list.
+          </p>
+        )}
+        {op?.careers ? (
+          <a className="button" href={op.careers.url} target="_blank" rel="noopener noreferrer">
+            All {operator} jobs
+          </a>
+        ) : (
+          <p className="note">We haven&apos;t verified {operator}&apos;s careers page yet.</p>
+        )}
+      </section>
+      <section>
+        <h3>Data center jobs anywhere</h3>
+        <p className="muted">Common roles at data centers, across all operators.</p>
+        <ul className="jobs">
+          {[
+            ["Data center technician", "Data center technician"],
+            ["Critical facilities engineer", "Critical facilities engineer"],
+            ["Electrician", "Data center electrician"],
+            ["HVAC and cooling technician", "Data center HVAC"],
+            ["Construction", "Data center construction"],
+          ].map(([label, q]) => (
+            <li key={label}>
+              {label}:{" "}
+              <a href={jobSearchUrl(q, `${site.city}, CA`)} target="_blank" rel="noopener noreferrer">
+                near {site.city}
+              </a>
+              {" · "}
+              <a href={jobSearchUrl(q, "remote")} target="_blank" rel="noopener noreferrer">
+                remote
+              </a>
+              {" · "}
+              <a href={jobSearchUrl(q, "")} target="_blank" rel="noopener noreferrer">
+                anywhere in the US
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p className="muted">Links open a live job search on Indeed.</p>
+      </section>
+    </>
+  );
+}
+
+/** Cities close enough to count as "near" each other for job listings. */
+const NEARBY: Record<string, string[]> = {
+  "Santa Clara": ["San Jose", "Sunnyvale", "Mountain View", "Milpitas", "Cupertino"],
+  "Mountain View": ["Sunnyvale", "Palo Alto", "Santa Clara", "Los Altos"],
+};
+function isNearby(city: string, location: string) {
+  return (NEARBY[city] ?? []).some((c) => location.startsWith(c));
+}
 
 export default function SitePanel({ site, onClose }: { site: Site; onClose: () => void }) {
+  const [tab, setTab] = useState<Section>("overview");
+  useEffect(() => setTab("overview"), [site.id]);
+
   const operator = site.facts.operator ? String(site.facts.operator.value) : "Operator not disclosed";
   const { approximate } = sitePosition(site, dataset.sites);
-  const usedSources = Array.from(new Set(Object.values(site.facts).flatMap((f) => f.sources)));
+  const order = Object.keys(FACT_LABEL);
+  const rank = (k: string) => (order.includes(k) ? order.indexOf(k) : order.length);
+  const entries = Object.entries(site.facts)
+    .filter(([k]) => factSection(k) === tab)
+    .sort(([a], [b]) => rank(a) - rank(b));
+  const missing = tab === "overview" ? [] : SECTION_EXPECTED[tab].filter((k) => !site.facts[k]);
+  const docs = tab === "environment" ? site.documents ?? [] : [];
+  const usedSources = Array.from(
+    new Set([
+      ...Object.values(site.facts).flatMap((f) => f.sources),
+      ...(site.documents ?? []).flatMap((d) => d.sources),
+    ]),
+  );
 
   return (
     <aside className="panel" aria-label={`${site.name} details`}>
@@ -21,49 +173,105 @@ export default function SitePanel({ site, onClose }: { site: Site; onClose: () =
           ×
         </button>
       </div>
-      <div className="panel__body">
-        <span className={`status status--${stageGroup(site.stage)}`}>{STAGE_LABEL[site.stage]}</span>
-        {approximate && (
-          <p className="note">Location shown at the city center. No public source gives the exact address yet.</p>
+      <div className="tabs" role="tablist" aria-label="Site details">
+        {SECTIONS.map((s) => (
+          <button
+            key={s}
+            type="button"
+            role="tab"
+            aria-selected={tab === s}
+            className={tab === s ? "tab tab--active" : "tab"}
+            onClick={() => setTab(s)}
+          >
+            {SECTION_LABEL[s]}
+          </button>
+        ))}
+      </div>
+      <div className="panel__body" role="tabpanel" aria-label={SECTION_LABEL[tab]}>
+        {tab === "overview" && (
+          <>
+            <span className={`status status--${stageGroup(site.stage)}`}>{STAGE_LABEL[site.stage]}</span>
+            {approximate && (
+              <p className="note">
+                The pin sits at the city center.
+                {site.facts.address ? " The address is below." : " No public source gives the exact address yet."}
+              </p>
+            )}
+          </>
         )}
-        <dl className="facts">
-          {Object.entries(site.facts).map(([key, fact]) => {
-            const c = confidence(fact);
-            return (
-              <div className="fact" key={key}>
-                <dt>{FACT_LABEL[key] ?? key}</dt>
-                <dd>
-                  <span>
-                    {typeof fact.value === "number" ? fact.value.toLocaleString("en-US") : fact.value}
-                    {fact.note ? <span className="muted"> ({fact.note})</span> : null}
-                  </span>
-                  {fact.quote && <q className="quote">{fact.quote}</q>}
-                  <span className={`tag tag--${c}`}>{CONFIDENCE_LABEL[c]}</span>
-                </dd>
-              </div>
-            );
-          })}
-        </dl>
-        <section>
-          <h3>Sources</h3>
-          <ul className="sources">
-            {usedSources.map((key) => {
-              const s = dataset.sources[key];
-              return (
-                <li key={key}>
-                  <a href={s.url} target="_blank" rel="noopener noreferrer">
-                    {s.title}
-                  </a>
-                  <span className="muted">
-                    {" "}
-                    · {s.publisher}
-                    {s.published ? `, ${s.published}` : ""} · checked {s.accessed}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
+
+        {tab === "jobs" ? (
+          <>
+            {entries.length > 0 && (
+              <dl className="facts">
+                {entries.map(([k, f]) => (
+                  <FactRow key={k} name={k} fact={f} />
+                ))}
+              </dl>
+            )}
+            <JobsSection site={site} operator={operator} />
+          </>
+        ) : (
+          (entries.length > 0 || missing.length > 0) && (
+            <dl className="facts">
+              {entries.map(([k, f]) => (
+                <FactRow key={k} name={k} fact={f} />
+              ))}
+              {missing.map((k) => (
+                <MissingRow key={k} name={k} />
+              ))}
+            </dl>
+          )
+        )}
+
+        {tab === "environment" && (
+          <section>
+            <h3>Public documents</h3>
+            {docs.length > 0 ? (
+              <ul className="sources">
+                {docs.map((d) => (
+                  <li key={d.url}>
+                    <a href={d.url} target="_blank" rel="noopener noreferrer">
+                      {d.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="note">We haven&apos;t found a public permit or environmental report for this site yet.</p>
+            )}
+          </section>
+        )}
+
+        {tab === "community" && !site.facts.community_benefits && (
+          <p className="note">
+            We list grants, benefit agreements and local programs only when a public source documents them. We haven&apos;t found
+            one for this site yet.
+          </p>
+        )}
+
+        {tab === "overview" && (
+          <section>
+            <h3>All sources</h3>
+            <ul className="sources">
+              {usedSources.map((key) => {
+                const s = dataset.sources[key];
+                return (
+                  <li key={key}>
+                    <a href={s.url} target="_blank" rel="noopener noreferrer">
+                      {s.title}
+                    </a>
+                    <span className="muted">
+                      {" "}
+                      · {s.publisher}
+                      {s.published ? `, ${s.published}` : ""} · checked {s.accessed}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
       </div>
     </aside>
   );

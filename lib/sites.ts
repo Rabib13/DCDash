@@ -70,11 +70,55 @@ export function sitePosition(
 export const FACT_LABEL: Record<string, string> = {
   operator: "Operator",
   owner: "Owner",
+  address: "Address",
   capacity_mw: "Size (MW)",
   size_sqft: "Building size (sq ft)",
   ai_use: "AI use",
+  opened: "Opened",
+  utility: "Electric utility",
   power_status: "Power",
   power_source: "Power source",
+  grid_upgrades: "Grid upgrades",
+  local_rates: "Electric bills",
   water: "Water",
-  opened: "Opened",
+  environmental_review: "Environmental review",
+  air_permit: "Air permit",
+  local_jobs: "Jobs at this site",
+  community_benefits: "Community benefits",
+};
+
+export type Section = "overview" | "power" | "environment" | "jobs" | "community";
+
+export const SECTION_LABEL: Record<Section, string> = {
+  overview: "Overview",
+  power: "Power & water",
+  environment: "Environment",
+  jobs: "Jobs",
+  community: "Community",
+};
+
+/** Which tab each fact appears under. Facts not listed here go under Overview. */
+const FACT_SECTION: Record<string, Section> = {
+  utility: "power",
+  power_status: "power",
+  power_source: "power",
+  grid_upgrades: "power",
+  local_rates: "power",
+  water: "power",
+  environmental_review: "environment",
+  air_permit: "environment",
+  local_jobs: "jobs",
+  community_benefits: "community",
+};
+
+export function factSection(key: string): Section {
+  return FACT_SECTION[key] ?? "overview";
+}
+
+/** The questions each tab answers, shown as "Not disclosed yet" when no source covers them. */
+export const SECTION_EXPECTED: Record<Exclude<Section, "overview">, string[]> = {
+  power: ["utility", "power_source", "water"],
+  environment: ["environmental_review", "air_permit"],
+  jobs: ["local_jobs"],
+  community: ["community_benefits"],
 };

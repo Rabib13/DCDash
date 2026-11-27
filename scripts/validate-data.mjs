@@ -26,6 +26,25 @@ for (const site of data.sites) {
   if (lat != null && precision !== "address") errors.push(`${where}: exact coordinates need precision "address"`);
 }
 
+const checkRefs = (where, refs) => {
+  if (!Array.isArray(refs) || refs.length === 0) errors.push(`${where}: no source`);
+  for (const ref of refs ?? []) if (!data.sources[ref]) errors.push(`${where}: unknown source "${ref}"`);
+};
+for (const site of data.sites) {
+  for (const [i, doc] of (site.documents ?? []).entries()) {
+    if (!doc.url?.startsWith("https://")) errors.push(`site ${site.id}.documents[${i}]: url must be https`);
+    checkRefs(`site ${site.id}.documents[${i}]`, doc.sources);
+  }
+}
+for (const [name, op] of Object.entries(data.operators ?? {})) {
+  if (op.careers) checkRefs(`operator ${name}.careers`, op.careers.sources);
+  if (op.openings) {
+    checkRefs(`operator ${name}.openings`, op.openings.sources);
+    if (!op.openings.checked) errors.push(`operator ${name}.openings: needs a checked date`);
+    for (const job of op.openings.items ?? []) if (!job.url?.startsWith("https://")) errors.push(`operator ${name}: job "${job.title}" needs an https url`);
+  }
+}
+
 if (errors.length) {
   console.error(`Data check failed (${errors.length}):\n- ` + errors.join("\n- "));
   process.exit(1);
