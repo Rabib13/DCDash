@@ -32,11 +32,39 @@ export type Site = {
   location: { lat: number | null; lon: number | null; precision: "address" | "city" };
   stage: Stage;
   facts: Record<string, Fact> & { ai_use: Fact };
+  documents?: SiteDocument[];
+};
+
+/** A public document about a site, such as a permit, filing or environmental report. */
+export type SiteDocument = {
+  title: string;
+  kind: "permit" | "environmental_review" | "filing" | "other";
+  url: string;
+  sources: string[];
+};
+
+/** A job posting copied from the operator's own job board on the `checked` date. */
+export type JobOpening = {
+  title: string;
+  location: string;
+  team?: string;
+  url: string;
+};
+
+export type Operator = {
+  /** Shown instead of jobs when the operator's job board can't be linked, e.g. it is down. */
+  careersNote?: string;
+  /** The operator's own careers page or job board. */
+  careers?: { url: string; sources: string[] };
+  /** Snapshot of openings read from the careers page. Always link out for the live list. */
+  openings?: { checked: string; sources: string[]; items: JobOpening[] };
 };
 
 export type Dataset = {
   asOf: string;
   sources: Record<string, Source>;
+  /** Keyed by the exact value of a site's `operator` fact. */
+  operators: Record<string, Operator>;
   sites: Site[];
 };
 

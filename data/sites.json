@@ -20,6 +20,124 @@
       "publisher": "Compute Atlas",
       "url": "https://www.compute-atlas.com/metros/bay-area",
       "accessed": "2026-11-27"
+    },
+    "dlr-sjc37-page": {
+      "title": "Silicon Valley SJC37 data center",
+      "publisher": "Digital Realty",
+      "url": "https://www.digitalrealty.com/data-centers/americas/silicon-valley/sjc37",
+      "accessed": "2026-11-27"
+    },
+    "baxtel-2021-sjc37": {
+      "title": "Digital Realty plans to build 430,000 sqft four-story Santa Clara facility",
+      "publisher": "Baxtel",
+      "url": "https://baxtel.com/news/digital-realty-plans-to-build-430-000-sqft-four-story-santa-clara-facility",
+      "published": "2021-02-05",
+      "accessed": "2026-11-27"
+    },
+    "dchawk-sjc37": {
+      "title": "Digital Realty SJC37, 641 Walsh Avenue",
+      "publisher": "datacenterHawk",
+      "url": "https://datacenterhawk.com/marketplace/providers/digital-realty/641-walsh-avenue/sjc37",
+      "accessed": "2026-11-27"
+    },
+    "dchawk-svy02a": {
+      "title": "STACK Infrastructure SVY02A, 1200 Memorex Dr",
+      "publisher": "datacenterHawk",
+      "url": "https://datacenterhawk.com/marketplace/providers/stack-infrastructure/1200-memorex-dr/svy02a",
+      "accessed": "2026-11-27"
+    },
+    "stack-svy02-page": {
+      "title": "Silicon Valley SVY02",
+      "publisher": "STACK Infrastructure",
+      "url": "https://www.stackinfra.com/locations/americas/silicon-valley/svy02/",
+      "accessed": "2026-11-27"
+    },
+    "stack-svy02a-brochure": {
+      "title": "SVY02A brochure",
+      "publisher": "STACK Infrastructure",
+      "url": "https://www.stackinfra.com/wp-content/uploads/2024/10/SVY02A-Brochure_Web.pdf",
+      "published": "2024-10",
+      "accessed": "2026-11-27"
+    },
+    "realdeal-2025-11": {
+      "title": "Santa Clara data centers await power supply",
+      "publisher": "The Real Deal",
+      "url": "https://therealdeal.com/san-francisco/2025/11/10/santa-clara-data-centers-await-power-supply",
+      "published": "2025-11-10",
+      "accessed": "2026-11-27"
+    },
+    "appa-svp-2026-03": {
+      "title": "Silicon Valley Power's Nico Procos details strategies tied to data centers",
+      "publisher": "American Public Power Association",
+      "url": "https://www.publicpower.org/periodical/article/silicon-valley-powers-nico-procos-details-strategies-tied-data-centers",
+      "published": "2026-03-05",
+      "accessed": "2026-11-27"
+    },
+    "baaqmd-memorex-2020": {
+      "title": "Memorex Data Center, Notice of Preparation: comment letter",
+      "publisher": "Bay Area Air Quality Management District",
+      "url": "https://www.baaqmd.gov/~/media/files/planning-and-research/ceqa-letters/2020/comment-letter-for-memorex-data-center-nop-pdf.pdf",
+      "published": "2020-08-13",
+      "accessed": "2026-11-27"
+    },
+    "ecl-csc1-release-2026-04": {
+      "title": "ECL announces CSC-1, a 35MW FlexGrid data center in Santa Clara",
+      "publisher": "ECL (press release on Business Wire)",
+      "url": "https://www.businesswire.com/news/home/20260421198659/en/",
+      "published": "2026-04-21",
+      "accessed": "2026-11-27"
+    },
+    "convergedigest-csc1": {
+      "title": "ECL unveils 35MW FlexGrid data center in Santa Clara to tackle AI power constraints",
+      "publisher": "Converge Digest",
+      "url": "https://convergedigest.com/ecl-unveils-35mw-flexgrid-data-center-in-santa-clara-to-tackle-ai-power-constraints/",
+      "accessed": "2026-11-27"
+    },
+    "stack-careers": {
+      "title": "Careers at STACK",
+      "publisher": "STACK Infrastructure",
+      "url": "https://www.stackinfra.com/about/careers/",
+      "accessed": "2026-11-27"
+    },
+    "indeed-dlr-santa-clara": {
+      "title": "Digital Realty jobs in Santa Clara, CA (Indeed search)",
+      "publisher": "Indeed",
+      "url": "https://www.indeed.com/jobs?q=Digital+Realty&l=Santa+Clara%2C+CA",
+      "accessed": "2026-11-27"
+    }
+  },
+  "operators": {
+    "ECL": {
+      "careersNote": "ECL's public job board (jobs.lever.co/ecldc) returned \"not found\" when we checked on 2026-11-27, so we can't link to its openings right now."
+    },
+    "Stack Infrastructure": {
+      "careers": {
+        "url": "https://stackinfra.wd108.myworkdayjobs.com/STACK_AMER",
+        "sources": [
+          "stack-careers"
+        ]
+      }
+    },
+    "Digital Realty": {
+      "careers": {
+        "url": "https://www.indeed.com/jobs?q=Digital+Realty&l=Santa+Clara%2C+CA",
+        "sources": [
+          "indeed-dlr-santa-clara"
+        ]
+      },
+      "openings": {
+        "checked": "2026-11-27",
+        "sources": [
+          "indeed-dlr-santa-clara"
+        ],
+        "items": [
+          {
+            "title": "Manager Engineering Operations",
+            "location": "Santa Clara, CA",
+            "url": "https://www.indeed.com/viewjob?jk=0f5d217fcce4fb91"
+          }
+        ]
+      }
     }
   },
   "sites": [
@@ -27,55 +145,346 @@
       "id": "dlr-sjc37",
       "name": "SJC37",
       "city": "Santa Clara",
-      "location": { "lat": null, "lon": null, "precision": "city" },
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
       "stage": "built_not_energized",
       "facts": {
-        "operator": { "value": "Digital Realty", "sources": ["toms-2025-11"] },
-        "capacity_mw": { "value": 48, "note": "critical load the building was designed for", "sources": ["toms-2025-11"], "quote": "built for 48 megawatts of critical load" },
-        "size_sqft": { "value": 430000, "sources": ["toms-2025-11"] },
-        "ai_use": { "value": "Built for AI-era workloads", "sources": ["toms-2025-11"], "quote": "Two major facilities built for AI-era workloads remain unpowered" },
-        "power_status": { "value": "Complete but waiting for power, no firm timeline", "sources": ["toms-2025-11"], "quote": "no firm timeline for full energization" }
+        "operator": {
+          "value": "Digital Realty",
+          "sources": [
+            "toms-2025-11",
+            "dlr-sjc37-page",
+            "baxtel-2021-sjc37"
+          ]
+        },
+        "capacity_mw": {
+          "value": 48,
+          "sources": [
+            "toms-2025-11",
+            "baxtel-2021-sjc37"
+          ],
+          "quote": "built for 48 megawatts of critical load",
+          "note": "planned first phase: 8 MW"
+        },
+        "size_sqft": {
+          "value": 430000,
+          "sources": [
+            "toms-2025-11",
+            "baxtel-2021-sjc37"
+          ],
+          "note": "Digital Realty's own page lists 399,500 sq ft"
+        },
+        "ai_use": {
+          "value": "Built for AI-era workloads",
+          "sources": [
+            "toms-2025-11"
+          ],
+          "quote": "Two major facilities built for AI-era workloads remain unpowered"
+        },
+        "power_status": {
+          "value": "Built, but waiting for full power. Reports say possibly not until 2028.",
+          "sources": [
+            "toms-2025-11",
+            "realdeal-2025-11"
+          ],
+          "quote": "no firm timeline for full energization"
+        },
+        "address": {
+          "value": "641 Walsh Ave, Santa Clara, CA 95050",
+          "sources": [
+            "dlr-sjc37-page",
+            "baxtel-2021-sjc37",
+            "dchawk-sjc37"
+          ]
+        },
+        "utility": {
+          "value": "Silicon Valley Power, the city-owned utility",
+          "sources": [
+            "toms-2025-11",
+            "realdeal-2025-11"
+          ]
+        },
+        "power_source": {
+          "value": "Grid, plus a rooftop solar array announced in 2021",
+          "sources": [
+            "baxtel-2021-sjc37"
+          ],
+          "note": "2021 plan, not confirmed as built"
+        },
+        "grid_upgrades": {
+          "value": "The city is expanding its grid, with upgrades due by 2028",
+          "sources": [
+            "toms-2025-11",
+            "realdeal-2025-11"
+          ],
+          "quote": "investing $450 million in grid upgrades scheduled for completion by 2028"
+        },
+        "local_rates": {
+          "value": "Data centers use 55% of Silicon Valley Power's electricity. Homes pay about 5% of its revenue.",
+          "sources": [
+            "appa-svp-2026-03"
+          ],
+          "quote": "developers directly fund dedicated substations",
+          "note": "from SVP's general manager at a state hearing, Jan 2026"
+        },
+        "water": {
+          "value": "Plans to use up to 10 million gallons of reclaimed water a year",
+          "sources": [
+            "baxtel-2021-sjc37"
+          ],
+          "quote": "use up to 10 million gallons of reclaimed water annually",
+          "note": "2021 plan with Nalco Water"
+        }
       }
     },
     {
       "id": "stack-svy02a",
       "name": "SVY02A",
       "city": "Santa Clara",
-      "location": { "lat": null, "lon": null, "precision": "city" },
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
       "stage": "built_not_energized",
       "facts": {
-        "operator": { "value": "Stack Infrastructure", "sources": ["toms-2025-11"] },
-        "capacity_mw": { "value": 48, "sources": ["toms-2025-11"], "quote": "also designed for 48 megawatts" },
-        "ai_use": { "value": "Built for AI-era workloads", "sources": ["toms-2025-11"], "quote": "Two major facilities built for AI-era workloads remain unpowered" },
-        "power_status": { "value": "Complete but waiting for power", "sources": ["toms-2025-11"] }
-      }
+        "operator": {
+          "value": "Stack Infrastructure",
+          "sources": [
+            "toms-2025-11",
+            "stack-svy02-page",
+            "stack-svy02a-brochure"
+          ]
+        },
+        "capacity_mw": {
+          "value": 48,
+          "sources": [
+            "toms-2025-11",
+            "stack-svy02-page",
+            "stack-svy02a-brochure"
+          ],
+          "quote": "also designed for 48 megawatts",
+          "note": "datacenterHawk lists 42 MW"
+        },
+        "ai_use": {
+          "value": "Built for AI-era workloads",
+          "sources": [
+            "toms-2025-11",
+            "stack-svy02a-brochure"
+          ],
+          "quote": "optimized to support AI/ML and cloud deployments"
+        },
+        "power_status": {
+          "value": "Built, waiting for full power. 12 MW committed to start.",
+          "sources": [
+            "toms-2025-11",
+            "stack-svy02a-brochure",
+            "realdeal-2025-11"
+          ],
+          "quote": "committed power through Silicon Valley Power (SVP) for inital 12MW"
+        },
+        "address": {
+          "value": "1200 Memorex Dr, Santa Clara, CA",
+          "sources": [
+            "dchawk-svy02a"
+          ]
+        },
+        "owner": {
+          "value": "Blue Owl Capital, which bought Stack in 2025",
+          "sources": [
+            "realdeal-2025-11"
+          ],
+          "quote": "Stack, acquired earlier this year by Blue Owl Capital"
+        },
+        "size_sqft": {
+          "value": 551000,
+          "sources": [
+            "realdeal-2025-11",
+            "stack-svy02a-brochure"
+          ]
+        },
+        "utility": {
+          "value": "Silicon Valley Power, the city-owned utility",
+          "sources": [
+            "toms-2025-11",
+            "stack-svy02a-brochure",
+            "realdeal-2025-11"
+          ]
+        },
+        "power_source": {
+          "value": "Grid. Stack says the power is 100% renewable.",
+          "sources": [
+            "stack-svy02a-brochure"
+          ],
+          "quote": "Powered by 100% renewable energy"
+        },
+        "grid_upgrades": {
+          "value": "Has its own on-site substation. The city's wider grid upgrades are due by 2028.",
+          "sources": [
+            "stack-svy02-page",
+            "toms-2025-11",
+            "realdeal-2025-11"
+          ]
+        },
+        "local_rates": {
+          "value": "Data centers use 55% of Silicon Valley Power's electricity. Homes pay about 5% of its revenue.",
+          "sources": [
+            "appa-svp-2026-03"
+          ],
+          "quote": "developers directly fund dedicated substations",
+          "note": "from SVP's general manager at a state hearing, Jan 2026"
+        },
+        "water": {
+          "value": "Closed-loop water cooling with air-cooled chillers",
+          "sources": [
+            "stack-svy02a-brochure"
+          ],
+          "quote": "Closed-loop water cooling systems provide optimal cooling for highdensity workloads",
+          "note": "no water volume published"
+        },
+        "air_permit": {
+          "value": "24 diesel backup generators. The air district asked the city to study health risks, because homes are downwind.",
+          "sources": [
+            "baaqmd-memorex-2020"
+          ],
+          "quote": "concerned about the 24 diesel-fueled backup generators",
+          "note": "letter is about the Memorex Data Center at 1200-1300 Memorex Dr, matched to SVY02A by address"
+        }
+      },
+      "documents": [
+        {
+          "title": "Air district comments on the Memorex Data Center plan (Aug 2020)",
+          "kind": "environmental_review",
+          "url": "https://www.baaqmd.gov/~/media/files/planning-and-research/ceqa-letters/2020/comment-letter-for-memorex-data-center-nop-pdf.pdf",
+          "sources": [
+            "baaqmd-memorex-2020"
+          ]
+        }
+      ]
     },
     {
       "id": "ecl-csc1",
       "name": "CSC-1 FlexGrid AI Data Center",
       "city": "Santa Clara",
-      "location": { "lat": null, "lon": null, "precision": "city" },
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
       "stage": "proposed",
       "facts": {
-        "operator": { "value": "ECL", "sources": ["autonocion-2026-07", "compute-atlas-bay-area"] },
-        "capacity_mw": { "value": 35, "note": "at full build, first phase 2.5 MW", "sources": ["autonocion-2026-07", "compute-atlas-bay-area"] },
-        "ai_use": { "value": "AI data center campus", "sources": ["autonocion-2026-07", "compute-atlas-bay-area"], "quote": "headed to an AI data center campus in Santa Clara, California" },
-        "power_source": { "value": "Hydrogen fuel cells (off-grid design)", "sources": ["autonocion-2026-07"] }
+        "operator": {
+          "value": "ECL",
+          "sources": [
+            "autonocion-2026-07",
+            "compute-atlas-bay-area",
+            "ecl-csc1-release-2026-04"
+          ]
+        },
+        "capacity_mw": {
+          "value": 35,
+          "sources": [
+            "autonocion-2026-07",
+            "compute-atlas-bay-area",
+            "ecl-csc1-release-2026-04",
+            "convergedigest-csc1"
+          ],
+          "note": "starts at 2.5 MW and grows with demand"
+        },
+        "ai_use": {
+          "value": "AI data center campus",
+          "sources": [
+            "autonocion-2026-07",
+            "ecl-csc1-release-2026-04",
+            "convergedigest-csc1"
+          ],
+          "quote": "begin AI training and inference workloads within months"
+        },
+        "power_source": {
+          "value": "Its own on-site power: grid electricity, hydrogen fuel cells and natural gas",
+          "sources": [
+            "ecl-csc1-release-2026-04",
+            "convergedigest-csc1"
+          ],
+          "quote": "on-grid electricity, hydrogen power, and natural gas"
+        },
+        "water": {
+          "value": "ECL says cooling uses water made by its hydrogen system, not fresh water",
+          "sources": [
+            "ecl-csc1-release-2026-04",
+            "convergedigest-csc1"
+          ],
+          "quote": "eliminating the freshwater draw",
+          "note": "company claim, no volume published"
+        },
+        "local_rates": {
+          "value": "Data centers use 55% of Silicon Valley Power's electricity. Homes pay about 5% of its revenue.",
+          "sources": [
+            "appa-svp-2026-03"
+          ],
+          "quote": "developers directly fund dedicated substations",
+          "note": "from SVP's general manager at a state hearing, Jan 2026"
+        }
       }
     },
     {
       "id": "ecl-mv1",
       "name": "MV-1",
       "city": "Mountain View",
-      "location": { "lat": null, "lon": null, "precision": "city" },
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
       "stage": "operating",
       "facts": {
-        "operator": { "value": "ECL", "sources": ["autonocion-2026-07"] },
-        "capacity_mw": { "value": 1, "sources": ["autonocion-2026-07"], "quote": "1 MW in about 1,000 square feet" },
-        "ai_use": { "value": "About 1,800 GPUs leased to an AI hosting company", "sources": ["autonocion-2026-07"], "quote": "cooling its 1,800 GPUs with the water that drips out of the fuel cells" },
-        "power_source": { "value": "Hydrogen fuel cells, no grid connection", "sources": ["autonocion-2026-07"] },
-        "water": { "value": "Cooling uses water produced by the fuel cells", "sources": ["autonocion-2026-07"] },
-        "opened": { "value": "2024", "sources": ["autonocion-2026-07"] }
+        "operator": {
+          "value": "ECL",
+          "sources": [
+            "autonocion-2026-07"
+          ]
+        },
+        "capacity_mw": {
+          "value": 1,
+          "sources": [
+            "autonocion-2026-07"
+          ],
+          "quote": "1 MW in about 1,000 square feet"
+        },
+        "ai_use": {
+          "value": "About 1,800 GPUs leased to an AI hosting company",
+          "sources": [
+            "autonocion-2026-07"
+          ],
+          "quote": "cooling its 1,800 GPUs with the water that drips out of the fuel cells"
+        },
+        "power_source": {
+          "value": "Hydrogen fuel cells, no grid connection",
+          "sources": [
+            "autonocion-2026-07"
+          ]
+        },
+        "water": {
+          "value": "Cooling uses water produced by the fuel cells",
+          "sources": [
+            "autonocion-2026-07"
+          ]
+        },
+        "opened": {
+          "value": "2024",
+          "sources": [
+            "autonocion-2026-07"
+          ]
+        },
+        "utility": {
+          "value": "None. Not connected to the grid.",
+          "sources": [
+            "autonocion-2026-07"
+          ]
+        }
       }
     }
   ]

@@ -75,5 +75,19 @@ h3 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing
 .sources a { color: var(--op); }
 
 @media (max-width: 640px) {
+  .tab { font-size: 12px; padding: 4px 2px; }
   .panel { top: auto; left: 8px; right: 8px; width: auto; height: 70%; }
 }
+
+.tabs { display: flex; gap: 0; padding: 4px 4px 0; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+.tab { flex: 1 1 auto; min-width: min-content; min-height: 44px; padding: 4px 4px; border: none; background: none; border-bottom: 3px solid transparent; font: inherit; font-size: 12.5px; line-height: 1.15; font-weight: 600; color: var(--ink-2); cursor: pointer; text-align: center; }
+.tab:hover { color: var(--ink); }
+.tab--active { color: var(--ink); border-bottom-color: var(--op); }
+.panel__body > * { flex-shrink: 0; }
+.fact__meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; font-size: 12px; }
+.fact__meta a, .jobs a, .note a { color: var(--op); }
+.jobs { margin: 0; padding-left: 18px; font-size: 13.5px; display: flex; flex-direction: column; gap: 8px; }
+.jobs li { display: list-item; }
+.jobs .muted { display: block; margin: 0; }
+.button { display: inline-flex; align-items: center; min-height: 40px; margin-top: 8px; padding: 0 14px; border-radius: 10px; background: var(--ink); color: #fff; font-size: 13.5px; font-weight: 600; text-decoration: none; }
+section .muted { margin-top: 6px; }
