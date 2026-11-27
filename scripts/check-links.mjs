@@ -26,12 +26,17 @@ export function classify(status) {
   return "unknown";
 }
 
-async function statusOf(url) {
-  const headers = { "user-agent": "Mozilla/5.0 (compatible; dc-dash-link-check)" };
+/** HTTP status for a url, or 0 if unreachable. Falls back to GET when HEAD is refused or answered 404. */
+export async function statusOf(url, fetchImpl = fetch) {
+  const headers = {
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131 Safari/537.36",
+    accept: "text/html,application/xhtml+xml,*/*",
+  };
+  const opts = (method) => ({ method, redirect: "follow", headers, signal: AbortSignal.timeout(15000) });
   try {
-    let res = await fetch(url, { method: "HEAD", redirect: "follow", headers, signal: AbortSignal.timeout(15000) });
-    if (res.status === 405 || res.status === 403) res = await fetch(url, { redirect: "follow", headers, signal: AbortSignal.timeout(15000) });
-    return res.status;
+    const head = await fetchImpl(url, opts("HEAD"));
+    if (![403, 404, 405].includes(head.status)) return head.status;
+    return (await fetchImpl(url, opts("GET"))).status;
   } catch {
     return 0;
   }
