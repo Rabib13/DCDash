@@ -137,7 +137,8 @@ export const FACT_LABEL: Record<string, string> = {
   environmental_review: "Environmental review",
   energy_commission: "Energy Commission",
   air_permit: "Air permit",
-  local_jobs: "Jobs at this site",
+  construction_jobs: "Construction jobs (at peak)",
+  permanent_jobs: "Permanent jobs",
   community_benefits: "Community benefits",
 };
 
@@ -162,7 +163,8 @@ const FACT_SECTION: Record<string, Section> = {
   environmental_review: "environment",
   energy_commission: "environment",
   air_permit: "environment",
-  local_jobs: "jobs",
+  construction_jobs: "jobs",
+  permanent_jobs: "jobs",
   community_benefits: "community",
 };
 
@@ -175,6 +177,26 @@ export const SECTION_EXPECTED: Record<Section, string[]> = {
   overview: ["operator", "capacity_mw", "ai_use"],
   power: ["utility", "power_source", "water"],
   environment: ["environmental_review", "air_permit"],
-  jobs: ["local_jobs"],
+  jobs: ["construction_jobs", "permanent_jobs"],
   community: ["community_benefits"],
 };
+
+/** Construction and permanent jobs the sites' filings expect, added up, with how many sites state each. */
+export function jobTotals(sites: Site[]) {
+  const sum = (key: string) => {
+    const vals = sites.map((s) => s.facts[key]?.value).filter((v): v is number => typeof v === "number");
+    return { total: vals.reduce((a, b) => a + b, 0), sites: vals.length };
+  };
+  return { construction: sum("construction_jobs"), permanent: sum("permanent_jobs"), siteCount: sites.length };
+}
+
+/** The job feed employer for a site: its operator, else its owner, matched by name or alias. */
+export function employerFor(site: Site, feeds: { employer: string; aliases?: string[] }[]): string | null {
+  for (const key of ["operator", "owner"]) {
+    const name = site.facts[key]?.value;
+    if (name == null) continue;
+    const hit = feeds.find((f) => f.employer === name || f.aliases?.includes(String(name)));
+    if (hit) return hit.employer;
+  }
+  return null;
+}

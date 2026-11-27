@@ -39,27 +39,18 @@ for (const site of data.sites) {
       await page.getByRole("tab", { name: tab }).click();
       await expect(page.getByRole("tab", { name: tab })).toHaveAttribute("aria-selected", "true");
       await expect(page.getByRole("tabpanel")).not.toBeEmpty();
-      const links = page.locator(".panel a");
-      for (const link of await links.all()) {
+      // Outside links open in a new tab; the only inside links go to the jobs page.
+      for (const link of await page.locator(".panel a:not([href^='/jobs'])").all()) {
         await expect(link).toHaveAttribute("href", /^https:\/\//);
         await expect(link).toHaveAttribute("target", "_blank");
         await expect(link).toHaveAttribute("rel", /noopener/);
         await expect(link).toBeVisible();
       }
+      for (const link of await page.locator(".panel a[href^='/jobs']").all()) await expect(link).toHaveAttribute("href", /^\/jobs(\?|$)/);
     }
     expect(errors).toEqual([]);
   });
 }
-
-test("clicking a job link opens the job in a new tab", async ({ page, context }) => {
-  await openMap(page);
-  await openSite(page, "SJC37");
-  await page.getByRole("tab", { name: "Jobs" }).click();
-  const job = page.getByRole("link", { name: "Manager Engineering Operations" });
-  const [popup] = await Promise.all([context.waitForEvent("page"), job.click()]);
-  expect(popup.url()).toBe("https://www.indeed.com/viewjob?jk=0f5d217fcce4fb91");
-  await expect(page.getByRole("complementary", { name: "SJC37 details" })).toBeVisible();
-});
 
 test("an operator whose job board is down shows why, with no broken links", async ({ page }) => {
   await openMap(page);

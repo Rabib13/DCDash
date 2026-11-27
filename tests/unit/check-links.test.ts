@@ -7,20 +7,21 @@ const data = {
   operators: {
     Op: {
       careers: { url: "https://careers.example", sources: ["a"] },
-      openings: { checked: "2026-11-27", sources: ["a"], items: [{ title: "Tech", location: "X", url: "https://job.example/1" }] },
     },
   },
   sites: [{ id: "s", documents: [{ url: "https://doc.example", sources: ["a"] }] }],
 };
 
+const FEEDS = [{ employer: "Feed Co", kind: "lever", board: "feedco", careersUrl: "https://feed-careers.example" }];
+
 describe("collectLinks", () => {
   it("collects every outbound link a visitor can click, once each", () => {
-    const urls = collectLinks(data).map((l: { url: string }) => l.url);
-    expect(urls.sort()).toEqual(["https://careers.example", "https://doc.example", "https://job.example/1", "https://source.example"]);
+    const urls = collectLinks(data, FEEDS).map((l: { url: string }) => l.url);
+    expect(urls.sort()).toEqual(["https://careers.example", "https://doc.example", "https://feed-careers.example", "https://source.example"]);
   });
   it("says where each link appears", () => {
-    const job = collectLinks(data).find((l: { url: string }) => l.url === "https://job.example/1");
-    expect(job.where).toMatch(/Op/);
+    const link = collectLinks(data, FEEDS).find((l: { url: string }) => l.url === "https://feed-careers.example");
+    expect(link.where).toMatch(/Feed Co/);
   });
 });
 

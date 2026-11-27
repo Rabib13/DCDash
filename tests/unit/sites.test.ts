@@ -223,3 +223,38 @@ describe("data quality", () => {
     expect(STAGE_LABEL["built" as Stage]).toBe("Built");
   });
 });
+
+describe("job counts from filings", () => {
+  const withJobs = (id: string, construction?: number, permanent?: number): Site => {
+    const s = site(id, "Santa Clara");
+    if (construction != null) s.facts.construction_jobs = { value: construction, sources: ["toms-2025-11"], quote: "q" };
+    if (permanent != null) s.facts.permanent_jobs = { value: permanent, sources: ["toms-2025-11"], quote: "q" };
+    return s;
+  };
+
+  it("files both counts under the Jobs tab and asks for them on every site", () => {
+    expect(factSection("construction_jobs")).toBe("jobs");
+    expect(factSection("permanent_jobs")).toBe("jobs");
+    expect(SECTION_EXPECTED.jobs).toEqual(["construction_jobs", "permanent_jobs"]);
+  });
+
+  it("adds up the counts and says how many sites they come from", async () => {
+    const { jobTotals } = await import("@/lib/sites");
+    expect(jobTotals([withJobs("a", 300, 30), withJobs("b", 200), withJobs("c")])).toEqual({
+      construction: { total: 500, sites: 2 },
+      permanent: { total: 30, sites: 1 },
+      siteCount: 3,
+    });
+  });
+});
+
+describe("employerFor", () => {
+  it("matches a site's operator, then owner, to a job feed by name or alias", async () => {
+    const { employerFor } = await import("@/lib/sites");
+    const feeds = [{ employer: "Microsoft", aliases: ["Microsoft Corporation"] }, { employer: "Digital Realty" }];
+    const s = site("x", "San Jose");
+    expect(employerFor(s, feeds)).toBeNull();
+    expect(employerFor({ ...s, facts: { ...s.facts, owner: { value: "Microsoft Corporation", sources: ["toms-2025-11"] } } }, feeds)).toBe("Microsoft");
+    expect(employerFor({ ...s, facts: { ...s.facts, operator: { value: "Digital Realty", sources: ["toms-2025-11"] } } }, feeds)).toBe("Digital Realty");
+  });
+});

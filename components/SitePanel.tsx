@@ -5,6 +5,7 @@ import {
   CONFIDENCE_LABEL,
   confidence,
   dataset,
+  employerFor,
   FACT_LABEL,
   factSection,
   SECTION_EXPECTED,
@@ -15,10 +16,20 @@ import {
   STAGE_LABEL,
   type Section,
 } from "@/lib/sites";
-import { jobSearchUrl, ROLE_SEARCHES, splitByDistance } from "@/lib/jobs";
+import { jobSearchUrl, ROLE_SEARCHES } from "@/lib/jobs";
+import { citiesWithin, freshnessLabel, openingsNear, type JobsSnapshot } from "@/lib/jobfeeds";
+import { NEAR_MILES } from "./JobsBrowser";
 import type { Fact, Site } from "@/lib/types";
 
 const SECTIONS: Section[] = ["overview", "power", "environment", "jobs", "community"];
+
+/** The year of the newest dated source behind a fact. */
+const planYear = (fact: Fact) =>
+  fact.sources
+    .map((id) => dataset.sources[id]?.published?.slice(0, 4))
+    .filter(Boolean)
+    .sort()
+    .at(-1);
 
 function FactRow({ name, fact }: { name: string; fact: Fact }) {
   const c = confidence(fact);
@@ -31,6 +42,9 @@ function FactRow({ name, fact }: { name: string; fact: Fact }) {
           {fact.note ? <span className="muted"> ({fact.note})</span> : null}
         </span>
         {fact.quote && <q className="quote">{fact.quote}</q>}
+        {(name === "construction_jobs" || name === "permanent_jobs") && planYear(fact) && (
+          <span className="muted">Plan in a {planYear(fact)} filing, not a count of today&apos;s staff.</span>
+        )}
         <span className="fact__meta">
           <span className={`tag tag--${c}`}>{CONFIDENCE_LABEL[c]}</span>
           {fact.sources
@@ -57,52 +71,90 @@ function MissingRow({ name }: { name: string }) {
   );
 }
 
+let jobsRequest: Promise<JobsSnapshot | null> | undefined;
+/** The jobs snapshot, fetched once per page load and shared by every site card. */
+function useJobs() {
+  const [snap, setSnap] = useState<JobsSnapshot | null | undefined>(undefined);
+  useEffect(() => {
+    jobsRequest ??= fetch("/api/jobs")
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null);
+    let live = true;
+    jobsRequest.then((s) => live && setSnap(s));
+    return () => {
+      live = false;
+    };
+  }, []);
+  return snap;
+}
+
+const jobsLink = (params: Record<string, string>) => `/jobs?${new URLSearchParams(params)}`;
+
 function JobsSection({ site, operator }: { site: Site; operator: string | null }) {
+  const snap = useJobs();
+  const employer = snap ? employerFor(site, snap.feeds) : null;
   const op = operator ? dataset.operators[operator] : undefined;
-  const { near, elsewhere } = splitByDistance(site.city, op?.openings?.items ?? []);
+  const near = snap && employer ? openingsNear(snap.jobs, employer, site.city, NEAR_MILES) : [];
+  const nearCities = new Set(citiesWithin(site.city, NEAR_MILES));
+  const allNear = snap ? snap.jobs.filter((j) => j.city !== null && nearCities.has(j.city)).length : 0;
   return (
     <>
-      {!operator ? (
-        <p className="note">Public sources don&apos;t name who runs this site yet, so we can&apos;t list its openings.</p>
-      ) : (
-      <section>
-        <h3>Openings at {operator} near this site</h3>
-        {op?.careersNote ? (
-          <p className="note">{op.careersNote}</p>
-        ) : (
+      <section data-testid="site-openings">
+        <h3>Open jobs nearby</h3>
+        {!operator && !employer && (
+          <p className="note">Public sources don&apos;t name who runs this site yet, so we can&apos;t list its own openings.</p>
+        )}
+        {snap === undefined && <p className="muted">Loading open jobs…</p>}
+        {snap === null && <p className="note">We couldn&apos;t load open jobs just now. Try again in a few minutes.</p>}
+        {snap && employer && (
           <>
-            {near.length > 0 ? (
+            <p>
+              {near.length} opening{near.length === 1 ? "" : "s"} at {employer} within {NEAR_MILES} miles of {site.city}
+            </p>
+            {near.length > 0 && (
               <ul className="jobs">
-                {near.map((j) => (
-                  <li key={j.url}>
+                {near.slice(0, 5).map((j) => (
+                  <li key={j.id}>
                     <a href={j.url} target="_blank" rel="noopener noreferrer">
                       {j.title}
                     </a>
-                    <span className="muted">
-                      {j.location}
-                      {j.team ? ` · ${j.team}` : ""}
-                    </span>
+                    <span className="muted">{j.city}</span>
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className="note">No openings near this site found when we last checked.</p>
             )}
-            {elsewhere.length > 0 && <p className="muted">{elsewhere.length} more {operator} openings in other places.</p>}
-            {op?.openings && (
-              <p className="muted">Checked {op.openings.checked}. Openings change often, so use the link below for the live list.</p>
-            )}
-            {op?.careers ? (
-              <a className="button" href={op.careers.url} target="_blank" rel="noopener noreferrer">
-                All {operator} jobs
-              </a>
+            <a className="button" href={jobsLink({ employer, near: site.city })}>
+              See all {employer} jobs
+            </a>
+            <p className="muted">
+              Job postings name a city, not a building, so these may be for any {employer} site nearby. {freshnessLabel(snap.fetchedAt)}.
+            </p>
+          </>
+        )}
+        {snap && !employer && operator && (
+          <>
+            {op?.careersNote ? (
+              <p className="note">{op.careersNote}</p>
+            ) : op?.careers ? (
+              <p className="note">
+                {operator} doesn&apos;t publish a job feed we can read yet.{" "}
+                <a href={op.careers.url} target="_blank" rel="noopener noreferrer">
+                  All {operator} jobs
+                </a>
+              </p>
             ) : (
-              <p className="note">We haven&apos;t verified {operator}&apos;s careers page yet.</p>
+              <p className="note">{operator} doesn&apos;t publish a job feed we can read yet.</p>
             )}
           </>
         )}
+        {snap && (
+          <p>
+            <a href={jobsLink({ near: site.city })}>
+              All data center jobs near {site.city} ({allNear})
+            </a>
+          </p>
+        )}
       </section>
-      )}
       <section>
         <h3>Data center jobs anywhere</h3>
         <p className="muted">Common roles at data centers, across all operators.</p>

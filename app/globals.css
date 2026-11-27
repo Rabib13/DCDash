@@ -29,7 +29,8 @@ body { background: var(--land); color: var(--ink); overflow: hidden; }
 /* Keep the zoom buttons clear of the site panel. */
 @media (min-width: 641px) { .map-wrap--panel .maplibregl-ctrl-bottom-right { right: 444px; } }
 
-.topbar { position: fixed; top: 12px; left: 16px; z-index: 5; }
+.topbar { position: fixed; top: 12px; left: 16px; z-index: 5; display: flex; gap: 8px; }
+.topbar__link { background: var(--surface); box-shadow: var(--shadow); border-radius: 12px; height: 48px; display: flex; align-items: center; padding: 0 16px; font-weight: 600; font-size: 15px; color: var(--ink); text-decoration: none; }
 .brand { background: var(--surface); box-shadow: var(--shadow); border-radius: 12px; height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 14px; font-weight: 700; font-size: 17px; }
 .badge { font-weight: 600; font-size: 11px; color: var(--ink-3); border: 1px solid var(--line); border-radius: 999px; padding: 4px 7px; }
 
@@ -91,3 +92,34 @@ h3 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing
 .jobs .muted { display: block; margin: 0; }
 .button { display: inline-flex; align-items: center; min-height: 40px; margin-top: 8px; padding: 0 14px; border-radius: 10px; background: var(--ink); color: #fff; font-size: 13.5px; font-weight: 600; text-decoration: none; }
 section .muted { margin-top: 6px; }
+
+/* Jobs page: a normal scrolling page, unlike the full-screen map. */
+.page { position: fixed; inset: 0; overflow-y: auto; background: var(--land); }
+.page__inner { max-width: 860px; margin: 0 auto; padding: 20px 16px 64px; }
+.page__inner h1 { font-size: 26px; margin: 12px 0 4px; }
+.page__inner h2 { font-size: 18px; margin: 0 0 8px; }
+.page__inner p { line-height: 1.5; }
+.page__back { color: var(--op); font-size: 14px; }
+.page__back::before { content: "← "; }
+.page__section { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); padding: 16px; margin-top: 16px; }
+.headline { font-size: 20px; font-weight: 700; margin: 8px 0 0; }
+.feed-problems { list-style: none; margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; min-height: 36px; }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.selects { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0; }
+.selects label { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; font-weight: 600; color: var(--ink-2); flex: 1 1 220px; min-width: 0; }
+.selects select { font: inherit; font-size: 14px; font-weight: 400; color: var(--ink); padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); min-height: 40px; width: 100%; }
+.joblist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.joblist li { padding: 10px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
+.joblist a { color: var(--op); font-weight: 600; font-size: 15px; }
+.joblist .muted { margin: 0; }
+.careers { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0; list-style: none; font-size: 14px; }
+.careers a { color: var(--op); }
+.table-wrap { overflow-x: auto; }
+.filing-table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+.filing-table th, .filing-table td { text-align: left; padding: 8px 6px; border-top: 1px solid var(--line); vertical-align: top; }
+.filing-table thead th { font-size: 12px; color: var(--ink-2); border-top: 0; }
+.filing-table tbody th { font-weight: 600; }
+.filing-table tbody th .muted { display: block; font-weight: 400; }
+.filing-table a { color: var(--op); display: block; }

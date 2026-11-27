@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error plain JS module shared with the build script
-import { checkData } from "../../scripts/check-data.mjs";
+import { checkData, checkFeeds } from "../../scripts/check-data.mjs";
 
 const valid = () => ({
   asOf: "2026-11-27",
@@ -9,7 +9,6 @@ const valid = () => ({
   operators: {
     Op: {
       careers: { url: "https://jobs.example", sources: ["a"] },
-      openings: { checked: "2026-11-27", sources: ["a"], items: [{ title: "Tech", location: "Santa Clara, CA", url: "https://jobs.example/1" }] },
     },
   },
   sites: [
@@ -84,18 +83,18 @@ describe("checkData", () => {
     expect(errorsFor((d) => (d.sites[0].documents[0].url = "ftp://x")).join()).toMatch(/documents\[0\]: url must be https/);
   });
 
-  it("rejects job data without a checked date, source, or https link", () => {
-    expect(errorsFor((d) => (d.operators.Op.openings.checked = "")).join()).toMatch(/needs a checked date/);
-    expect(errorsFor((d) => (d.operators.Op.openings.sources = [])).join()).toMatch(/openings: no source/);
-    expect(errorsFor((d) => (d.operators.Op.openings.items[0].url = "javascript:alert(1)")).join()).toMatch(/url must be https/);
+  it("rejects careers links that aren't https", () => {
     expect(errorsFor((d) => (d.operators.Op.careers.url = "http://jobs.example")).join()).toMatch(/careers: url must be https/);
+  });
+
+  it("rejects copied job openings, which go stale; jobs come from live feeds", () => {
+    expect(
+      errorsFor((d) => Object.assign(d.operators.Op, { openings: { checked: "2026-11-27", sources: ["a"], items: [] } })).join(),
+    ).toMatch(/openings go stale/);
   });
 });
 
 describe("checkData link rules", () => {
-  it("rejects short-lived tracking links for jobs, which stop working", () => {
-    expect(errorsFor((d) => (d.operators.Op.openings.items[0].url = "https://to.indeed.com/aawkzdcsy6zd")).join()).toMatch(/tracking link/);
-  });
   it("rejects careers links with a tracking parameter", () => {
     expect(errorsFor((d) => (d.operators.Op.careers.url = "https://jobs.example/?from=mcp-claude-jobsearch")).join()).toMatch(/tracking link/);
   });
@@ -136,5 +135,51 @@ describe("which sites belong on the map", () => {
 describe("stages", () => {
   it("accepts built, for a finished building not yet confirmed as operating", () => {
     expect(errorsFor((d) => (d.sites[0].stage = "built"))).toEqual([]);
+  });
+});
+
+describe("job counts from filings", () => {
+  const withCount = (key: string, fact: Record<string, unknown>) => (d: Data) => {
+    (d.sources as Record<string, unknown>).f = { title: "Filing", publisher: "CEC", url: "https://f.example", published: "2022-03-01", accessed: "2026-11-27" };
+    (d.sites[0].facts as Record<string, unknown>)[key] = fact;
+  };
+
+  it("accepts a sourced, quoted number from a dated filing", () => {
+    expect(errorsFor(withCount("construction_jobs", { value: 300, sources: ["f"], quote: "peak workforce of 300" }))).toEqual([]);
+  });
+
+  it("rejects a count that isn't a number", () => {
+    expect(errorsFor(withCount("permanent_jobs", { value: "about 30", sources: ["f"], quote: "30" })).join()).toMatch(/permanent_jobs: must be a number/);
+  });
+
+  it("rejects a count without the filing's exact words", () => {
+    expect(errorsFor(withCount("construction_jobs", { value: 300, sources: ["f"] })).join()).toMatch(/construction_jobs: needs a quote/);
+  });
+
+  it("rejects a count from a source with no published date, since readers need to know how old the plan is", () => {
+    expect(errorsFor(withCount("permanent_jobs", { value: 30, sources: ["a"], quote: "30 employees" })).join()).toMatch(/permanent_jobs: source "a" needs a published date/);
+  });
+});
+
+describe("checkFeeds", () => {
+  const feed = () => ({ employer: "Op", kind: "greenhouse", board: "op", careersUrl: "https://op.example/careers" });
+
+  it("accepts a valid feed list and the real data/job-feeds.json", () => {
+    expect(checkFeeds([feed()])).toEqual([]);
+    expect(checkFeeds(JSON.parse(readFileSync(new URL("../../data/job-feeds.json", import.meta.url), "utf8")))).toEqual([]);
+  });
+
+  it("rejects an unknown feed type, a missing board, or a non-https careers page", () => {
+    expect(checkFeeds([{ ...feed(), kind: "indeed" }]).join()).toMatch(/unknown kind "indeed"/);
+    expect(checkFeeds([{ ...feed(), board: "" }]).join()).toMatch(/needs a board/);
+    expect(checkFeeds([{ ...feed(), careersUrl: "http://op.example" }]).join()).toMatch(/careersUrl must be https/);
+  });
+
+  it("rejects a Workday board that isn't a full https address", () => {
+    expect(checkFeeds([{ ...feed(), kind: "workday", board: "op" }]).join()).toMatch(/Workday board must be/);
+  });
+
+  it("rejects the same employer listed twice, which would count its jobs twice", () => {
+    expect(checkFeeds([feed(), feed()]).join()).toMatch(/Op: listed twice/);
   });
 });

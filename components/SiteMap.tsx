@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -100,6 +101,9 @@ export default function SiteMap() {
         <div className="brand">
           DC Dash <span className="badge">Beta · {SITES.length} sites</span>
         </div>
+        <Link href="/jobs" className="topbar__link">
+          Jobs
+        </Link>
       </header>
       <div className="legend">
         <span><i className="swatch swatch--operating" />Operating</span>
