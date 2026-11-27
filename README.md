@@ -13,3 +13,21 @@ Only sites where a source says the facility runs or is built for AI / GPU worklo
 ## Status
 
 Phase 0: data foundation. See `data/` and `scripts/validate-data.mjs`.
+
+## Run it
+
+```
+npm install
+npm run dev        # http://localhost:3000
+npm run validate   # checks data/sites.json against the sourcing rules
+npm run build      # validate + production build
+```
+
+## Data
+
+- `data/sites.json` is what the map shows. Each fact lists the keys of the sources it came from. The app works out the confidence label from how many different publishers back it.
+- `npm run validate` fails if a fact has no source, a source is missing, or a site has no `ai_use` fact.
+- Sites with no sourced address are drawn at their city center, and the site card says so.
+- `data/candidates/` holds sites found in public filings that have no source yet tying them to AI. They stay off the map until one turns up.
+
+The map uses free [OpenFreeMap](https://openfreemap.org) tiles with [MapLibre](https://maplibre.org).
