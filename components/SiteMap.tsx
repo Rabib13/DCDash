@@ -9,6 +9,8 @@ import { spreadApart } from "@/lib/layout";
 import { CATEGORY_LABEL, citiesWithin, type Category } from "@/lib/jobfeeds";
 import { bubbleSize, bubbleText, CATEGORY_COLOR, NEAR_MILES, cityBubbles, EMPTY_VIEW, matchesView, parseJobsView, ringGradient, viewQuery, type JobsView } from "@/lib/jobs-view";
 import { useJobs } from "@/lib/useJobs";
+import { buildoutSummary } from "@/lib/buildout";
+import BuildoutBanner from "./BuildoutBanner";
 import JobsPanel from "./JobsPanel";
 import SitePanel from "./SitePanel";
 
@@ -28,6 +30,7 @@ const SITES = dataset.sites.filter(onMap);
 const MARKER_GAP = 46;
 /** Job circles may overlap a little, but never sit right on top of each other. */
 const BUBBLE_GAP = 48;
+const BANNER_KEY = "dcdash.summaryHidden";
 
 export default function SiteMap() {
   const container = useRef<HTMLDivElement>(null);
@@ -40,9 +43,28 @@ export default function SiteMap() {
   const snap = useJobs();
   const bubbleMarkers = useRef<maplibregl.Marker[]>([]);
 
+  // The summary banner shows until a visitor hides it; that choice is remembered on this device.
+  const [bannerHidden, setBannerHidden] = useState<boolean | null>(null);
+  const hideBanner = (hidden: boolean) => {
+    setBannerHidden(hidden);
+    try {
+      if (hidden) localStorage.setItem(BANNER_KEY, "1");
+      else localStorage.removeItem(BANNER_KEY);
+    } catch {
+      // Storage can be blocked; the banner then just shows again next visit.
+    }
+  };
+
   useEffect(() => {
     setJobs(parseJobsView(window.location.search));
     setReady(true);
+    let hidden = false;
+    try {
+      hidden = localStorage.getItem(BANNER_KEY) === "1";
+    } catch {
+      // ignore
+    }
+    setBannerHidden(hidden);
   }, []);
   useEffect(() => {
     if (ready) window.history.replaceState(null, "", `/${viewQuery(jobs)}`);
@@ -227,6 +249,11 @@ export default function SiteMap() {
         >
           {localCount === null ? "Jobs" : `Jobs · ${localCount} open`}
         </button>
+        {bannerHidden && (
+          <button type="button" className="topbar__link topbar__link--quiet" onClick={() => hideBanner(false)}>
+            What&apos;s in it for me?
+          </button>
+        )}
       </header>
       {jobs ? (
         <div className="legend legend--jobs">
@@ -244,6 +271,9 @@ export default function SiteMap() {
           <span><i className="swatch swatch--building" />Building or waiting for power</span>
           <span><i className="swatch swatch--planned" />Proposed</span>
         </div>
+      )}
+      {bannerHidden === false && !selected && !jobs && (
+        <BuildoutBanner summary={buildoutSummary(snap, SITES)} onSeeJobs={() => openJobs({})} onHide={() => hideBanner(true)} />
       )}
       {selected && <SitePanel site={selected} onClose={() => setSelected(null)} onOpenJobs={openJobs} />}
       {jobs && !selected && <JobsPanel snap={snap} view={jobs} onChange={changeJobs} onClose={() => setJobs(null)} />}
