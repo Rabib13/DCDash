@@ -132,9 +132,10 @@ export default function JobsPanel({
             <details className="what-counts">
               <summary>What counts here</summary>
               <p>
-                Jobs in Bay Area cities posted on the public job boards of companies that own, run, build or power the data centers on our map.
-                For employers that hire for much more than data centers, such as Amazon and Lawrence Livermore National Laboratory, we keep
-                only data center and infrastructure roles. Postings name a city, not a building, so we never say a job is at a specific site.
+                Jobs in Bay Area cities posted on the public job boards of companies that own, run, build or power the data centers on our map,
+                and of AI companies whose infrastructure teams are based here, such as OpenAI and Anthropic. Those teams plan, buy and run
+                computing power, often for data centers in other states. For employers that hire for much more than data centers, we keep only
+                data center and infrastructure roles. Postings name a city, not a building, so we never say a job is at a specific site.
                 Many construction and electrical jobs are hired through union halls, which don&apos;t post here, and some employers, such as
                 CoreSite, Google and PG&amp;E, don&apos;t publish a job feed we can read yet.
               </p>

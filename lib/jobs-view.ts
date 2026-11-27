@@ -24,7 +24,9 @@ export const CATEGORY_COLOR: Record<Category, string> = {
   mechanical: "#d4572a",
   construction: "#8a5a2b",
   network: "#7b4fd6",
-  security: "#4d6b3c",
+  planning: "#c2408f",
+  systems: "#1f8a5b",
+  security: "#55606e",
   other: "#9aa0a6",
 };
 

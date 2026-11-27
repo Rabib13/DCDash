@@ -82,5 +82,55 @@
     "kind": "eightfold",
     "board": "https://careers.dpr.com/api/pcsx/search?domain=dpr.com&query=&location=",
     "careersUrl": "https://careers.dpr.com/careers"
+  },
+  {
+    "employer": "OpenAI",
+    "kind": "ashby",
+    "board": "openai",
+    "careersUrl": "https://openai.com/careers",
+    "titleFilter": "data ?cent|datacenter|\\bcompute\\b|capacity|fleet|\\bhpc\\b|\\bgpu\\b|cluster|power|energy|cooling|thermal|electrical|mechanical|commission|cabling|construction|supply chain|sourcing|network|interconnect|optic|collective communication|facilit|infrastructure|hardware",
+    "titleExclude": "robotic|consumer devices|merchant|channel lead|champion|computer use|identity|search|privacy|evaluation|evals|safeguards|monetization|brand|caching|agent|chatgpt|claude app|analytics platform|ci/cd|product infrastructure|traffic|ip infrastructure|\\beda\\b|motor|battery|dynamometer|pcba|\\blab\\b|laboratory|data infrastructure|counsel|accounting|accounts payable|finance|fp&a|marketing|recruiter|people business|account executive|(?<!data center )security"
+  },
+  {
+    "employer": "Anthropic",
+    "kind": "greenhouse",
+    "board": "anthropic",
+    "careersUrl": "https://www.anthropic.com/careers",
+    "titleFilter": "data ?cent|datacenter|\\bcompute\\b|capacity|fleet|\\bhpc\\b|\\bgpu\\b|cluster|power|energy|cooling|thermal|electrical|mechanical|commission|cabling|construction|supply chain|sourcing|network|interconnect|optic|collective communication|facilit|infrastructure|hardware",
+    "titleExclude": "robotic|consumer devices|merchant|channel lead|champion|computer use|identity|search|privacy|evaluation|evals|safeguards|monetization|brand|caching|agent|chatgpt|claude app|analytics platform|ci/cd|product infrastructure|traffic|ip infrastructure|\\beda\\b|motor|battery|dynamometer|pcba|\\blab\\b|laboratory|data infrastructure|counsel|accounting|accounts payable|finance|fp&a|marketing|recruiter|people business|account executive|(?<!data center )security"
+  },
+  {
+    "employer": "CoreWeave",
+    "kind": "greenhouse",
+    "board": "coreweave",
+    "careersUrl": "https://www.coreweave.com/careers",
+    "titleFilter": "data ?cent|datacenter|\\bcompute\\b|capacity|fleet|\\bhpc\\b|\\bgpu\\b|cluster|power|energy|cooling|thermal|electrical|mechanical|commission|cabling|construction|supply chain|sourcing|network|interconnect|optic|collective communication|facilit|infrastructure|hardware",
+    "titleExclude": "robotic|consumer devices|merchant|channel lead|champion|computer use|identity|search|privacy|evaluation|evals|safeguards|monetization|brand|caching|agent|chatgpt|claude app|analytics platform|ci/cd|product infrastructure|traffic|ip infrastructure|\\beda\\b|motor|battery|dynamometer|pcba|\\blab\\b|laboratory|data infrastructure|counsel|accounting|accounts payable|finance|fp&a|marketing|recruiter|people business|account executive|(?<!data center )security"
+  },
+  {
+    "employer": "Lambda",
+    "kind": "ashby",
+    "board": "lambda",
+    "careersUrl": "https://lambda.ai/careers",
+    "titleFilter": "data ?cent|datacenter|\\bcompute\\b|capacity|fleet|\\bhpc\\b|\\bgpu\\b|cluster|power|energy|cooling|thermal|electrical|mechanical|commission|cabling|construction|supply chain|sourcing|network|interconnect|optic|collective communication|facilit|infrastructure|hardware",
+    "titleExclude": "robotic|consumer devices|merchant|channel lead|champion|computer use|identity|search|privacy|evaluation|evals|safeguards|monetization|brand|caching|agent|chatgpt|claude app|analytics platform|ci/cd|product infrastructure|traffic|ip infrastructure|\\beda\\b|motor|battery|dynamometer|pcba|\\blab\\b|laboratory|data infrastructure|counsel|accounting|accounts payable|finance|fp&a|marketing|recruiter|people business|account executive|(?<!data center )security"
+  },
+  {
+    "employer": "xAI",
+    "kind": "greenhouse",
+    "board": "xai",
+    "careersUrl": "https://job-boards.greenhouse.io/xai",
+    "titleFilter": "data ?cent|datacenter|\\bcompute\\b|capacity|fleet|\\bhpc\\b|\\bgpu\\b|cluster|power|energy|cooling|thermal|electrical|mechanical|commission|cabling|construction|supply chain|sourcing|network|interconnect|optic|collective communication|facilit|infrastructure|hardware",
+    "titleExclude": "robotic|consumer devices|merchant|channel lead|champion|computer use|identity|search|privacy|evaluation|evals|safeguards|monetization|brand|caching|agent|chatgpt|claude app|analytics platform|ci/cd|product infrastructure|traffic|ip infrastructure|\\beda\\b|motor|battery|dynamometer|pcba|\\blab\\b|laboratory|data infrastructure|counsel|accounting|accounts payable|finance|fp&a|marketing|recruiter|people business|account executive|(?<!data center )security"
+  },
+  {
+    "employer": "Meta",
+    "kind": "link",
+    "careersUrl": "https://www.metacareers.com/jobs"
+  },
+  {
+    "employer": "NVIDIA",
+    "kind": "link",
+    "careersUrl": "https://www.nvidia.com/en-us/about-nvidia/careers/"
   }
 ]

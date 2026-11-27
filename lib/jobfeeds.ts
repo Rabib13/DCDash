@@ -36,7 +36,17 @@ export type FeedConfig = {
   department?: string;
 };
 
-export type Category = "operations" | "facilities" | "electrical" | "mechanical" | "construction" | "network" | "security" | "other";
+export type Category =
+  | "operations"
+  | "facilities"
+  | "electrical"
+  | "mechanical"
+  | "construction"
+  | "network"
+  | "planning"
+  | "systems"
+  | "security"
+  | "other";
 
 export const CATEGORY_LABEL: Record<Category, string> = {
   operations: "Data center operations",
@@ -45,6 +55,8 @@ export const CATEGORY_LABEL: Record<Category, string> = {
   mechanical: "Mechanical and cooling",
   construction: "Construction",
   network: "Network and hardware",
+  planning: "Planning, sourcing and programs",
+  systems: "Compute systems engineering",
   security: "Security",
   other: "Other roles",
 };
@@ -89,6 +101,9 @@ export type JobsSnapshot = {
 /** Bay Area cities a job can be in: every city we know the center of. Longest names first so "South San Francisco" wins over "San Francisco". */
 const BAY_AREA_CITIES = Object.keys(CITY_CENTER).sort((a, b) => b.length - a.length);
 
+/** Between places in one location text: "A; B", "A | B" or "A / B". */
+const PLACE_SEPARATOR = /[;|]|\s\/\s/;
+
 /** States that would make a same-named city not ours, like Newark, NJ. */
 const OTHER_STATE = /,\s*(?!ca\b|california\b|us\b|usa\b|united states\b)[a-z]{2,}/i;
 
@@ -108,7 +123,7 @@ export function bayAreaCity(location: string): string | null {
     const re = new RegExp(`(^|[^a-z])${fold(city)}(?![a-z])`, "g");
     for (let m = re.exec(text); m; m = re.exec(text)) {
       const after = text.slice(m.index + m[0].length);
-      if (OTHER_STATE.test(after.split(/[;|]/)[0])) continue;
+      if (OTHER_STATE.test(after.split(PLACE_SEPARATOR)[0])) continue;
       if (!best || m.index < best.at) best = { city, at: m.index };
       break;
     }
@@ -117,13 +132,15 @@ export function bayAreaCity(location: string): string | null {
 }
 
 const RULES: [Category, RegExp][] = [
-  ["construction", /construct|superintendent|foreman|estimator|project (engineer|manager|coordinator|control)|schedul|planner|\bvdc\b|structural|architect|modeler|safety|\behs\b/i],
+  ["construction", /construct|superintendent|foreman|estimator|project (engineer|manager|coordinator|control)|schedul|planner &|\bvdc\b|structural|architectur|modeler|safety|\behs\b/i],
   ["security", /security (officer|guard|supervisor)|guard\b/i],
   ["electrical", /electric|lineworker|lineman/i],
-  ["mechanical", /hvac|mechanic|cooling|chiller|plumb|pipefitter/i],
+  ["mechanical", /hvac|mechanic|cooling|chiller|plumb|pipefitter|thermal/i],
   ["facilities", /critical facilit|facilit|chief engineer|building engineer|stationary engineer/i],
-  ["network", /network|hardware|fiber|cabling|deployment/i],
+  ["planning", /program manager|\btpm\b|capacity|planner|planning|supply chain|sourcing|procurement/i],
+  ["network", /network|hardware|fiber|cabling|deployment|interconnect|optic/i],
   ["operations", /data ?cent(er|re)|technician|operations|noc\b|remote hands/i],
+  ["systems", /fleet|\bhpc\b|\bgpu\b|compute|cluster|kubernetes|site reliability|storage|collective communication/i],
 ];
 
 /** Sorts a job title into a broad role type, so visitors can browse by kind of work. */
@@ -146,7 +163,7 @@ function job(employer: string, id: unknown, title: unknown, location: unknown, u
   if (!t || !u.startsWith("https://") || NOT_A_JOB.test(t)) return null;
   const loc = String(location ?? "").trim();
   const j: Job = { id: `${employer}:${id}`, employer, title: t, location: loc, city: bayAreaCity(loc), url: u, category: categorize(t) };
-  if (j.city && loc.split(/;|\|/).some((part) => part.trim() && !bayAreaCity(part))) j.alsoElsewhere = true;
+  if (j.city && loc.split(PLACE_SEPARATOR).some((part) => part.trim() && !bayAreaCity(part))) j.alsoElsewhere = true;
   const p = day(posted);
   if (p) j.posted = p;
   return j;
@@ -164,7 +181,9 @@ export function parseLever(employer: string, body: any): Job[] {
 }
 
 export function parseAshby(employer: string, body: any): Job[] {
-  return keep((body?.jobs ?? []).map((j: any) => job(employer, j.id, j.title, j.location, j.jobUrl, j.publishedAt)));
+  // A job's other offices are listed apart; read them all so a job based in Seattle and San Francisco counts here.
+  const where = (j: any) => [j.location, ...(j.secondaryLocations ?? []).map((l: any) => l?.location)].filter(Boolean).join("; ");
+  return keep((body?.jobs ?? []).map((j: any) => job(employer, j.id, j.title, where(j), j.jobUrl, j.publishedAt)));
 }
 
 export function parseSmartRecruiters(employer: string, company: string, body: any): Job[] {

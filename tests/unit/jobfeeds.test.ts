@@ -25,6 +25,15 @@ import {
 const NOW = new Date("2026-11-27T18:00:00Z");
 
 describe("bayAreaCity", () => {
+  it("reads slash-separated location lists, as CoreWeave posts them", () => {
+    expect(bayAreaCity("Livingston, NJ / New York, NY / Sunnyvale, CA / San Francisco, CA / Bellevue, WA")).toBe("Sunnyvale");
+    expect(bayAreaCity("Bellevue, WA / Sunnyvale, CA")).toBe("Sunnyvale");
+  });
+
+  it("reads Lambda's office names", () => {
+    expect(bayAreaCity("San Jose Office (Zanker)")).toBe("San Jose");
+  });
+
   it("reads the city from the common location formats", () => {
     expect(bayAreaCity("Santa Clara, CA")).toBe("Santa Clara");
     expect(bayAreaCity("San Jose, California, United States")).toBe("San Jose");
@@ -75,6 +84,13 @@ describe("categorize", () => {
     ["EHS Executive", "construction"],
     ["Boiler & Pressure System Mechanic II", "mechanical"],
     ["Social Media Specialist", "other"],
+    ["Technical Program Manager, Compute Infrastructure", "planning"],
+    ["Supply Chain Program Manager (SCPM) - AI Infrastructure", "planning"],
+    ["Infrastructure Capacity Planner, Demand Planning", "planning"],
+    ["Data Center Strategic Sourcing Lead - Construction", "construction"],
+    ["Software Engineer, Fleet Management", "systems"],
+    ["Software Engineer, GPU Infrastructure - HPC", "systems"],
+    ["Staff HPC Network Architect", "network"],
   ])("%s is %s", (title, category) => {
     expect(categorize(title)).toBe(category);
   });
@@ -121,6 +137,28 @@ describe("feed parsers", () => {
       jobs: [{ id: "x", title: "Security Officer", jobUrl: "https://jobs.ashbyhq.com/example/x", location: "Fremont, CA", publishedAt: "2026-10-05T12:00:00Z" }],
     });
     expect(job).toMatchObject({ city: "Fremont", posted: "2026-10-05", category: "security" });
+  });
+
+  it("reads an Ashby job's other locations, so a job based in Seattle and San Francisco counts, flagged as also elsewhere", () => {
+    const [job] = parseAshby(employer, {
+      jobs: [
+        {
+          id: "y",
+          title: "Network Engineer",
+          jobUrl: "https://jobs.ashbyhq.com/example/y",
+          location: "Bellevue Office",
+          secondaryLocations: [{ location: "San Francisco Office (Fremont St)" }],
+        },
+      ],
+    });
+    expect(job).toMatchObject({ city: "San Francisco", alsoElsewhere: true });
+  });
+
+  it("flags a slash-separated job that also lists other states", async () => {
+    const [job] = parseGreenhouse(employer, {
+      jobs: [{ id: 1, title: "Staff Electrical Engineer", absolute_url: "https://x.example/1", location: { name: "New York, NY / Sunnyvale, CA / Bellevue, WA" } }],
+    });
+    expect(job).toMatchObject({ city: "Sunnyvale", alsoElsewhere: true });
   });
 
   it("reads SmartRecruiters jobs", () => {
@@ -529,6 +567,51 @@ describe("the real title filters in data/job-feeds.json", () => {
   ])("Amazon drops chip design and server engineering, which isn't data center work: %s", (title) =>
     expect(keeps("Amazon Web Services", title)).toBe(false),
   );
+
+  // AI companies' boards list every kind of job; keep the teams that plan, buy, build and run computing power.
+  // Titles from their live feeds on Nov 27.
+  const AI = ["OpenAI", "Anthropic", "CoreWeave", "Lambda", "xAI"];
+  it.each([
+    ["OpenAI", "Technical Program Manager, Compute Infrastructure"],
+    ["OpenAI", "Datacenter Networking Technician, AI Compute Deployment - Stargate"],
+    ["OpenAI", "Electrical Commissioning Lead"],
+    ["OpenAI", "Physical Network & Structured Cabling Engineer"],
+    ["OpenAI", "Software Engineer, Fleet Management"],
+    ["OpenAI", "Software Engineer, GPU Infrastructure - HPC"],
+    ["OpenAI", "Software Engineer, Collective Communication"],
+    ["OpenAI", "Supply Chain Program Manager (SCPM) - AI Infrastructure"],
+    ["OpenAI", "Power Generation Design Engineer, Electrical & Mechanical"],
+    ["Anthropic", "Data Center Energy Lead"],
+    ["Anthropic", "Technical Program Manager, Data Center Infrastructure"],
+    ["Anthropic", "Infrastructure Capacity Planner, Demand Planning"],
+    ["Anthropic", "Manufacturing Quality Engineer, Data Center Power & Cooling"],
+    ["CoreWeave", "Data Center Construction Scheduler"],
+    ["CoreWeave", "Senior Thermo-Mechanical Engineer"],
+    ["Lambda", "Staff Mechanical Engineer - Data Center Cooling"],
+    ["Lambda", "Construction Administrator"],
+    ["xAI", "Sr. Network Engineer, High-Speed Interconnects (ML Infrastructure)"],
+  ])("%s keeps infrastructure work: %s", (employer, title) => expect(keeps(employer, title)).toBe(true));
+
+  it.each([
+    ["OpenAI", "Agent Post-Training, Computer Use Research"],
+    ["OpenAI", "Community Programs Manager, Champion Network"],
+    ["OpenAI", "Visual Merchant, Hardware"],
+    ["OpenAI", "Electrical Engineer, Robotics"],
+    ["OpenAI", "Mechanical Design Engineer, Battery Pack"],
+    ["OpenAI", "Software Engineer, Identity Infrastructure"],
+    ["OpenAI", "Software Engineer, Search Infrastructure"],
+    ["OpenAI", "Data Engineer, Hardware & Consumer Devices"],
+    ["OpenAI", "Research Scientist"],
+    ["Anthropic", "Account Executive, Startups"],
+    ["Anthropic", "Engineering Manager, Privacy Infrastructure"],
+    ["xAI", "Barista"],
+    ["xAI", "Software Engineer, Evaluation Infrastructure"],
+  ])("%s drops work that isn't infrastructure: %s", (employer, title) => expect(keeps(employer, title)).toBe(false));
+
+  it("lists Meta and NVIDIA as links, since their boards can't be read", () => {
+    for (const e of ["Meta", "NVIDIA"]) expect(feeds.find((f) => f.employer === e)?.kind).toBe("link");
+    for (const e of AI) expect(feeds.find((f) => f.employer === e), e).toBeDefined();
+  });
 
   it("applies an exclude pattern after the include pattern", async () => {
     const snap = await fetchFeeds(
