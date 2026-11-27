@@ -42,10 +42,11 @@ test("the Jobs button on the map opens the jobs layer: a count, a circle per cit
   await expect(page.getByTestId("jobs-freshness")).toHaveText(/^Updated 2 hours ago/);
   await expect(jobLinks(page)).toHaveCount(fixture.jobs.length);
   // One circle per city with jobs, labeled with its count, ringed by role type.
+  // Like the headline, the number counts jobs based only here; the rest are named apart.
   await expect(bubbles(page)).toHaveCount(4);
-  await expect(page.getByRole("button", { name: "San Jose: 4 open jobs" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "San Jose: 3 open jobs, plus 1 also listed elsewhere" })).toHaveText("3");
   await expect(page.getByRole("button", { name: "Hayward: 1 open job" })).toBeVisible();
-  expect(await page.getByRole("button", { name: "San Jose: 4 open jobs" }).evaluate((el) => getComputedStyle(el).backgroundImage)).toContain("conic-gradient");
+  expect(await page.getByRole("button", { name: /^San Jose:/ }).evaluate((el) => getComputedStyle(el).backgroundImage)).toContain("conic-gradient");
   // Site markers fade back but stay on the map, and the legend now explains the ring colors.
   await expect(page.locator(".map-wrap--jobs")).toHaveCount(1);
   await expect(page.locator(".legend")).toContainText("Data center operations");
@@ -55,11 +56,13 @@ test("the Jobs button on the map opens the jobs layer: a count, a circle per cit
 test("tapping a city's circle shows that city's jobs, and the whole Bay Area is one tap back", async ({ page }) => {
   await stubOutside(page);
   await openJobs(page);
-  await page.getByRole("button", { name: "San Jose: 4 open jobs" }).click();
+  await page.getByRole("button", { name: /^San Jose:/ }).click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Jobs in San Jose");
   await expect(jobLinks(page)).toHaveCount(4);
   await expect(page).toHaveURL(/city=San\+Jose/);
-  await expect(page.getByRole("button", { name: "San Jose: 4 open jobs" })).toHaveClass(/jobbubble--selected/);
+  await expect(page.getByRole("button", { name: /^San Jose:/ })).toHaveClass(/jobbubble--selected/);
+  // Jobs based only here come first; ones that also list other places follow.
+  await expect(jobLinks(page).last()).toHaveText("Data Center Capacity Analyst");
   await page.getByRole("button", { name: `Widen to 10 miles around San Jose` }).click();
   await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Jobs within 10 miles of San Jose");
   await expect(page).toHaveURL(/near=San\+Jose/);
@@ -129,6 +132,11 @@ test("a site run by such an employer links to its careers page instead of a coun
   const box = page.getByTestId("site-openings");
   await expect(box).toContainText("Prologis's job board doesn't allow automated reading");
   await expect(box.getByRole("link", { name: "See Prologis jobs on its own site" })).toHaveAttribute("href", "https://careers.prologis.example/");
+});
+
+test("the jobs list is never cached while the server is still reading job boards", async ({ request }) => {
+  const res = await request.get("/api/jobs");
+  expect(res.headers()["cache-control"]).toBe("public, max-age=300");
 });
 
 test("a job that also lists other states says so", async ({ page }) => {

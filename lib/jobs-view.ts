@@ -2,7 +2,7 @@
  * The jobs layer on the map: what's filtered, how it reads from and writes to the address,
  * and the per-city circles drawn on the map.
  */
-import { CATEGORY_LABEL, citiesWithin, type Category, type Job } from "./jobfeeds";
+import { CATEGORY_LABEL, citiesWithin, type Category, type Job, type JobsSnapshot } from "./jobfeeds";
 import { CITY_CENTER } from "./sites";
 
 /** How long the server keeps jobs before reading the job boards again. */
@@ -61,26 +61,34 @@ export function matchesView(job: Job, view: JobsView, nearCities = view.near ? n
   return true;
 }
 
-export type CityBubble = { city: string; lngLat: [number, number]; count: number; roles: { role: Category; count: number }[] };
+/** `count` is jobs based only in the Bay Area, like the headline; `elsewhere` is jobs that also list other places. */
+export type CityBubble = { city: string; lngLat: [number, number]; count: number; elsewhere: number; roles: { role: Category; count: number }[] };
 
-/** One circle per city with jobs, biggest first, with how many of each role type it holds. */
+/** One circle per city with jobs, biggest first, with how many of each role type its count holds. */
 export function cityBubbles(jobs: Job[]): CityBubble[] {
-  const by = new Map<string, Map<Category, number>>();
+  const by = new Map<string, Job[]>();
   for (const j of jobs) {
     if (!j.city || !CITY_CENTER[j.city]) continue;
-    const roles = by.get(j.city) ?? new Map<Category, number>();
-    roles.set(j.category, (roles.get(j.category) ?? 0) + 1);
-    by.set(j.city, roles);
+    by.set(j.city, [...(by.get(j.city) ?? []), j]);
   }
   return [...by]
-    .map(([city, roles]) => ({
-      city,
-      lngLat: CITY_CENTER[city],
-      count: [...roles.values()].reduce((a, b) => a + b, 0),
-      roles: [...roles].map(([role, count]) => ({ role, count })).sort((a, b) => b.count - a.count || a.role.localeCompare(b.role)),
-    }))
-    .sort((a, b) => b.count - a.count || a.city.localeCompare(b.city));
+    .map(([city, all]) => {
+      const local = all.filter((j) => !j.alsoElsewhere);
+      const roles = new Map<Category, number>();
+      for (const j of local.length ? local : all) roles.set(j.category, (roles.get(j.category) ?? 0) + 1);
+      return {
+        city,
+        lngLat: CITY_CENTER[city],
+        count: local.length,
+        elsewhere: all.length - local.length,
+        roles: [...roles].map(([role, count]) => ({ role, count })).sort((a, b) => b.count - a.count || a.role.localeCompare(b.role)),
+      };
+    })
+    .sort((a, b) => b.count - a.count || b.elsewhere - a.elsewhere || a.city.localeCompare(b.city));
 }
+
+/** Browsers may keep a complete list for 5 minutes, but never one the server is still filling in. */
+export const cacheControl = (snap: JobsSnapshot) => (snap.refreshing ? "no-store" : "public, max-age=300");
 
 /** A ring split into one slice per role type, sized by its share of the city's jobs. */
 export function ringGradient(roles: { role: Category; count: number }[]): string {

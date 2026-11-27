@@ -138,10 +138,13 @@ export default function SiteMap() {
       const el = document.createElement("button");
       el.type = "button";
       const size = bubbleSize(b.count);
-      el.className = "jobbubble";
+      el.className = b.elsewhere ? "jobbubble jobbubble--elsewhere" : "jobbubble";
       el.style.width = el.style.height = `${size}px`;
       el.style.backgroundImage = ringGradient(b.roles);
-      el.setAttribute("aria-label", `${b.city}: ${b.count} open job${b.count === 1 ? "" : "s"}`);
+      el.setAttribute(
+        "aria-label",
+        `${b.city}: ${b.count} open job${b.count === 1 ? "" : "s"}${b.elsewhere ? `, plus ${b.elsewhere} also listed elsewhere` : ""}`,
+      );
       el.innerHTML = `<span class="jobbubble__count">${b.count}</span>`;
       el.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -227,7 +230,7 @@ export default function SiteMap() {
       </header>
       {jobs ? (
         <div className="legend legend--jobs">
-          <span>Circle size: open jobs in that city</span>
+          <span>Circle: jobs based in that city · gray halo: more that also list other places</span>
           {legendRoles.map((c) => (
             <span key={c}>
               <i className="swatch" style={{ background: CATEGORY_COLOR[c] }} />

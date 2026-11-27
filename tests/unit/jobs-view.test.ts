@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cityBubbles, CATEGORY_COLOR, jobsHref, matchesView, parseJobsView, ringGradient, viewQuery, type JobsView } from "@/lib/jobs-view";
+import { cacheControl, cityBubbles, CATEGORY_COLOR, jobsHref, matchesView, parseJobsView, ringGradient, viewQuery, type JobsView } from "@/lib/jobs-view";
 import { CATEGORY_LABEL, bayAreaCity, citiesWithin, type Job } from "@/lib/jobfeeds";
 import { CITY_CENTER } from "@/lib/sites";
 
@@ -75,6 +75,19 @@ describe("cityBubbles", () => {
     ]);
   });
 
+  it("counts jobs based only in the Bay Area apart from jobs that also list other places, so circles match the headline", () => {
+    const elsewhere = { ...j("2", "Santa Clara"), alsoElsewhere: true };
+    const [b] = cityBubbles([j("1", "Santa Clara", "electrical"), elsewhere, { ...elsewhere, id: "3" }]);
+    expect(b).toMatchObject({ city: "Santa Clara", count: 1, elsewhere: 2 });
+    // The ring shows the jobs counted in the circle.
+    expect(b.roles).toEqual([{ role: "electrical", count: 1 }]);
+  });
+
+  it("still shows a city whose only jobs also list other places, with a count of 0", () => {
+    const [b] = cityBubbles([{ ...j("1", "Gilroy", "network"), alsoElsewhere: true }]);
+    expect(b).toMatchObject({ city: "Gilroy", count: 0, elsewhere: 1, roles: [{ role: "network", count: 1 }] });
+  });
+
   it("leaves out jobs without a Bay Area city", () => {
     expect(cityBubbles([j("1", null)])).toEqual([]);
   });
@@ -106,5 +119,15 @@ describe("city coverage", () => {
 
   it("counts nearby cities without centers of their own before, like Cupertino near Santa Clara", () => {
     expect(citiesWithin("Santa Clara", 10)).toContain("Cupertino");
+  });
+});
+
+describe("cacheControl", () => {
+  it("never lets a browser keep a half-read list, so reloading shows jobs as they arrive", () => {
+    expect(cacheControl({ fetchedAt: "x", feeds: [], jobs: [], refreshing: true })).toBe("no-store");
+  });
+
+  it("lets browsers keep a complete list for 5 minutes", () => {
+    expect(cacheControl({ fetchedAt: "x", feeds: [], jobs: [] })).toBe("public, max-age=300");
   });
 });

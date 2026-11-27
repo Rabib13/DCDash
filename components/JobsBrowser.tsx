@@ -25,7 +25,8 @@ export default function JobsBrowser({ jobs, view, onChange }: { jobs: Job[]; vie
     .filter(({ n, c }) => n > 0 || c === view.role);
   const list = jobs
     .filter((j) => matchesView(j, view, nearCities))
-    .sort((a, b) => (b.posted ?? "").localeCompare(a.posted ?? "") || a.title.localeCompare(b.title));
+    // Jobs based only here first, then ones that also list other places.
+    .sort((a, b) => Number(!!a.alsoElsewhere) - Number(!!b.alsoElsewhere) || (b.posted ?? "").localeCompare(a.posted ?? "") || a.title.localeCompare(b.title));
   const placeValue = view.city ? `city:${view.city}` : view.near ? `near:${view.near}` : "";
 
   return (

@@ -127,6 +127,8 @@ section .muted { margin-top: 6px; }
 .jobbubble:hover, .jobbubble--selected { z-index: 3; }
 .jobbubble--selected { outline: 3px solid var(--ink); outline-offset: 2px; }
 .jobbubble--faded { opacity: 0.45; }
+/* A faint halo for jobs that also list other places: present, but not counted in the number. */
+.jobbubble--elsewhere { box-shadow: 0 0 0 5px rgba(120, 120, 120, 0.22), var(--shadow); }
 .legend--jobs .swatch { border: none; }
 .chip__dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; flex-shrink: 0; }
 .chip[aria-pressed="true"] .chip__dot { box-shadow: 0 0 0 2px #fff; }

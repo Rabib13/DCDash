@@ -165,7 +165,7 @@ function Summary({ snap }: { snap: JobsSnapshot }) {
         {local.length} open jobs based in the Bay Area at {employers} employers
       </p>
       {multi > 0 && <p data-testid="jobs-multi">Plus {multi} more that can be based here or elsewhere.</p>}
-      <p className="muted">Each circle on the map is a city. Its size is how many jobs are open there, and its ring shows the kinds of work. Tap one to see its jobs.</p>
+      <p className="muted">Each circle on the map is a city. Its number and size are the jobs based only there, and its ring shows the kinds of work. A gray halo means more jobs there also list other places. Tap a circle to see its jobs.</p>
     </div>
   );
 }
