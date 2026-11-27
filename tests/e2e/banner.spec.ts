@@ -15,6 +15,9 @@ async function openMap(page: Page) {
   await page.context().route(/^https:\/\/(?!tiles\.openfreemap\.org)/, (r) => r.fulfill({ contentType: "text/html", body: "<h1>external page</h1>" }));
   await page.goto("/");
   await expect(page.locator(".marker")).toHaveCount(data.sites.length);
+  // Phones start with the one-line banner; open it in full.
+  const pill = page.locator(".buildout-pill");
+  if (await pill.isVisible()) await pill.click();
   return errors;
 }
 
@@ -42,9 +45,18 @@ test("the banner says how many sites have documented community benefits, with an
   await expect(banner(page)).toContainText(`${s.benefitExample!.value} at ${s.benefitExample!.site} in ${s.benefitExample!.city}`);
 });
 
-test("moving the map shrinks the banner to one line, so it never covers sites; one tap opens it again", async ({ page }) => {
+test("the visitor moving the map shrinks the banner to one line; the map moving itself doesn't", async ({ page }) => {
   await openMap(page);
-  await page.evaluate(() => (window as unknown as { __dcMap: { jumpTo: (o: object) => void } }).__dcMap.jumpTo({ zoom: 11 }));
+  // The map framing itself on load must not hide the banner.
+  await page.evaluate(() => (window as unknown as { __dcMap: { jumpTo: (o: object) => void } }).__dcMap.jumpTo({ zoom: 10 }));
+  await expect(banner(page)).toBeVisible();
+  // A visitor dragging it does.
+  const box = (await page.locator(".map").boundingBox())!;
+  const [x, y] = [box.x + 30, box.y + box.height - 80];
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x + 60, y - 40, { steps: 8 });
+  await page.mouse.up();
   await expect(banner(page)).toHaveCount(0);
   const pill = page.getByRole("button", { name: /jobs open now/ });
   await expect(pill).toBeVisible();
@@ -142,4 +154,12 @@ test("See community benefits lists each documented benefit with its source, and 
   await expect(page.getByRole("complementary", { name: `${first.name} details` })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Community" })).toHaveAttribute("aria-selected", "true");
   void context;
+});
+
+test("on a phone the banner starts as one line with the key numbers, without covering the map", async ({ page, isMobile }) => {
+  test.skip(!isMobile, "phones only");
+  await page.route("https://tiles.openfreemap.org/**", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify(BLANK_STYLE) }));
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: /^8 jobs open now · \d+ paid apprenticeships/ })).toBeVisible();
+  await expect(banner(page)).toHaveCount(0);
 });

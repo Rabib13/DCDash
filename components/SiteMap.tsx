@@ -54,6 +54,7 @@ export default function SiteMap() {
   const [far, setFar] = useState(true);
   const hideBanner = (hidden: boolean) => {
     setBannerHidden(hidden);
+    if (!hidden) setBannerCompact(false);
     try {
       if (hidden) localStorage.setItem(BANNER_KEY, "1");
       else localStorage.removeItem(BANNER_KEY);
@@ -72,6 +73,8 @@ export default function SiteMap() {
       // ignore
     }
     setBannerHidden(hidden);
+    // On a phone the full banner would cover the map, so it starts as one line with the key numbers.
+    setBannerCompact(window.innerWidth <= 640);
   }, []);
   useEffect(() => {
     if (ready) window.history.replaceState(null, "", `/${viewQuery(jobs)}`);
@@ -146,7 +149,10 @@ export default function SiteMap() {
     m.on("moveend", layout);
     m.on("resize", layout);
     m.on("click", () => setSelected(null));
-    m.on("movestart", () => setBannerCompact(true));
+    // Only a visitor's own drag or zoom counts; the map framing itself doesn't.
+    m.on("movestart", (e) => {
+      if ((e as { originalEvent?: Event }).originalEvent) setBannerCompact(true);
+    });
     const zoomLevel = () => setFar(m.getZoom() < FAR_ZOOM);
     m.on("zoomend", zoomLevel);
     m.on("load", zoomLevel);
