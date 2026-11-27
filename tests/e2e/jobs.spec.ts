@@ -22,7 +22,7 @@ test("the jobs page leads with how many jobs are open and how fresh the list is"
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Data center jobs in the Bay Area");
   const local = fixture.jobs.filter((j) => !(j as { alsoElsewhere?: boolean }).alsoElsewhere);
   const employers = new Set(local.map((j) => j.employer)).size;
-  await expect(page.getByTestId("jobs-headline")).toHaveText(`${local.length} open jobs based in the Bay Area at ${employers} data center companies`);
+  await expect(page.getByTestId("jobs-headline")).toHaveText(`${local.length} open jobs based in the Bay Area at ${employers} employers`);
   // Jobs that list other states too are counted apart, so they can't inflate the headline.
   await expect(page.getByTestId("jobs-multi")).toHaveText("Plus 1 more that can be based here or elsewhere.");
   await expect(page.getByTestId("jobs-freshness")).toHaveText(/^Updated 2 hours ago/);
@@ -95,7 +95,7 @@ test("every job opens the employer's own posting in a new tab", async ({ page, c
 test("the page explains what counts and links each employer's careers page", async ({ page }) => {
   await stubOutside(page);
   await page.goto("/jobs");
-  await expect(page.getByText(/public job boards of companies that own, run or build/)).toBeVisible();
+  await expect(page.getByText(/public job boards of companies that own, run, build or power/)).toBeVisible();
   await expect(page.getByRole("link", { name: "Equinix careers" })).toHaveAttribute("href", "https://careers.equinix.example/");
 });
 

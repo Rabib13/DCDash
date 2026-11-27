@@ -88,7 +88,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
         </Link>
         <h1>Data center jobs in the Bay Area</h1>
         <p className="headline" data-testid="jobs-headline">
-          {local.length} open jobs based in the Bay Area at {employers} data center companies
+          {local.length} open jobs based in the Bay Area at {employers} employers
         </p>
         {multi > 0 && (
           <p data-testid="jobs-multi">
@@ -120,9 +120,11 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
         <section className="page__section">
           <h2>What counts here</h2>
           <p>
-            Jobs in Bay Area cities posted on the public job boards of companies that own, run or build the data centers on our map. Postings
-            name a city, not a building, so we never say a job is at a specific site. Many construction and electrical jobs are hired through
-            contractors and union halls, which don&apos;t post here.
+            Jobs in Bay Area cities posted on the public job boards of companies that own, run, build or power the data centers on our map.
+            For employers that hire for much more than data centers, such as Amazon, Microsoft, Prologis and Lawrence Livermore National
+            Laboratory, we keep only data center and infrastructure roles. Postings name a city, not a building, so we never say a job is at a
+            specific site. Many construction and electrical jobs are hired through union halls, which don&apos;t post here, and some employers,
+            such as CoreSite, Google and PG&amp;E, don&apos;t publish a job feed we can read yet.
           </p>
           <ul className="careers">
             {snap.feeds.map((f) => (

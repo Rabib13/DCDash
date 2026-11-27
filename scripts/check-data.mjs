@@ -18,7 +18,7 @@ export const MIN_MW = 20;
 /** Facts holding job counts stated in a site's filings. */
 export const JOB_COUNT_FACTS = new Set(["construction_jobs", "permanent_jobs"]);
 
-export const FEED_KINDS = new Set(["greenhouse", "lever", "ashby", "smartrecruiters", "workday"]);
+export const FEED_KINDS = new Set(["greenhouse", "lever", "ashby", "smartrecruiters", "workday", "oracle", "amazon", "eightfold", "neogov", "jobvite-xml"]);
 
 /** Rules for data/job-feeds.json, the employers whose public job feeds the jobs page reads. */
 export function checkFeeds(feeds) {

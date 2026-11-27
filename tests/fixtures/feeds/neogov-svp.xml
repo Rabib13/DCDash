@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:joblisting="http://www.neogov.com/namespaces/JobListing" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>City of Santa Clara, CA</title>
+    <link>https://agency.governmentjobs.com/cityofsantaclaraca</link>
+    <item>
+      <guid isPermaLink="true">https://www.governmentjobs.com/careers/cityofsantaclaraca/jobs/5543290-0</guid>
+      <link>https://www.governmentjobs.com/careers/cityofsantaclaraca/jobs/5543290-0</link>
+      <title>Senior Electric Crew Foreperson</title>
+      <description>&lt;p&gt;The application period has been extended.&lt;/p&gt;</description>
+      <pubDate>Wed, 25 Nov 2026 17:22:34 GMT</pubDate>
+      <joblisting:jobId>5543290</joblisting:jobId>
+      <joblisting:advertiseFromDate>Fri, 06 Nov 2026 00:00:00:0</joblisting:advertiseFromDate>
+      <joblisting:minimumSalary>217775.28</joblisting:minimumSalary>
+      <joblisting:maximumSalary>278107.92</joblisting:maximumSalary>
+      <joblisting:salaryInterval>Year</joblisting:salaryInterval>
+      <joblisting:department>Electric Utility</joblisting:department>
+      <joblisting:location>1500 Warburton Ave., Santa Clara</joblisting:location>
+    </item>
+    <item>
+      <guid isPermaLink="true">https://www.governmentjobs.com/careers/cityofsantaclaraca/jobs/5526199-0</guid>
+      <link>https://www.governmentjobs.com/careers/cityofsantaclaraca/jobs/5526199-0</link>
+      <title>Staff Aide II</title>
+      <pubDate>Fri, 20 Nov 2026 18:23:00 GMT</pubDate>
+      <joblisting:jobId>5526199</joblisting:jobId>
+      <joblisting:department>Electric Utility</joblisting:department>
+      <joblisting:location>1500 Warburton Ave., Santa Clara</joblisting:location>
+    </item>
+    <item>
+      <link>https://www.governmentjobs.com/careers/cityofsantaclaraca/jobs/5000001-0</link>
+      <title>Librarian I</title>
+      <pubDate>Fri, 20 Nov 2026 18:23:00 GMT</pubDate>
+      <joblisting:department>Library</joblisting:department>
+      <joblisting:location>2635 Homestead Rd., Santa Clara</joblisting:location>
+    </item>
+  </channel>
+</rss>

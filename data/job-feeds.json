@@ -1,1 +1,85 @@
-[]
+[
+  {
+    "employer": "Digital Realty",
+    "kind": "oracle",
+    "board": "https://hdep.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX",
+    "careersUrl": "https://www.digitalrealty.com/about/careers"
+  },
+  {
+    "employer": "Equinix",
+    "kind": "workday",
+    "board": "https://equinix.wd1.myworkdayjobs.com/External",
+    "careersUrl": "https://careers.equinix.com/"
+  },
+  {
+    "employer": "Vantage Data Centers",
+    "kind": "workday",
+    "board": "https://vantagedc.wd1.myworkdayjobs.com/Vantage",
+    "careersUrl": "https://vantage-dc.com/company/careers/"
+  },
+  {
+    "employer": "Stack Infrastructure",
+    "aliases": ["STACK Infrastructure"],
+    "kind": "workday",
+    "board": "https://stackinfra.wd108.myworkdayjobs.com/STACK_AMER",
+    "careersUrl": "https://www.stackinfra.com/about/careers/"
+  },
+  {
+    "employer": "Goodman Group",
+    "kind": "greenhouse",
+    "board": "goodmanau",
+    "careersUrl": "https://www.goodman.com/careers"
+  },
+  {
+    "employer": "Prologis",
+    "kind": "workday",
+    "board": "https://prologis.wd5.myworkdayjobs.com/Prologis_External_Careers",
+    "titleFilter": "data cent",
+    "careersUrl": "https://www.prologis.com/careers"
+  },
+  {
+    "employer": "Amazon Web Services",
+    "kind": "amazon",
+    "board": "data center",
+    "careersUrl": "https://www.amazon.jobs/en/search?base_query=data+center"
+  },
+  {
+    "employer": "Microsoft",
+    "aliases": ["Microsoft Corporation"],
+    "kind": "eightfold",
+    "board": "https://apply.careers.microsoft.com/api/pcsx/search?domain=microsoft.com&query=datacenter&location=",
+    "careersUrl": "https://apply.careers.microsoft.com/careers?query=datacenter"
+  },
+  {
+    "employer": "Lawrence Livermore National Laboratory",
+    "kind": "smartrecruiters",
+    "board": "LLNL",
+    "titleFilter": "comput|hpc|data ?cent|facilit|electric|mechanic|hvac|network|infrastructure",
+    "careersUrl": "https://www.llnl.gov/join-our-team/careers/find-your-job"
+  },
+  {
+    "employer": "Silicon Valley Power",
+    "kind": "neogov",
+    "board": "cityofsantaclaraca",
+    "department": "Electric Utility",
+    "careersUrl": "https://www.governmentjobs.com/careers/cityofsantaclaraca"
+  },
+  {
+    "employer": "Rosendin",
+    "kind": "workday",
+    "board": "https://rosendin.wd1.myworkdayjobs.com/en-US/Careers",
+    "careersUrl": "https://rosendin.wd1.myworkdayjobs.com/en-US/Careers"
+  },
+  {
+    "employer": "Cupertino Electric",
+    "kind": "jobvite-xml",
+    "board": "cei:qCzaVfw0",
+    "careersUrl": "https://www.cei.com/careers/current-openings"
+  },
+  {
+    "employer": "DPR Construction",
+    "kind": "eightfold",
+    "board": "https://careers.dpr.com/api/pcsx/search?domain=dpr.com&query=&location=",
+    "careersUrl": "https://careers.dpr.com/careers"
+  }
+]

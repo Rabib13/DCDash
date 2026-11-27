@@ -4,7 +4,17 @@
  */
 import { CITY_CENTER } from "./sites";
 
-export type FeedKind = "greenhouse" | "lever" | "ashby" | "smartrecruiters" | "workday";
+export type FeedKind =
+  | "greenhouse"
+  | "lever"
+  | "ashby"
+  | "smartrecruiters"
+  | "workday"
+  | "oracle"
+  | "amazon"
+  | "eightfold"
+  | "neogov"
+  | "jobvite-xml";
 
 export type FeedConfig = {
   /** The name shown to visitors. */
@@ -16,6 +26,10 @@ export type FeedConfig = {
   careersUrl: string;
   /** Other names the site data uses for this employer, such as an owner's legal name. */
   aliases?: string[];
+  /** For employers that hire far beyond data centers: keep only titles matching this pattern (case-insensitive). */
+  titleFilter?: string;
+  /** NEOGOV only: keep only this department, e.g. a city's electric utility. */
+  department?: string;
 };
 
 export type Category = "operations" | "facilities" | "electrical" | "mechanical" | "construction" | "network" | "security" | "other";
@@ -105,15 +119,18 @@ const fold = (s: string) =>
 /** The Bay Area city in a job's location text, or null when it's elsewhere, remote, or vague ("3 Locations"). */
 export function bayAreaCity(location: string): string | null {
   const text = fold(location ?? "");
+  // The city named first wins, so "Toronto; Sunnyvale; San Jose" is Sunnyvale.
+  let best: { city: string; at: number } | null = null;
   for (const city of BAY_AREA_CITIES) {
-    const re = new RegExp(`(^|[^a-z])${fold(city)}(?![a-z])`);
-    const m = re.exec(text);
-    if (!m) continue;
-    const after = text.slice(m.index + m[0].length);
-    if (OTHER_STATE.test(after.split(/[;|]/)[0])) continue;
-    return city;
+    const re = new RegExp(`(^|[^a-z])${fold(city)}(?![a-z])`, "g");
+    for (let m = re.exec(text); m; m = re.exec(text)) {
+      const after = text.slice(m.index + m[0].length);
+      if (OTHER_STATE.test(after.split(/[;|]/)[0])) continue;
+      if (!best || m.index < best.at) best = { city, at: m.index };
+      break;
+    }
   }
-  return null;
+  return best?.city ?? null;
 }
 
 const RULES: [Category, RegExp][] = [
@@ -137,10 +154,13 @@ const day = (value: unknown): string | undefined => {
   return Number.isNaN(d.getTime()) ? undefined : d.toISOString().slice(0, 10);
 };
 
+/** Standing "send us your resume" entries that some boards list as if they were jobs. */
+const NOT_A_JOB = /^(open|general) application|talent (community|pool|network)/i;
+
 function job(employer: string, id: unknown, title: unknown, location: unknown, url: unknown, posted?: unknown): Job | null {
   const t = String(title ?? "").trim();
   const u = String(url ?? "");
-  if (!t || !u.startsWith("https://")) return null;
+  if (!t || !u.startsWith("https://") || NOT_A_JOB.test(t)) return null;
   const loc = String(location ?? "").trim();
   const j: Job = { id: `${employer}:${id}`, employer, title: t, location: loc, city: bayAreaCity(loc), url: u, category: categorize(t) };
   if (j.city && loc.split(/;|\|/).some((part) => part.trim() && !bayAreaCity(part))) j.alsoElsewhere = true;
@@ -179,55 +199,240 @@ export function parseSmartRecruiters(employer: string, company: string, body: an
   );
 }
 
-/** Workday gives only relative dates ("Posted 3 Days Ago"), so jobs from it have no posted date. */
-export function parseWorkday(employer: string, board: string, body: any): Job[] {
-  const base = board.replace(/\/$/, "");
-  return keep((body?.jobPostings ?? []).map((j: any) => job(employer, j.externalPath, j.title, j.locationsText, j.externalPath ? base + j.externalPath : "")));
+/** Workday lists only relative dates. Returns the day, or nothing for "30+ Days Ago". */
+export function parseWorkdayPosted(text: string | undefined, now: Date): string | undefined {
+  if (!text) return undefined;
+  const days = /today/i.test(text) ? 0 : /yesterday/i.test(text) ? 1 : /(\d+)\s+days?\s+ago/i.exec(text) && !/\+/.test(text) ? Number(/(\d+)/.exec(text)![1]) : null;
+  if (days === null) return undefined;
+  return new Date(now.getTime() - days * 86400_000).toISOString().slice(0, 10);
 }
+
+/** Oracle Recruiting Cloud: every requisition with its primary and secondary locations. */
+export function parseOracle(employer: string, board: string, body: any): Job[] {
+  const base = board.replace(/\/$/, "");
+  const reqs = (body?.items ?? []).flatMap((i: any) => i.requisitionList ?? []);
+  return keep(
+    reqs.map((r: any) =>
+      job(
+        employer,
+        r.Id,
+        r.Title,
+        [r.PrimaryLocation, ...(r.secondaryLocations ?? []).map((l: any) => l.Name)].filter(Boolean).join("; "),
+        `${base}/job/${r.Id}`,
+        r.PostedDate,
+      ),
+    ),
+  );
+}
+export function parseAmazon(employer: string, body: any): Job[] {
+  return keep(
+    (body?.jobs ?? []).map((j: any) =>
+      job(employer, j.id_icims ?? j.id, j.title, j.normalized_location ?? j.location, j.job_path ? `https://www.amazon.jobs${j.job_path}` : "", j.posted_date),
+    ),
+  );
+}
+
+/** Eightfold career sites (Microsoft, DPR). `origin` is the site's address, like https://apply.careers.microsoft.com. */
+export function parseEightfold(employer: string, origin: string, body: any): Job[] {
+  return keep(
+    (body?.data?.positions ?? []).map((p: any) =>
+      job(
+        employer,
+        p.id,
+        p.name,
+        (p.standardizedLocations?.length ? p.standardizedLocations : p.locations ?? []).join("; "),
+        p.positionUrl ? origin.replace(/\/$/, "") + p.positionUrl : "",
+        p.postedTs ? p.postedTs * 1000 : undefined,
+      ),
+    ),
+  );
+}
+
+const decodeXml = (s: string) =>
+  s
+    .replace(/^<!\[CDATA\[([\s\S]*)\]\]>$/, "$1")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&")
+    .trim();
+
+/** The text of the first <tag> inside an XML fragment, or "". */
+const tag = (xml: string, name: string) => {
+  const m = new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)</${name}>`).exec(xml);
+  return m ? decodeXml(m[1]) : "";
+};
+const blocks = (xml: string, name: string) => xml.match(new RegExp(`<${name}[\\s>][\\s\\S]*?</${name}>`, "g")) ?? [];
+
+/** NEOGOV / GovernmentJobs RSS, used by many cities, such as Santa Clara for Silicon Valley Power. */
+export function parseNeogov(employer: string, xml: string, department?: string): Job[] {
+  return keep(
+    blocks(xml.replace(/^\uFEFF/, ""), "item")
+      .filter((item) => !department || tag(item, "joblisting:department") === department)
+      .map((item) => job(employer, tag(item, "joblisting:jobId") || tag(item, "link"), tag(item, "title"), tag(item, "joblisting:location"), tag(item, "link"), tag(item, "pubDate"))),
+  );
+}
+
+/** Jobvite's XML feed. A posting's copies for other cities share its parentId, so they merge into one job. */
+export function parseJobviteXml(employer: string, site: string, xml: string): Job[] {
+  const groups = new Map<string, { title: string; date: string; locations: string[] }>();
+  for (const j of blocks(xml, "job")) {
+    const id = tag(j, "parentId") || tag(j, "id");
+    const g = groups.get(id) ?? { title: tag(j, "title"), date: tag(j, "date"), locations: [] };
+    const loc = tag(j, "location");
+    if (loc && !g.locations.includes(loc)) g.locations.push(loc);
+    groups.set(id, g);
+  }
+  return keep(
+    [...groups].map(([id, g]) => {
+      const [m, d, y] = g.date.split("/");
+      return job(employer, id, g.title, g.locations.join("; "), `https://jobs.jobvite.com/${site}/job/${id}`, y ? `${y}-${m}-${d}` : undefined);
+    }),
+  );
+}
+
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 type FetchLike = (url: string, init?: RequestInit) => Promise<Response>;
+type Ctx = { fetchImpl: FetchLike; sleep: (ms: number) => Promise<void>; now: Date };
 
-async function getJson(fetchImpl: FetchLike, url: string, init?: RequestInit) {
-  const res = await fetchImpl(url, { ...init, signal: AbortSignal.timeout(15_000) });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+const RETRIES = 3;
+
+/** GET or POST for JSON. Waits and retries when a board says it's busy (429 or 503). */
+async function getJson(ctx: Ctx, url: string, init?: RequestInit) {
+  for (let attempt = 0; ; attempt++) {
+    const res = await ctx.fetchImpl(url, { ...init, signal: AbortSignal.timeout(20_000) });
+    if ((res.status === 429 || res.status === 503) && attempt < RETRIES) {
+      const after = Number(res.headers.get("retry-after"));
+      await ctx.sleep(after > 0 ? after * 1000 : 2000 * 2 ** attempt);
+      continue;
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  }
 }
 
-/** The most Workday jobs read per employer, to keep one huge board from slowing the page. */
-const WORKDAY_MAX = 1000;
+/** Eightfold sites (Microsoft, DPR) allow only a few quick requests, 10 jobs at a time. */
+const EIGHTFOLD_PAUSE_MS = 2500;
+const EIGHTFOLD_MAX = 600;
 
-async function readFeed(feed: FeedConfig, fetchImpl: FetchLike): Promise<Job[]> {
+async function getText(ctx: Ctx, url: string) {
+  const res = await ctx.fetchImpl(url, { signal: AbortSignal.timeout(20_000), headers: { "user-agent": "Mozilla/5.0 (compatible; DCDash job reader)" } });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.text();
+}
+
+/** Pause between requests to boards that limit how fast they can be read. */
+const WORKDAY_PAUSE_MS = 1500;
+/** The most Workday Bay Area jobs read per employer. */
+const WORKDAY_MAX = 500;
+
+async function readWorkday(feed: FeedConfig, ctx: Ctx): Promise<Job[]> {
+  const u = new URL(feed.board);
+  const tenant = u.hostname.split(".")[0];
+  const site = u.pathname.split("/").filter(Boolean).pop();
+  const cxs = `${u.origin}/wday/cxs/${tenant}/${site}`;
+  const post = async (offset: number, ids: string[]) => {
+    await ctx.sleep(WORKDAY_PAUSE_MS);
+    return getJson(ctx, `${cxs}/jobs`, {
+      method: "POST",
+      headers: { "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify({ appliedFacets: ids.length ? { locations: ids } : {}, limit: 20, offset, searchText: "" }),
+    });
+  };
+  // The first page lists every location id. Several ids can share a city name, so keep them all.
+  const first = await post(0, []);
+  const facets = (first?.facets ?? []).flatMap((f: any) => (f.facetParameter === "locations" ? [f] : (f.values ?? []).filter((v: any) => v.facetParameter === "locations")));
+  const ids: string[] = facets.flatMap((f: any) => f.values ?? []).filter((v: any) => bayAreaCity(v.descriptor)).map((v: any) => v.id);
+  if (ids.length === 0) return [];
+  const postings: any[] = [];
+  for (let offset = 0; offset < WORKDAY_MAX; offset += 20) {
+    const page = await post(offset, ids);
+    postings.push(...(page?.jobPostings ?? []));
+    if (!page?.jobPostings?.length || offset + 20 >= (page.total ?? 0)) break;
+  }
+  const base = feed.board.replace(/\/$/, "");
+  const out: Job[] = [];
+  for (const p of postings) {
+    let location = p.locationsText;
+    let posted = parseWorkdayPosted(p.postedOn, ctx.now);
+    // "7 Locations" hides where the job is, so read its detail page.
+    if (!bayAreaCity(location ?? "") && p.externalPath) {
+      await ctx.sleep(WORKDAY_PAUSE_MS);
+      const info = (await getJson(ctx, `${cxs}${p.externalPath}`, { headers: { accept: "application/json" } }))?.jobPostingInfo ?? {};
+      location = [...new Set([info.location, ...(info.additionalLocations ?? [])].filter(Boolean))].join("; ");
+      posted = day(info.startDate) ?? posted;
+    }
+    const j = job(feed.employer, p.externalPath, p.title, location, p.externalPath ? base + p.externalPath : "", posted);
+    if (j) out.push(j);
+  }
+  return out;
+}
+
+async function readOracle(feed: FeedConfig, ctx: Ctx): Promise<Job[]> {
+  const u = new URL(feed.board);
+  const site = u.pathname.split("/").filter(Boolean).pop();
+  const out: Job[] = [];
+  for (let offset = 0; offset < 2000; offset += 200) {
+    const body = await getJson(
+      ctx,
+      `${u.origin}/hcmRestApi/resources/latest/recruitingCEJobRequisitions?onlyData=true&expand=requisitionList.secondaryLocations&finder=findReqs;siteNumber=${site},limit=200,offset=${offset},sortBy=POSTING_DATES_DESC`,
+    );
+    out.push(...parseOracle(feed.employer, feed.board, body));
+    if (offset + 200 >= (body?.items?.[0]?.TotalJobsCount ?? 0)) break;
+  }
+  return out;
+}
+
+async function readFeed(feed: FeedConfig, ctx: Ctx): Promise<Job[]> {
   switch (feed.kind) {
     case "greenhouse":
-      return parseGreenhouse(feed.employer, await getJson(fetchImpl, `https://boards-api.greenhouse.io/v1/boards/${feed.board}/jobs`));
+      return parseGreenhouse(feed.employer, await getJson(ctx, `https://boards-api.greenhouse.io/v1/boards/${feed.board}/jobs`));
     case "lever":
-      return parseLever(feed.employer, await getJson(fetchImpl, `https://api.lever.co/v0/postings/${feed.board}?mode=json`));
+      return parseLever(feed.employer, await getJson(ctx, `https://api.lever.co/v0/postings/${feed.board}?mode=json`));
     case "ashby":
-      return parseAshby(feed.employer, await getJson(fetchImpl, `https://api.ashbyhq.com/posting-api/job-board/${feed.board}`));
-    case "smartrecruiters":
-      return parseSmartRecruiters(
-        feed.employer,
-        feed.board,
-        await getJson(fetchImpl, `https://api.smartrecruiters.com/v1/companies/${feed.board}/postings?limit=100`),
-      );
-    case "workday": {
-      const u = new URL(feed.board);
-      const tenant = u.hostname.split(".")[0];
-      const site = u.pathname.split("/").filter(Boolean).pop();
-      const api = `${u.origin}/wday/cxs/${tenant}/${site}/jobs`;
+      return parseAshby(feed.employer, await getJson(ctx, `https://api.ashbyhq.com/posting-api/job-board/${feed.board}`));
+    case "smartrecruiters": {
       const out: Job[] = [];
-      for (let offset = 0; offset < WORKDAY_MAX; offset += 20) {
-        const body = await getJson(fetchImpl, api, {
-          method: "POST",
-          headers: { "content-type": "application/json", accept: "application/json" },
-          body: JSON.stringify({ limit: 20, offset, searchText: "" }),
-        });
-        out.push(...parseWorkday(feed.employer, feed.board, body));
-        if (!body?.jobPostings?.length || offset + 20 >= (body.total ?? 0)) break;
+      for (let offset = 0; offset < 1000; offset += 100) {
+        const body = await getJson(ctx, `https://api.smartrecruiters.com/v1/companies/${feed.board}/postings?limit=100&offset=${offset}`);
+        out.push(...parseSmartRecruiters(feed.employer, feed.board, body));
+        if (offset + 100 >= (body?.totalFound ?? 0)) break;
       }
       return out;
     }
+    case "amazon": {
+      const out: Job[] = [];
+      for (let offset = 0; offset < 1000; offset += 100) {
+        const q = new URLSearchParams({ base_query: feed.board, "normalized_state_name[]": "California", result_limit: "100", offset: String(offset) });
+        const body = await getJson(ctx, `https://www.amazon.jobs/en/search.json?${q}`);
+        out.push(...parseAmazon(feed.employer, body));
+        if (offset + 100 >= (body?.hits ?? 0)) break;
+      }
+      return out;
+    }
+    case "eightfold": {
+      const origin = new URL(feed.board).origin;
+      const out: Job[] = [];
+      for (let start = 0; start < EIGHTFOLD_MAX; start += 10) {
+        await ctx.sleep(EIGHTFOLD_PAUSE_MS);
+        const body = await getJson(ctx, `${feed.board}&start=${start}`);
+        out.push(...parseEightfold(feed.employer, origin, body));
+        if (!body?.data?.positions?.length || start + 10 >= (body?.data?.count ?? 0)) break;
+      }
+      return out;
+    }
+    case "neogov":
+      return parseNeogov(feed.employer, await getText(ctx, `https://www.governmentjobs.com/SearchEngine/JobsFeed?agency=${feed.board}`), feed.department);
+    case "jobvite-xml": {
+      const [site, company] = feed.board.split(":");
+      return parseJobviteXml(feed.employer, site, await getText(ctx, `https://app.jobvite.com/CompanyJobs/Xml.aspx?c=${company}`));
+    }
+    case "workday":
+      return readWorkday(feed, ctx);
+    case "oracle":
+      return readOracle(feed, ctx);
   }
 }
 
@@ -242,8 +447,16 @@ export async function fetchFeeds(
     now = new Date(),
     previous,
     onProgress,
-  }: { fetchImpl?: FetchLike; now?: Date; previous?: JobsSnapshot; onProgress?: (partial: JobsSnapshot) => void } = {},
+    sleep = (ms) => new Promise((r) => setTimeout(r, ms)),
+  }: {
+    fetchImpl?: FetchLike;
+    now?: Date;
+    previous?: JobsSnapshot;
+    onProgress?: (partial: JobsSnapshot) => void;
+    sleep?: (ms: number) => Promise<void>;
+  } = {},
 ): Promise<JobsSnapshot> {
+  const ctx: Ctx = { fetchImpl, sleep, now };
   const done: { status: FeedStatus; jobs: Job[] }[] = [];
   const results = await Promise.all(
     feeds.map(async (feed) => {
@@ -272,7 +485,8 @@ export async function fetchFeeds(
 
   async function readOne(feed: FeedConfig): Promise<{ status: FeedStatus; jobs: Job[] }> {
       try {
-        const jobs = (await readFeed(feed, fetchImpl)).filter((j) => j.city !== null);
+        const only = feed.titleFilter ? new RegExp(feed.titleFilter, "i") : null;
+        const jobs = (await readFeed(feed, ctx)).filter((j) => j.city !== null && (!only || only.test(j.title)));
         const status: FeedStatus = { employer: feed.employer, careersUrl: feed.careersUrl, ok: true, count: 0, refreshedAt: now.toISOString() };
         if (feed.aliases?.length) status.aliases = feed.aliases;
         return { status, jobs };
