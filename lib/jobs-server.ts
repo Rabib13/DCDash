@@ -2,9 +2,7 @@ import { readFileSync } from "node:fs";
 import feeds from "@/data/job-feeds.json";
 import { fetchFeeds, type FeedConfig, type JobsSnapshot } from "./jobfeeds";
 import { createJobsCache } from "./jobs-cache";
-
-/** How long the server keeps jobs before reading the job boards again. */
-export const REFRESH_HOURS = 6;
+import { REFRESH_HOURS } from "./jobs-view";
 
 /**
  * Browser tests set JOBS_FIXTURE to a snapshot file so they never depend on live job boards.

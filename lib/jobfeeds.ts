@@ -30,6 +30,8 @@ export type FeedConfig = {
   aliases?: string[];
   /** For employers that hire far beyond data centers: keep only titles matching this pattern (case-insensitive). */
   titleFilter?: string;
+  /** Then drop titles matching this pattern (case-insensitive), such as internships or lab research. */
+  titleExclude?: string;
   /** NEOGOV only: keep only this department, e.g. a city's electric utility. */
   department?: string;
 };
@@ -84,31 +86,8 @@ export type JobsSnapshot = {
   refreshing?: boolean;
 };
 
-/** Bay Area cities a job can be in. Longest names first so "South San Francisco" wins over "San Francisco". */
-const BAY_AREA_CITIES = [
-  ...new Set([
-    ...Object.keys(CITY_CENTER),
-    "South San Francisco",
-    "Cupertino",
-    "Redwood City",
-    "San Mateo",
-    "Menlo Park",
-    "Los Altos",
-    "Union City",
-    "San Leandro",
-    "Berkeley",
-    "Richmond",
-    "Concord",
-    "Walnut Creek",
-    "Pleasanton",
-    "Dublin",
-    "Morgan Hill",
-    "Vallejo",
-    "Santa Rosa",
-    "Brisbane",
-    "Burlingame",
-  ]),
-].sort((a, b) => b.length - a.length);
+/** Bay Area cities a job can be in: every city we know the center of. Longest names first so "South San Francisco" wins over "San Francisco". */
+const BAY_AREA_CITIES = Object.keys(CITY_CENTER).sort((a, b) => b.length - a.length);
 
 /** States that would make a same-named city not ours, like Newark, NJ. */
 const OTHER_STATE = /,\s*(?!ca\b|california\b|us\b|usa\b|united states\b)[a-z]{2,}/i;
@@ -138,9 +117,9 @@ export function bayAreaCity(location: string): string | null {
 }
 
 const RULES: [Category, RegExp][] = [
-  ["construction", /construct|superintendent|foreman|estimator|project engineer|site safety/i],
+  ["construction", /construct|superintendent|foreman|estimator|project (engineer|manager|coordinator|control)|schedul|planner|\bvdc\b|structural|architect|modeler|safety|\behs\b/i],
   ["security", /security (officer|guard|supervisor)|guard\b/i],
-  ["electrical", /electric/i],
+  ["electrical", /electric|lineworker|lineman/i],
   ["mechanical", /hvac|mechanic|cooling|chiller|plumb|pipefitter/i],
   ["facilities", /critical facilit|facilit|chief engineer|building engineer|stationary engineer/i],
   ["network", /network|hardware|fiber|cabling|deployment/i],
@@ -497,7 +476,8 @@ export async function fetchFeeds(
     }
       try {
         const only = feed.titleFilter ? new RegExp(feed.titleFilter, "i") : null;
-        const jobs = (await readFeed(feed, ctx)).filter((j) => j.city !== null && (!only || only.test(j.title)));
+        const not = feed.titleExclude ? new RegExp(feed.titleExclude, "i") : null;
+        const jobs = (await readFeed(feed, ctx)).filter((j) => j.city !== null && (!only || only.test(j.title)) && (!not || !not.test(j.title)));
         const status: FeedStatus = { employer: feed.employer, careersUrl: feed.careersUrl, ok: true, count: 0, refreshedAt: now.toISOString() };
         if (feed.aliases?.length) status.aliases = feed.aliases;
         return { status, jobs };

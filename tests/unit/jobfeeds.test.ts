@@ -61,6 +61,20 @@ describe("categorize", () => {
     ["Network Engineer", "network"],
     ["Hardware Deployment Technician", "network"],
     ["Senior Accountant", "other"],
+    // Seen in live feeds, Nov 27, where they used to land in "Other roles".
+    ["Journey Lineworker", "electrical"],
+    ["Standby Reliability Power Electrician", "electrical"],
+    ["Sr Planner & Scheduler", "construction"],
+    ["Mgr - Project Controls", "construction"],
+    ["Project Coordinator", "construction"],
+    ["Sr Project Manager", "construction"],
+    ["VDC Engineer", "construction"],
+    ["Sr Structural Engineer", "construction"],
+    ["Architectural Modeler", "construction"],
+    ["Safety Project Manager", "construction"],
+    ["EHS Executive", "construction"],
+    ["Boiler & Pressure System Mechanic II", "mechanical"],
+    ["Social Media Specialist", "other"],
   ])("%s is %s", (title, category) => {
     expect(categorize(title)).toBe(category);
   });
@@ -475,6 +489,57 @@ describe("SmartRecruiters, against a real LLNL response", () => {
       sleep: noWait,
     });
     expect(snap.jobs.map((j) => j.title)).toEqual(["Associate Deputy Director for Program Enablement – Active Security Clearance Required"]);
+  });
+});
+
+describe("the real title filters in data/job-feeds.json", () => {
+  const feeds = JSON.parse(readFileSync(new URL("../../data/job-feeds.json", import.meta.url), "utf8")) as FeedConfig[];
+  const keeps = (employer: string, title: string) => {
+    const f = feeds.find((x) => x.employer === employer)!;
+    return (!f.titleFilter || new RegExp(f.titleFilter, "i").test(title)) && (!f.titleExclude || !new RegExp(f.titleExclude, "i").test(title));
+  };
+
+  // Titles from the live feeds on Nov 27.
+  it.each([
+    "Electrician II - Water Shop",
+    "Standby Reliability Power Electrician",
+    "Boiler & Pressure System Mechanic II",
+    "HPC Cluster Engineer",
+  ])("LLNL keeps infrastructure and HPC work: %s", (title) => expect(keeps("Lawrence Livermore National Laboratory", title)).toBe(true));
+
+  it.each([
+    "Computing Graduate Student Intern - Summer 2027",
+    "Computational Materials Scientist - Postdoctoral Researcher",
+    "Space Optomechanical Systems Group Leader - Active Clearance Required",
+    "Pulsed Power Electrical Engineer - Laser and Experimental Systems",
+    "Nuclear Facility Mechanical Cognizant Systems Engineer",
+    "Power Systems Graduate Intern - Cyber and Critical Infrastructure Summer Institute - Summer 2027",
+  ])("LLNL drops lab research, internships and postdocs: %s", (title) => expect(keeps("Lawrence Livermore National Laboratory", title)).toBe(false));
+
+  it.each(["Data Center Technician, AWS Infrastructure", "Data Center Operations Manager", "Critical Facilities Engineer", "Logistics Specialist"])(
+    "Amazon keeps data center work: %s",
+    (title) => expect(keeps("Amazon Web Services", title)).toBe(true),
+  );
+
+  it.each([
+    "Sr MLA Design Verification Engineer, Cloud-Scale Machine Learning Acceleration - Annapurna Labs",
+    "Software Development Engineer, Neuron Collectives, Annapurna Labs",
+    "Manufacturing Engineer  , AWS Board Core Design Team",
+    "Sr. System Development Engineer, AWS Mainstream Compute",
+  ])("Amazon drops chip design and server engineering, which isn't data center work: %s", (title) =>
+    expect(keeps("Amazon Web Services", title)).toBe(false),
+  );
+
+  it("applies an exclude pattern after the include pattern", async () => {
+    const snap = await fetchFeeds(
+      [{ employer: "LLNL", kind: "smartrecruiters", board: "LLNL", careersUrl: "https://www.llnl.gov/", titleFilter: "program enablement", titleExclude: "deputy" }],
+      {
+        fetchImpl: fakeFetch({ "https://api.smartrecruiters.com/v1/companies/LLNL/postings?limit=100&offset=0": sample("smartrecruiters-llnl.json") }),
+        now: NOW,
+        sleep: noWait,
+      },
+    );
+    expect(snap.jobs).toEqual([]);
   });
 });
 

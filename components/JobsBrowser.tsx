@@ -1,51 +1,42 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CATEGORY_LABEL, citiesWithin, type Category, type Job } from "@/lib/jobfeeds";
+import { CATEGORY_COLOR, matchesView, NEAR_MILES, type JobsView } from "@/lib/jobs-view";
 
-/** How far "near" reaches, in miles. The site cards use the same distance. */
-export const NEAR_MILES = 10;
 const PAGE = 50;
 
-type Filters = { role: string; employer: string; near: string };
-
-function matches(j: Job, f: Filters, nearCities: Set<string> | null) {
-  return (!f.role || j.category === f.role) && (!f.employer || j.employer === f.employer) && (!nearCities || (j.city !== null && nearCities.has(j.city)));
-}
-
-export default function JobsBrowser({ jobs, initial }: { jobs: Job[]; initial: Filters }) {
-  const [f, setF] = useState<Filters>(initial);
+/** Role chips, employer and place filters, and the list of jobs. The map owns the filters, so the circles follow them. */
+export default function JobsBrowser({ jobs, view, onChange }: { jobs: Job[]; view: JobsView; onChange: (patch: Partial<JobsView>) => void }) {
   const [shown, setShown] = useState(PAGE);
+  useEffect(() => setShown(PAGE), [view.role, view.employer, view.city, view.near]);
 
-  const set = (patch: Partial<Filters>) => {
-    const next = { ...f, ...patch };
-    setF(next);
-    setShown(PAGE);
-    const q = new URLSearchParams();
-    for (const k of ["role", "employer", "near"] as const) if (next[k]) q.set(k, next[k]);
-    window.history.replaceState(null, "", q.size ? `/jobs?${q}` : "/jobs");
-  };
-
-  const nearCities = f.near ? new Set(citiesWithin(f.near, NEAR_MILES)) : null;
+  const nearCities = view.near ? new Set(citiesWithin(view.near, NEAR_MILES)) : null;
   const employers = useMemo(() => [...new Set(jobs.map((j) => j.employer))].sort(), [jobs]);
-  const cities = useMemo(() => [...new Set(jobs.map((j) => j.city).filter((c): c is string => !!c))].sort(), [jobs]);
+  const place = view.city ? view.city : view.near;
+  const cities = useMemo(
+    () => [...new Set([...jobs.map((j) => j.city).filter((c): c is string => !!c), ...(place ? [place] : [])])].sort(),
+    [jobs, place],
+  );
   // Role counts follow the other filters, so each button says how many jobs it would show.
-  const forRoles = jobs.filter((j) => matches(j, { ...f, role: "" }, nearCities));
+  const forRoles = jobs.filter((j) => matchesView(j, { ...view, role: "" }, nearCities));
   const roleCounts = (Object.keys(CATEGORY_LABEL) as Category[])
     .map((c) => ({ c, n: forRoles.filter((j) => j.category === c).length }))
-    .filter(({ n, c }) => n > 0 || c === f.role);
+    .filter(({ n, c }) => n > 0 || c === view.role);
   const list = jobs
-    .filter((j) => matches(j, f, nearCities))
+    .filter((j) => matchesView(j, view, nearCities))
     .sort((a, b) => (b.posted ?? "").localeCompare(a.posted ?? "") || a.title.localeCompare(b.title));
+  const placeValue = view.city ? `city:${view.city}` : view.near ? `near:${view.near}` : "";
 
   return (
-    <section className="page__section" aria-label="Browse open jobs">
+    <section className="jobs-browser" aria-label="Browse open jobs">
       <div className="chips" role="group" aria-label="Role type">
-        <button type="button" className="chip" aria-pressed={!f.role} onClick={() => set({ role: "" })}>
+        <button type="button" className="chip" aria-pressed={!view.role} onClick={() => onChange({ role: "" })}>
           All roles ({forRoles.length})
         </button>
         {roleCounts.map(({ c, n }) => (
-          <button key={c} type="button" className="chip" aria-pressed={f.role === c} onClick={() => set({ role: c })}>
+          <button key={c} type="button" className="chip" aria-pressed={view.role === c} onClick={() => onChange({ role: c })}>
+            <i className="chip__dot" style={{ background: CATEGORY_COLOR[c] }} aria-hidden="true" />
             {CATEGORY_LABEL[c]} ({n})
           </button>
         ))}
@@ -53,7 +44,7 @@ export default function JobsBrowser({ jobs, initial }: { jobs: Job[]; initial: F
       <div className="selects">
         <label>
           Employer
-          <select value={f.employer} onChange={(e) => set({ employer: e.target.value })}>
+          <select value={view.employer} onChange={(e) => onChange({ employer: e.target.value })}>
             <option value="">All employers</option>
             {employers.map((e) => (
               <option key={e}>{e}</option>
@@ -61,13 +52,22 @@ export default function JobsBrowser({ jobs, initial }: { jobs: Job[]; initial: F
           </select>
         </label>
         <label>
-          Near
-          <select value={f.near} onChange={(e) => set({ near: e.target.value })}>
+          Place
+          <select
+            value={placeValue}
+            onChange={(e) => {
+              const [kind, name = ""] = e.target.value.split(/:(.*)/);
+              onChange({ city: kind === "city" ? name : "", near: kind === "near" ? name : "" });
+            }}
+          >
             <option value="">Anywhere in the Bay Area</option>
-            {[...new Set([...cities, ...(f.near ? [f.near] : [])])].sort().map((c) => (
-              <option key={c} value={c}>
-                Within {NEAR_MILES} miles of {c}
-              </option>
+            {cities.map((c) => (
+              <optgroup key={c} label={c}>
+                <option value={`city:${c}`}>In {c}</option>
+                <option value={`near:${c}`}>
+                  Within {NEAR_MILES} miles of {c}
+                </option>
+              </optgroup>
             ))}
           </select>
         </label>
@@ -78,6 +78,7 @@ export default function JobsBrowser({ jobs, initial }: { jobs: Job[]; initial: F
         <ul className="joblist">
           {list.slice(0, shown).map((j) => (
             <li key={j.id}>
+              <i className="chip__dot" style={{ background: CATEGORY_COLOR[j.category] }} aria-hidden="true" />
               <a href={j.url} target="_blank" rel="noopener noreferrer">
                 {j.title}
               </a>

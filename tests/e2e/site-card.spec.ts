@@ -39,14 +39,14 @@ for (const site of data.sites) {
       await page.getByRole("tab", { name: tab }).click();
       await expect(page.getByRole("tab", { name: tab })).toHaveAttribute("aria-selected", "true");
       await expect(page.getByRole("tabpanel")).not.toBeEmpty();
-      // Outside links open in a new tab; the only inside links go to the jobs page.
-      for (const link of await page.locator(".panel a:not([href^='/jobs'])").all()) {
+      // Outside links open in a new tab; the only inside links open the jobs layer on this map.
+      for (const link of await page.locator(".panel a:not([href^='/?jobs'])").all()) {
         await expect(link).toHaveAttribute("href", /^https:\/\//);
         await expect(link).toHaveAttribute("target", "_blank");
         await expect(link).toHaveAttribute("rel", /noopener/);
         await expect(link).toBeVisible();
       }
-      for (const link of await page.locator(".panel a[href^='/jobs']").all()) await expect(link).toHaveAttribute("href", /^\/jobs(\?|$)/);
+      for (const link of await page.locator(".panel a[href^='/?jobs']").all()) await expect(link).not.toHaveAttribute("target", "_blank");
     }
     expect(errors).toEqual([]);
   });

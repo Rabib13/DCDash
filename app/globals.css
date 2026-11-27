@@ -30,7 +30,7 @@ body { background: var(--land); color: var(--ink); overflow: hidden; }
 @media (min-width: 641px) { .map-wrap--panel .maplibregl-ctrl-bottom-right { right: 444px; } }
 
 .topbar { position: fixed; top: 12px; left: 16px; z-index: 5; display: flex; gap: 8px; }
-.topbar__link { background: var(--surface); box-shadow: var(--shadow); border-radius: 12px; height: 48px; display: flex; align-items: center; padding: 0 16px; font-weight: 600; font-size: 15px; color: var(--ink); text-decoration: none; }
+.topbar__link { border: none; cursor: pointer; font-family: inherit; background: var(--surface); box-shadow: var(--shadow); border-radius: 12px; height: 48px; display: flex; align-items: center; padding: 0 16px; font-weight: 600; font-size: 15px; color: var(--ink); text-decoration: none; }
 .brand { background: var(--surface); box-shadow: var(--shadow); border-radius: 12px; height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 14px; font-weight: 700; font-size: 17px; }
 .badge { font-weight: 600; font-size: 11px; color: var(--ink-3); border: 1px solid var(--line); border-radius: 999px; padding: 4px 7px; }
 
@@ -78,6 +78,8 @@ h3 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing
 @media (max-width: 640px) {
   .tab { font-size: 12px; padding: 4px 2px; }
   .panel { top: auto; left: 8px; right: 8px; width: auto; height: 70%; }
+  /* The jobs sheet is shorter, so the circles stay in view above it. */
+  .panel--jobs { height: 48%; }
 }
 
 .tabs { display: flex; gap: 0; padding: 4px 4px 0; border-bottom: 1px solid var(--line); flex-shrink: 0; }
@@ -93,15 +95,7 @@ h3 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing
 .button { display: inline-flex; align-items: center; min-height: 40px; margin-top: 8px; padding: 0 14px; border-radius: 10px; background: var(--ink); color: #fff; font-size: 13.5px; font-weight: 600; text-decoration: none; }
 section .muted { margin-top: 6px; }
 
-/* Jobs page: a normal scrolling page, unlike the full-screen map. */
-.page { position: fixed; inset: 0; overflow-y: auto; background: var(--land); }
-.page__inner { max-width: 860px; margin: 0 auto; padding: 20px 16px 64px; }
-.page__inner h1 { font-size: 26px; margin: 12px 0 4px; }
-.page__inner h2 { font-size: 18px; margin: 0 0 8px; }
-.page__inner p { line-height: 1.5; }
-.page__back { color: var(--op); font-size: 14px; }
-.page__back::before { content: "← "; }
-.page__section { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); padding: 16px; margin-top: 16px; }
+/* Jobs layer: circles on the map and the jobs panel beside it. */
 .headline { font-size: 20px; font-weight: 700; margin: 8px 0 0; }
 .feed-problems { list-style: none; margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -123,3 +117,26 @@ section .muted { margin-top: 6px; }
 .filing-table tbody th { font-weight: 600; }
 .filing-table tbody th .muted { display: block; font-weight: 400; }
 .filing-table a { color: var(--op); display: block; }
+
+.topbar__link[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.map-wrap--jobs .marker { opacity: 0.3; }
+.map-wrap--jobs .marker__ring { transform: scale(0.7); }
+.map-wrap--jobs .marker:hover { opacity: 1; }
+.jobbubble { padding: 0; border: none; border-radius: 50%; cursor: pointer; display: grid; place-items: center; box-shadow: var(--shadow); z-index: 2; transition: opacity 0.15s; }
+.jobbubble__count { width: calc(100% - 12px); height: calc(100% - 12px); border-radius: 50%; background: var(--surface); display: grid; place-items: center; font-weight: 700; font-size: 13px; color: var(--ink); }
+.jobbubble:hover, .jobbubble--selected { z-index: 3; }
+.jobbubble--selected { outline: 3px solid var(--ink); outline-offset: 2px; }
+.jobbubble--faded { opacity: 0.45; }
+.legend--jobs .swatch { border: none; }
+.chip__dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; flex-shrink: 0; }
+.chip[aria-pressed="true"] .chip__dot { box-shadow: 0 0 0 2px #fff; }
+.joblist li { position: relative; padding-left: 18px; }
+.joblist li > .chip__dot { position: absolute; left: 0; top: 16px; }
+.jobs-summary .headline { margin: 0; font-size: 18px; }
+.jobs-summary p { margin: 4px 0 0; line-height: 1.45; }
+.place-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.jobs-filings .stats { display: flex; gap: 12px; flex-wrap: wrap; }
+.jobs-filings .stats p { flex: 1 1 140px; margin: 0; background: var(--land); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.35; }
+.jobs-filings .stats strong { display: block; font-size: 20px; }
+.panel details summary { cursor: pointer; color: var(--op); font-weight: 600; font-size: 14px; min-height: 32px; display: flex; align-items: center; }
+.what-counts p { font-size: 13.5px; line-height: 1.5; }

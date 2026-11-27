@@ -179,6 +179,11 @@ describe("checkFeeds", () => {
     expect(checkFeeds([{ ...feed(), kind: "workday", board: "op" }]).join()).toMatch(/Workday board must be/);
   });
 
+  it("rejects a title filter that isn't a valid pattern", () => {
+    expect(checkFeeds([{ ...feed(), titleFilter: "(" }]).join()).toMatch(/Op: titleFilter is not a valid pattern/);
+    expect(checkFeeds([{ ...feed(), titleExclude: "[" }]).join()).toMatch(/Op: titleExclude is not a valid pattern/);
+  });
+
   it("rejects the same employer listed twice, which would count its jobs twice", () => {
     expect(checkFeeds([feed(), feed()]).join()).toMatch(/Op: listed twice/);
   });

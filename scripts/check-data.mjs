@@ -33,6 +33,14 @@ export function checkFeeds(feeds) {
     if (!f.board && f.kind !== "link") errors.push(`${where}: needs a board`);
     else if (f.kind === "workday" && !/^https:\/\/[a-z0-9-]+\.wd\d+\.myworkdayjobs\.com\/[^/]+/i.test(f.board))
       errors.push(`${where}: Workday board must be like https://name.wd1.myworkdayjobs.com/Site`);
+    for (const k of ["titleFilter", "titleExclude"]) {
+      if (f[k] === undefined) continue;
+      try {
+        new RegExp(f[k], "i");
+      } catch {
+        errors.push(`${where}: ${k} is not a valid pattern`);
+      }
+    }
     if (typeof f.careersUrl !== "string" || !f.careersUrl.startsWith("https://")) errors.push(`${where}: careersUrl must be https`);
     else if (isTrackingLink(f.careersUrl)) errors.push(`${where}: careersUrl is a tracking link`);
   }

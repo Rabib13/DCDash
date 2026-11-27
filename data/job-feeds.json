@@ -39,7 +39,8 @@
     "employer": "Amazon Web Services",
     "kind": "amazon",
     "board": "data center",
-    "careersUrl": "https://www.amazon.jobs/en/search?base_query=data+center"
+    "careersUrl": "https://www.amazon.jobs/en/search?base_query=data+center",
+    "titleExclude": "annapurna|neuron|verification|asic|physical design|pd methodology|manufactur|board|printed circuit|mainstream compute|nitro|system development engineer|software|\\bsoc\\b|program manager"
   },
   {
     "employer": "Microsoft",
@@ -53,8 +54,9 @@
     "employer": "Lawrence Livermore National Laboratory",
     "kind": "smartrecruiters",
     "board": "LLNL",
-    "titleFilter": "comput|hpc|data ?cent|facilit|electric|mechanic|hvac|network|infrastructure",
-    "careersUrl": "https://www.llnl.gov/join-our-team/careers/find-your-job"
+    "titleFilter": "electrician|mechanic\\b|hvac|facilit|power|hpc|data ?cent|network|stationary|boiler",
+    "careersUrl": "https://www.llnl.gov/join-our-team/careers/find-your-job",
+    "titleExclude": "intern\\b|internship|postdoc|space|optomech|laser|nuclear|ignition|pulsed|radar|computational"
   },
   {
     "employer": "Silicon Valley Power",

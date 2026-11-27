@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import {
   CONFIDENCE_LABEL,
   confidence,
@@ -18,8 +18,9 @@ import {
   type Section,
 } from "@/lib/sites";
 import { jobSearchUrl, ROLE_SEARCHES } from "@/lib/jobs";
-import { citiesWithin, freshnessLabel, openingsNear, type JobsSnapshot } from "@/lib/jobfeeds";
-import { NEAR_MILES } from "./JobsBrowser";
+import { citiesWithin, freshnessLabel, openingsNear } from "@/lib/jobfeeds";
+import { jobsHref, NEAR_MILES, type JobsView } from "@/lib/jobs-view";
+import { useJobs } from "@/lib/useJobs";
 import type { Fact, Site } from "@/lib/types";
 
 const SECTIONS: Section[] = ["overview", "power", "environment", "jobs", "community"];
@@ -72,26 +73,23 @@ function MissingRow({ name }: { name: string }) {
   );
 }
 
-let jobsRequest: Promise<JobsSnapshot | null> | undefined;
-/** The jobs snapshot, fetched once per page load and shared by every site card. */
-function useJobs() {
-  const [snap, setSnap] = useState<JobsSnapshot | null | undefined>(undefined);
-  useEffect(() => {
-    jobsRequest ??= fetch("/api/jobs")
-      .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null);
-    let live = true;
-    jobsRequest.then((s) => live && setSnap(s));
-    return () => {
-      live = false;
-    };
-  }, []);
-  return snap;
+type OpenJobs = (view: Partial<JobsView>) => void;
+
+/** A link to the map's jobs layer. It works as a plain link too (new tab, copy link), but a normal click opens the layer in place. */
+function JobsLink({ view, onOpenJobs, className, children }: { view: Partial<JobsView>; onOpenJobs: OpenJobs; className?: string; children: ReactNode }) {
+  const open = (e: MouseEvent) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    onOpenJobs(view);
+  };
+  return (
+    <a className={className} href={jobsHref(view)} onClick={open}>
+      {children}
+    </a>
+  );
 }
 
-const jobsLink = (params: Record<string, string>) => `/jobs?${new URLSearchParams(params)}`;
-
-function JobsSection({ site, operator }: { site: Site; operator: string | null }) {
+function JobsSection({ site, operator, onOpenJobs }: { site: Site; operator: string | null; onOpenJobs: OpenJobs }) {
   const snap = useJobs();
   const employer = snap ? employerFor(site, snap.feeds) : null;
   const linkOnly = snap?.feeds.find((f) => f.employer === employer && f.linkOnly);
@@ -133,9 +131,9 @@ function JobsSection({ site, operator }: { site: Site; operator: string | null }
                 ))}
               </ul>
             )}
-            <a className="button" href={jobsLink({ employer, near: site.city })}>
+            <JobsLink className="button" view={{ employer, near: site.city }} onOpenJobs={onOpenJobs}>
               See all {employer} jobs
-            </a>
+            </JobsLink>
             <p className="muted">
               Job postings name a city, not a building, so these may be for any {employer} site nearby. {freshnessLabel(snap.fetchedAt)}.
             </p>
@@ -159,9 +157,9 @@ function JobsSection({ site, operator }: { site: Site; operator: string | null }
         )}
         {snap && (
           <p>
-            <a href={jobsLink({ near: site.city })}>
+            <JobsLink view={{ near: site.city }} onOpenJobs={onOpenJobs}>
               All data center jobs near {site.city} ({allNear})
-            </a>
+            </JobsLink>
           </p>
         )}
       </section>
@@ -192,7 +190,7 @@ function JobsSection({ site, operator }: { site: Site; operator: string | null }
   );
 }
 
-export default function SitePanel({ site, onClose }: { site: Site; onClose: () => void }) {
+export default function SitePanel({ site, onClose, onOpenJobs }: { site: Site; onClose: () => void; onOpenJobs: OpenJobs }) {
   const [tab, setTab] = useState<Section>("overview");
   useEffect(() => setTab("overview"), [site.id]);
 
@@ -263,7 +261,7 @@ export default function SitePanel({ site, onClose }: { site: Site; onClose: () =
                 <MissingRow key={k} name={k} />
               ))}
             </dl>
-            <JobsSection site={site} operator={operator} />
+            <JobsSection site={site} operator={operator} onOpenJobs={onOpenJobs} />
           </>
         ) : (
           (entries.length > 0 || missing.length > 0) && (

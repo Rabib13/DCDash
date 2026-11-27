@@ -83,6 +83,26 @@ export const CITY_CENTER: Record<string, [number, number]> = {
   Newark: [-122.04, 37.53],
   Pittsburg: [-121.885, 38.028],
   Fairfield: [-122.04, 38.249],
+  // Cities where jobs are posted but no site on the map sits yet. Approximate city centers.
+  "South San Francisco": [-122.408, 37.655],
+  Cupertino: [-122.032, 37.323],
+  "Redwood City": [-122.236, 37.485],
+  "San Mateo": [-122.313, 37.563],
+  "Menlo Park": [-122.182, 37.453],
+  "Los Altos": [-122.114, 37.385],
+  "Union City": [-122.019, 37.596],
+  "San Leandro": [-122.156, 37.725],
+  Berkeley: [-122.273, 37.872],
+  Richmond: [-122.348, 37.936],
+  Concord: [-122.031, 37.978],
+  "Walnut Creek": [-122.065, 37.91],
+  Pleasanton: [-121.875, 37.662],
+  Dublin: [-121.936, 37.702],
+  "Morgan Hill": [-121.654, 37.13],
+  Vallejo: [-122.257, 38.104],
+  "Santa Rosa": [-122.714, 38.44],
+  Brisbane: [-122.4, 37.681],
+  Burlingame: [-122.366, 37.584],
 };
 
 /**
