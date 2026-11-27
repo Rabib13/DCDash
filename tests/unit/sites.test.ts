@@ -238,6 +238,21 @@ describe("job counts from filings", () => {
     expect(SECTION_EXPECTED.jobs).toEqual(["construction_jobs", "permanent_jobs"]);
   });
 
+  it("uses the low end of a range, so totals never overstate", async () => {
+    const { jobTotals } = await import("@/lib/sites");
+    const s = withJobs("a", 200, 19);
+    s.facts.construction_jobs.upTo = 225;
+    s.facts.permanent_jobs.upTo = 21;
+    expect(jobTotals([s])).toMatchObject({ construction: { total: 200 }, permanent: { total: 19 } });
+  });
+
+  it("shows a range as words", async () => {
+    const { factValueText } = await import("@/lib/sites");
+    expect(factValueText({ value: 19, upTo: 21, sources: [] })).toBe("19 to 21");
+    expect(factValueText({ value: 1500, sources: [] })).toBe("1,500");
+    expect(factValueText({ value: "Yes", sources: [] })).toBe("Yes");
+  });
+
   it("adds up the counts and says how many sites they come from", async () => {
     const { jobTotals } = await import("@/lib/sites");
     expect(jobTotals([withJobs("a", 300, 30), withJobs("b", 200), withJobs("c")])).toEqual({

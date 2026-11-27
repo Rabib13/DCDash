@@ -200,3 +200,10 @@ export function employerFor(site: Site, feeds: { employer: string; aliases?: str
   }
   return null;
 }
+
+/** A fact's value as shown to visitors: numbers with commas, ranges as "19 to 21". */
+export function factValueText(fact: Fact): string {
+  const n = (v: number) => v.toLocaleString("en-US");
+  if (typeof fact.value !== "number") return String(fact.value);
+  return fact.upTo != null ? `${n(fact.value)} to ${n(fact.upTo)}` : n(fact.value);
+}

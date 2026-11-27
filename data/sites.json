@@ -292,6 +292,111 @@
       "publisher": "CoreSite",
       "url": "https://www.coresite.com/news/coresite-expands-silicon-valley-campus-with-completion-of-228000-square-foot-ai-ready-data-center",
       "accessed": "2026-11-27"
+    },
+    "cec-sjc02-feir": {
+      "title": "San Jose Data Center Final Environmental Impact Report, Part 1 (19-SPPE-04)",
+      "publisher": "California Energy Commission",
+      "url": "https://efiling.energy.ca.gov/GetDocument.aspx?tn=241977-1&DocumentContentId=75659",
+      "published": "2022-02-28",
+      "accessed": "2026-11-27"
+    },
+    "cec-sjc02-decision": {
+      "title": "San Jose Data Center Commission Final Decision, Part 1 (19-SPPE-04)",
+      "publisher": "California Energy Commission",
+      "url": "https://efiling.energy.ca.gov/GetDocument.aspx?tn=244835&DocumentContentId=79021",
+      "published": "2022-08-12",
+      "accessed": "2026-11-27"
+    },
+    "cec-gos-decision": {
+      "title": "Great Oaks South Backup Generating Facility Commission Final Decision (20-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://efiling.energy.ca.gov/GetDocument.aspx?tn=240902&DocumentContentId=74743",
+      "published": "2021-12-10",
+      "accessed": "2026-11-27"
+    },
+    "cec-bowers-feir": {
+      "title": "Bowers Backup Generating Facility Final Environmental Impact Report, Part 1 (22-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://efiling.energy.ca.gov/GetDocument.aspx?tn=252664&DocumentContentId=87738",
+      "published": "2023-10-20",
+      "accessed": "2026-11-27"
+    },
+    "cec-martin-feir": {
+      "title": "Martin Backup Generating Facility Final Environmental Impact Report (22-SPPE-03)",
+      "publisher": "California Energy Commission",
+      "url": "https://efiling.energy.ca.gov/GetDocument.aspx?tn=256587&DocumentContentId=92396",
+      "published": "2024-05-29",
+      "accessed": "2026-11-27"
+    },
+    "cec-svy03a-ismnd": {
+      "title": "STACK SVY03A Data Center Campus Final Initial Study / Mitigated Negative Declaration (23-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://efiling.energy.ca.gov/GetDocument.aspx?tn=262794&DocumentContentId=99407",
+      "published": "2025-04-24",
+      "accessed": "2026-11-27"
+    },
+    "cec-northtown-app": {
+      "title": "NorthTown Backup Generating Facility exemption application (25-SPPE-02)",
+      "publisher": "California Energy Commission",
+      "url": "https://efiling.energy.ca.gov/GetDocument.aspx?tn=264500&DocumentContentId=101360",
+      "published": "2025-06-30",
+      "accessed": "2026-11-27"
+    },
+    "cec-laurelwood-ismnd": {
+      "title": "Laurelwood Data Center Initial Study and Proposed Mitigated Negative Declaration (19-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://ceqanet.lci.ca.gov/2019089107/2/Attachment/XSBdd-",
+      "published": "2019-08",
+      "accessed": "2026-11-27"
+    },
+    "cec-ca3-deir": {
+      "title": "CA3 Backup Generating Facility Draft Environmental Impact Report (21-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://ceqanet.lci.ca.gov/2021080438/2/Attachment/VUT40k",
+      "published": "2022-01",
+      "accessed": "2026-11-27"
+    },
+    "cec-sequoia-ismnd": {
+      "title": "Sequoia Data Center Initial Study and Proposed Mitigated Negative Declaration (19-SPPE-03)",
+      "publisher": "California Energy Commission",
+      "url": "https://ceqanet.lci.ca.gov/2020010384/2/Attachment/emtyRS",
+      "published": "2020-01",
+      "accessed": "2026-11-27"
+    },
+    "cec-walsh-ismnd": {
+      "title": "Walsh Data Center Initial Study and Proposed Mitigated Negative Declaration (19-SPPE-02)",
+      "publisher": "California Energy Commission",
+      "url": "https://ceqanet.lci.ca.gov/2020029062/2/Attachment/agW7OF",
+      "published": "2020-02",
+      "accessed": "2026-11-27"
+    },
+    "cec-mission-college-ismnd": {
+      "title": "Mission College Data Center Initial Study and Proposed Mitigated Negative Declaration (19-SPPE-05)",
+      "publisher": "California Energy Commission",
+      "url": "https://ceqanet.lci.ca.gov/2020040254/2/Attachment/7w9iPt",
+      "published": "2020-04",
+      "accessed": "2026-11-27"
+    },
+    "cec-sc1-isnd": {
+      "title": "Santa Clara SC-1 Data Center Initial Study and Negative Declaration (11-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://efiling.energy.ca.gov/GetDocument.aspx?tn=63496",
+      "published": "2012-02",
+      "accessed": "2026-11-27"
+    },
+    "cec-stack-tzp-deir": {
+      "title": "STACK Trade Zone Park Draft Environmental Impact Report (21-SPPE-02)",
+      "publisher": "California Energy Commission",
+      "url": "https://ceqanet.lci.ca.gov/2022060141/2/Attachment/Q2u_U9",
+      "published": "2023-01",
+      "accessed": "2026-11-27"
+    },
+    "cec-pittsburg-ismnd": {
+      "title": "AVAIO Pittsburg Backup Generating Facility Initial Study / Mitigated Negative Declaration (24-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://ceqanet.lci.ca.gov/2025100607/1/Attachment/YaxuJ9",
+      "published": "2025-10",
+      "accessed": "2026-11-27"
     }
   },
   "operators": {
@@ -680,6 +785,23 @@
           "sources": [
             "cec-sj-data-center"
           ]
+        },
+        "construction_jobs": {
+          "value": 300,
+          "sources": [
+            "cec-sjc02-feir"
+          ],
+          "quote": "The total construction workforce (onsite and offsite) would average 157 workers per month and would peak with 300 workers in month 13.",
+          "note": "onsite and offsite work in the busiest month; Final EIR page 4.14-4"
+        },
+        "permanent_jobs": {
+          "value": 100,
+          "sources": [
+            "cec-sjc02-feir",
+            "cec-sjc02-decision"
+          ],
+          "quote": "The project's 100 operation workers would be drawn from the greater Bay Area and are not expected to relocate closer to the project site.",
+          "note": "Final EIR and Final Decision page 4.14-5"
         }
       }
     },
@@ -784,6 +906,22 @@
           "sources": [
             "cec-svy03a"
           ]
+        },
+        "construction_jobs": {
+          "value": 150,
+          "sources": [
+            "cec-svy03a-ismnd"
+          ],
+          "quote": "Project construction would require a construction workforce averaging 100 workers per month and a peak workforce of 150",
+          "note": "Final Initial Study page 5.14-3"
+        },
+        "permanent_jobs": {
+          "value": 45,
+          "sources": [
+            "cec-svy03a-ismnd"
+          ],
+          "quote": "The project would employ an estimated 45 operations workers.",
+          "note": "Final Initial Study page 5.15-4"
         }
       }
     },
@@ -842,6 +980,14 @@
             "compute-atlas-bay-area"
           ],
           "note": "per Compute Atlas"
+        },
+        "construction_jobs": {
+          "value": 600,
+          "sources": [
+            "cec-northtown-app"
+          ],
+          "quote": "The peak construction workforce will be approximately 600 workers per month with an average of approximately 300 workers per month.",
+          "note": "the owner's application, page 27; no environmental review published yet"
         }
       }
     },
@@ -900,6 +1046,23 @@
             "compute-atlas-bay-area"
           ],
           "note": "per Compute Atlas"
+        },
+        "construction_jobs": {
+          "value": 125,
+          "sources": [
+            "cec-bowers-feir"
+          ],
+          "quote": "The construction workforce would average 100 workers per month and have an estimated peak of 125 per month",
+          "note": "Final EIR page 4.14-5"
+        },
+        "permanent_jobs": {
+          "value": 33,
+          "upTo": 35,
+          "sources": [
+            "cec-bowers-feir"
+          ],
+          "quote": "there would be 33 to 35 people in the building on an average day, with 17 to 30 people in the building at the same time.",
+          "note": "people in the building on an average day, which may include tenants and visitors; Final EIR page 4.15-6"
         }
       }
     },
@@ -960,6 +1123,22 @@
             "ceqa-laurelwood-6"
           ],
           "note": "one 2020 Energy Commission notice says 2210"
+        },
+        "construction_jobs": {
+          "value": 129,
+          "sources": [
+            "cec-laurelwood-ismnd"
+          ],
+          "quote": "Demolition/construction of the project would employ an average of 60 workers per month and reach a peak workforce of 129 (Jacobs 2019f).",
+          "note": "includes demolition; Initial Study page 5.14-3"
+        },
+        "permanent_jobs": {
+          "value": 54,
+          "sources": [
+            "cec-laurelwood-ismnd"
+          ],
+          "quote": "The project would employ a total of 54 operations workers including 2 facility managers, 2 account managers, 2 equipment managers, 2 environmental engineers, 18 facility operators,",
+          "note": "Initial Study page 5.14-4"
         }
       }
     },
@@ -1020,6 +1199,23 @@
             "compute-atlas-bay-area"
           ],
           "note": "per Compute Atlas"
+        },
+        "construction_jobs": {
+          "value": 200,
+          "sources": [
+            "cec-ca3-deir"
+          ],
+          "quote": "The Phase II construction workforce is estimated to have a peak number of workers of approximately 200 per month with an average of approximately 80 per month",
+          "note": "Phase II; Phase I peaks at about 150. Draft EIR page 4.14-3"
+        },
+        "permanent_jobs": {
+          "value": 19,
+          "upTo": 21,
+          "sources": [
+            "cec-ca3-deir"
+          ],
+          "quote": "The applicant anticipates the project would require a total of 19-21 permanent employees, with approximately 10-14 rental space tenant employees visiting the facility daily",
+          "note": "Draft EIR page 4.14-4"
         }
       }
     },
@@ -1067,6 +1263,22 @@
             "compute-atlas-bay-area"
           ],
           "note": "per Compute Atlas"
+        },
+        "construction_jobs": {
+          "value": 300,
+          "sources": [
+            "cec-sequoia-ismnd"
+          ],
+          "quote": "Project construction would employ an average of 125 workers per month and have a peak workforce of 300 workers per month.",
+          "note": "Initial Study page 5.14-3"
+        },
+        "permanent_jobs": {
+          "value": 25,
+          "sources": [
+            "cec-sequoia-ismnd"
+          ],
+          "quote": "The project would employ a total of 25 operations workers.",
+          "note": "Initial Study page 5.14-4"
         }
       }
     },
@@ -1107,6 +1319,22 @@
           "sources": [
             "cec-walsh-app"
           ]
+        },
+        "construction_jobs": {
+          "value": 175,
+          "sources": [
+            "cec-walsh-ismnd"
+          ],
+          "quote": "Construction of the project would employ an average of 90 workers per month and reach a peak workforce of 175 in month 10 (Walsh 2019c).",
+          "note": "Initial Study page 5.14-4"
+        },
+        "permanent_jobs": {
+          "value": 25,
+          "sources": [
+            "cec-walsh-ismnd"
+          ],
+          "quote": "The project would employ a total of 25 operations workers (Walsh 2019a, Section 4.14, page 152).",
+          "note": "Initial Study page 5.14-4"
         }
       }
     },
@@ -1147,6 +1375,22 @@
           "sources": [
             "cec-mission-college-app"
           ]
+        },
+        "construction_jobs": {
+          "value": 115,
+          "sources": [
+            "cec-mission-college-ismnd"
+          ],
+          "quote": "Construction of the project would employ an average of 62 workers and reach a peak workforce of 115 workers (Mission College 2019a, pg. 19).",
+          "note": "Initial Study page 5.14-4; its project description says 100 for each phase"
+        },
+        "permanent_jobs": {
+          "value": 57,
+          "sources": [
+            "cec-mission-college-ismnd"
+          ],
+          "quote": "The project would employ a total of 57 operations workers, 30 full time and 27 part time employees (Mission College 2019a, pg. 164).",
+          "note": "30 full-time and 27 part-time; Initial Study page 5.14-4"
         }
       }
     },
@@ -1192,6 +1436,23 @@
           "sources": [
             "cec-martin"
           ]
+        },
+        "construction_jobs": {
+          "value": 190,
+          "sources": [
+            "cec-martin-feir"
+          ],
+          "quote": "Phase I construction of would employ an average of 100 workers per month and reach a peak workforce of 190 workers per month.",
+          "note": "Phase I; Phase II peaks at 100. Final EIR page 4.14-4"
+        },
+        "permanent_jobs": {
+          "value": 19,
+          "upTo": 21,
+          "sources": [
+            "cec-martin-feir"
+          ],
+          "quote": "The project would require 19 to 21 operations workers with approximately 10 to 14 tenant employees and visitors on a daily basis.",
+          "note": "Final EIR page 4.14-4"
         }
       }
     },
@@ -1232,6 +1493,14 @@
           "sources": [
             "cec-sc1-doc"
           ]
+        },
+        "permanent_jobs": {
+          "value": 30,
+          "sources": [
+            "cec-sc1-isnd"
+          ],
+          "quote": "The proposed data center would employ approximately 30 people.",
+          "note": "the filing cites a 2007 estimate from the project architect; Initial Study page 80"
         }
       }
     },
@@ -1285,6 +1554,22 @@
             "compute-atlas-bay-area"
           ],
           "note": "per Compute Atlas"
+        },
+        "construction_jobs": {
+          "value": 200,
+          "sources": [
+            "cec-stack-tzp-deir"
+          ],
+          "quote": "Phase II construction workforce would require an average of 80 workers per month and a peak workforce of 200 workers per month.",
+          "note": "Phase II, for the whole campus including a manufacturing building; Phase I peaks at 150. Draft EIR page 4.14-4"
+        },
+        "permanent_jobs": {
+          "value": 70,
+          "sources": [
+            "cec-stack-tzp-deir"
+          ],
+          "quote": "There would be approximately 269 employees for the advanced manufacturing building and 70 employees for the SVY Data Center (DayZenLLC 2022n).",
+          "note": "data center only; Draft EIR page 4.14-4"
         }
       }
     },
@@ -2024,6 +2309,23 @@
             "sanjose-large-energy"
           ],
           "quote": "Cooling Technology: Air-cooled"
+        },
+        "construction_jobs": {
+          "value": 200,
+          "upTo": 225,
+          "sources": [
+            "cec-gos-decision"
+          ],
+          "quote": "Project construction would require an onsite construction workforce averaging 125-150 workers per month and a peak workforce of 200-225 workers for each of the three phases",
+          "note": "for each of three phases, built one after another; Final Decision page 4.14-3"
+        },
+        "permanent_jobs": {
+          "value": 42,
+          "sources": [
+            "cec-gos-decision"
+          ],
+          "quote": "The project would employ approximately 42 operations workers.",
+          "note": "14 per building; Final Decision page 4.14-4"
         }
       }
     },
@@ -2093,6 +2395,23 @@
             "sfist-pittsburg"
           ],
           "quote": "will be primarily air-cooled and will use recycled water"
+        },
+        "construction_jobs": {
+          "value": 150,
+          "sources": [
+            "cec-pittsburg-ismnd"
+          ],
+          "quote": "The peak construction workforce is approximately 150 workers per month with an average of approximately 100 workers per month.",
+          "note": "Initial Study page 3-20"
+        },
+        "permanent_jobs": {
+          "value": 20,
+          "upTo": 30,
+          "sources": [
+            "cec-pittsburg-ismnd"
+          ],
+          "quote": "The data center is expected to staff between 20 and 30 full-time employees.",
+          "note": "Initial Study page 5.14-5"
         }
       }
     },

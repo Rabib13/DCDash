@@ -152,10 +152,23 @@ test("a site with no named operator still points to every data center job nearby
   await expect(all).toHaveAttribute("href", "/jobs?near=Santa+Clara");
 });
 
-test("job counts on a site card say they're a plan from a dated filing", async ({ page }) => {
-  const site = data.sites.find((s) => (s.facts as Record<string, unknown>).construction_jobs);
-  test.skip(!site, "no site has a filed job count yet");
+test("job counts on a site card say they're a plan from a dated filing, with the filing's words", async ({ page }) => {
   await stubOutside(page);
-  await openSiteJobs(page, site!.name);
-  await expect(page.locator(".fact", { hasText: "Construction jobs" })).toContainText(/Plan in a \d{4} filing/);
+  await openSiteJobs(page, "Walsh Data Center");
+  const row = page.locator(".fact", { hasText: "Construction jobs" });
+  await expect(row).toContainText("175");
+  await expect(row).toContainText("Plan in a 2020 filing");
+  await expect(row).toContainText("peak workforce of 175");
+});
+
+test("a range in a filing shows as a range", async ({ page }) => {
+  await stubOutside(page);
+  await openSiteJobs(page, "CA3");
+  await expect(page.locator(".fact", { hasText: "Permanent jobs" })).toContainText("19 to 21");
+});
+
+test("a site whose filings give no clear count says Not disclosed yet", async ({ page }) => {
+  await stubOutside(page);
+  await openSiteJobs(page, "NorthTown Data Center");
+  await expect(page.locator(".fact", { hasText: "Permanent jobs" })).toContainText("Not disclosed yet");
 });

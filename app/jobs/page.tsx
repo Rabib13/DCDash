@@ -3,7 +3,8 @@ import Link from "next/link";
 import JobsBrowser from "@/components/JobsBrowser";
 import { freshnessLabel } from "@/lib/jobfeeds";
 import { getJobs, REFRESH_HOURS } from "@/lib/jobs-server";
-import { dataset, jobTotals, onMap } from "@/lib/sites";
+import { dataset, factValueText, jobTotals, onMap } from "@/lib/sites";
+import type { Fact } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -20,14 +21,15 @@ const when = (iso: string) =>
 function FilingJobs() {
   const totals = jobTotals(SITES);
   const rows = SITES.filter((s) => s.facts.construction_jobs || s.facts.permanent_jobs);
-  const num = (v: unknown) => (typeof v === "number" ? v.toLocaleString("en-US") : "Not stated");
+  const num = (f: Fact | undefined) => (f ? factValueText(f) : "Not stated");
   return (
     <section className="page__section" data-testid="filing-jobs">
       <h2>Jobs the projects expect to create</h2>
       <p>
-        About <strong>{totals.construction.total.toLocaleString("en-US")}</strong> construction jobs at peak and{" "}
-        <strong>{totals.permanent.total.toLocaleString("en-US")}</strong> permanent jobs, from filings for {rows.length} of {totals.siteCount} sites.
-        These are plans stated in each project&apos;s filing, not counts of who works there today.
+        Added up, the filings plan about <strong>{totals.permanent.total.toLocaleString("en-US")} permanent jobs</strong> and about{" "}
+        <strong>{totals.construction.total.toLocaleString("en-US")} construction workers</strong> in each project&apos;s busiest month, from
+        filings for {rows.length} of {totals.siteCount} sites. Construction is temporary, and the projects don&apos;t all build at the same time.
+        These are plans stated in each filing, not counts of who works there today. Where a filing gives a range, the total uses the low end.
       </p>
       {rows.length > 0 && (
         <div className="table-wrap">
@@ -49,8 +51,8 @@ function FilingJobs() {
                       {s.name}
                       <span className="muted">{s.city}</span>
                     </th>
-                    <td>{num(s.facts.construction_jobs?.value)}</td>
-                    <td>{num(s.facts.permanent_jobs?.value)}</td>
+                    <td>{num(s.facts.construction_jobs)}</td>
+                    <td>{num(s.facts.permanent_jobs)}</td>
                     <td>
                       {ids.map((id) => (
                         <a key={id} href={dataset.sources[id].url} target="_blank" rel="noopener noreferrer">

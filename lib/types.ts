@@ -18,6 +18,8 @@ export type Source = {
 
 export type Fact = {
   value: string | number;
+  /** The high end when a source gives a range, like 19 to 21. `value` holds the low end. */
+  upTo?: number;
   /** Keys into the dataset's `sources` map. Every fact needs at least one. */
   sources: string[];
   /** Exact words from the source, when the value is a paraphrase or a number. */

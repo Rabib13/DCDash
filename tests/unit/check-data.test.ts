@@ -183,3 +183,15 @@ describe("checkFeeds", () => {
     expect(checkFeeds([feed(), feed()]).join()).toMatch(/Op: listed twice/);
   });
 });
+
+describe("job count ranges", () => {
+  const withRange = (upTo: unknown) => (d: Data) => {
+    (d.sources as Record<string, unknown>).f = { title: "Filing", publisher: "CEC", url: "https://f.example", published: "2022-03", accessed: "2026-11-27" };
+    (d.sites[0].facts as Record<string, unknown>).permanent_jobs = { value: 19, upTo, sources: ["f"], quote: "19-21 employees" };
+  };
+  it("accepts a range like 19 to 21 as value and upTo", () => expect(errorsFor(withRange(21))).toEqual([]));
+  it("rejects an upTo that isn't a number above the value", () => {
+    expect(errorsFor(withRange(19)).join()).toMatch(/upTo must be a number above value/);
+    expect(errorsFor(withRange("21")).join()).toMatch(/upTo must be a number above value/);
+  });
+});

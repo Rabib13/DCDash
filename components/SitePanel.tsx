@@ -7,6 +7,7 @@ import {
   dataset,
   employerFor,
   FACT_LABEL,
+  factValueText,
   factSection,
   SECTION_EXPECTED,
   SECTION_LABEL,
@@ -38,7 +39,7 @@ function FactRow({ name, fact }: { name: string; fact: Fact }) {
       <dt>{FACT_LABEL[name] ?? name}</dt>
       <dd>
         <span>
-          {typeof fact.value === "number" ? fact.value.toLocaleString("en-US") : fact.value}
+          {factValueText(fact)}
           {fact.note ? <span className="muted"> ({fact.note})</span> : null}
         </span>
         {fact.quote && <q className="quote">{fact.quote}</q>}
@@ -245,13 +246,14 @@ export default function SitePanel({ site, onClose }: { site: Site; onClose: () =
 
         {tab === "jobs" ? (
           <>
-            {entries.length > 0 && (
-              <dl className="facts">
-                {entries.map(([k, f]) => (
-                  <FactRow key={k} name={k} fact={f} />
-                ))}
-              </dl>
-            )}
+            <dl className="facts">
+              {entries.map(([k, f]) => (
+                <FactRow key={k} name={k} fact={f} />
+              ))}
+              {missing.map((k) => (
+                <MissingRow key={k} name={k} />
+              ))}
+            </dl>
             <JobsSection site={site} operator={operator} />
           </>
         ) : (

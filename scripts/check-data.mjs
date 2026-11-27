@@ -90,6 +90,8 @@ export function checkData(data) {
     for (const [name, fact] of Object.entries(site.facts ?? {})) {
       if (fact.value === undefined || fact.value === null || fact.value === "") errors.push(`${where}.${name}: empty value`);
       checkRefs(`${where}.${name}`, fact.sources);
+      if ("upTo" in fact && !(typeof fact.upTo === "number" && typeof fact.value === "number" && fact.upTo > fact.value))
+        errors.push(`${where}.${name}: upTo must be a number above value`);
       // Job counts are plans in a filing: a number, in the filing's own words, from a dated document.
       if (JOB_COUNT_FACTS.has(name)) {
         if (typeof fact.value !== "number") errors.push(`${where}.${name}: must be a number`);
