@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 // @ts-expect-error plain JS module shared with the link check script
-import { classify, collectLinks } from "../../scripts/check-links.mjs";
+import { classify, collectLinks, statusOf } from "../../scripts/check-links.mjs";
 
 const data = {
   sources: { a: { url: "https://source.example", title: "A", publisher: "P", accessed: "2026-11-27" } },
@@ -40,4 +40,36 @@ describe("classify", () => {
   });
   it("treats a network failure as unknown", () => expect(classify(0)).toBe("unknown"));
   it("treats server errors as unknown", () => expect(classify(503)).toBe("unknown"));
+});
+
+describe("statusOf", () => {
+  const fakeFetch = (byMethod: Record<string, number>) => {
+    const calls: string[] = [];
+    const impl = async (_url: string, init?: { method?: string }) => {
+      const m = init?.method ?? "GET";
+      calls.push(m);
+      return { status: byMethod[m] };
+    };
+    return { impl, calls };
+  };
+
+  it("retries with GET when a server answers HEAD with 404, as some government sites do", async () => {
+    const f = fakeFetch({ HEAD: 404, GET: 200 });
+    expect(await statusOf("https://x", f.impl)).toBe(200);
+    expect(f.calls).toEqual(["HEAD", "GET"]);
+  });
+
+  it("reports 404 when GET also says not found", async () => {
+    expect(await statusOf("https://x", fakeFetch({ HEAD: 404, GET: 404 }).impl)).toBe(404);
+  });
+
+  it("doesn't retry when HEAD works", async () => {
+    const f = fakeFetch({ HEAD: 200, GET: 500 });
+    expect(await statusOf("https://x", f.impl)).toBe(200);
+    expect(f.calls).toEqual(["HEAD"]);
+  });
+
+  it("returns 0 when the network fails", async () => {
+    expect(await statusOf("https://x", async () => { throw new Error("down"); })).toBe(0);
+  });
 });

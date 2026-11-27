@@ -40,8 +40,8 @@ describe("checkData", () => {
     expect(checkData(real)).toEqual([]);
   });
 
-  it("rejects a site with no AI evidence", () => {
-    expect(errorsFor((d) => delete (d.sites[0].facts as Record<string, unknown>).ai_use).join()).toMatch(/no ai_use/);
+  it("rejects a site with no AI evidence and no size", () => {
+    expect(errorsFor((d) => delete (d.sites[0].facts as Record<string, unknown>).ai_use).join()).toMatch(/over 20 MW, or tied to AI/);
   });
 
   it("rejects a fact with no source", () => {
@@ -98,5 +98,43 @@ describe("checkData link rules", () => {
   });
   it("rejects careers links with a tracking parameter", () => {
     expect(errorsFor((d) => (d.operators.Op.careers.url = "https://jobs.example/?from=mcp-claude-jobsearch")).join()).toMatch(/tracking link/);
+  });
+});
+
+describe("which sites belong on the map", () => {
+  const noAi = (d: Data) => delete (d.sites[0].facts as Record<string, unknown>).ai_use;
+  const capacity = (mw: unknown) => (d: Data) => {
+    noAi(d);
+    (d.sites[0].facts as Record<string, unknown>).capacity_mw = { value: mw, sources: ["a"] };
+  };
+
+  it("accepts a site over 20 MW with no AI evidence", () => {
+    expect(errorsFor(capacity(25))).toEqual([]);
+  });
+
+  it("rejects a site of exactly 20 MW with no AI evidence, since the rule is more than 20", () => {
+    expect(errorsFor(capacity(20)).join()).toMatch(/over 20 MW/);
+  });
+
+  it("rejects a small site with no AI evidence", () => {
+    expect(errorsFor(capacity(5)).join()).toMatch(/over 20 MW/);
+  });
+
+  it("rejects a site with neither size nor AI evidence", () => {
+    expect(errorsFor(noAi).join()).toMatch(/over 20 MW/);
+  });
+
+  it("keeps a small site when a source ties it to AI", () => {
+    expect(errorsFor((d) => ((d.sites[0].facts as Record<string, unknown>).capacity_mw = { value: 1, sources: ["a"] }))).toEqual([]);
+  });
+
+  it("requires the size to be a number", () => {
+    expect(errorsFor(capacity("48 MW")).join()).toMatch(/capacity_mw must be a number/);
+  });
+});
+
+describe("stages", () => {
+  it("accepts built, for a finished building not yet confirmed as operating", () => {
+    expect(errorsFor((d) => (d.sites[0].stage = "built"))).toEqual([]);
   });
 });

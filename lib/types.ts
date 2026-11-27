@@ -5,6 +5,7 @@ export type Stage =
   | "approved"
   | "under_construction"
   | "built_not_energized"
+  | "built"
   | "operating";
 
 export type Source = {
@@ -31,7 +32,8 @@ export type Site = {
   /** Null until a source gives an address. The map then shows the city center, marked approximate. */
   location: { lat: number | null; lon: number | null; precision: "address" | "city" };
   stage: Stage;
-  facts: Record<string, Fact> & { ai_use: Fact };
+  /** Needs `ai_use`, or `capacity_mw` over 20. See scripts/check-data.mjs. */
+  facts: Record<string, Fact>;
   documents?: SiteDocument[];
 };
 
