@@ -4,7 +4,10 @@ import { freshnessLabel, type JobsSnapshot } from "@/lib/jobfeeds";
 import { NEAR_MILES, REFRESH_HOURS, type JobsView } from "@/lib/jobs-view";
 import { dataset, factValueText, jobTotals, onMap } from "@/lib/sites";
 import type { Fact } from "@/lib/types";
+import pathways from "@/data/pathways.json";
+import type { Pathway } from "@/lib/types";
 import JobsBrowser from "./JobsBrowser";
+import WaysIn from "./WaysIn";
 
 const SITES = dataset.sites.filter(onMap);
 
@@ -88,13 +91,20 @@ export default function JobsPanel({
   onClose: () => void;
 }) {
   const place = view.city || view.near;
-  const title = view.city ? `Jobs in ${view.city}` : view.near ? `Jobs within ${NEAR_MILES} miles of ${view.near}` : "Data center jobs in the Bay Area";
+  const ways = view.tab === "ways";
+  const title = ways
+    ? "Ways into data center work"
+    : view.city
+      ? `Jobs in ${view.city}`
+      : view.near
+        ? `Jobs within ${NEAR_MILES} miles of ${view.near}`
+        : "Data center jobs in the Bay Area";
   return (
     <aside className="panel panel--jobs" aria-label="Open jobs">
       <div className="panel__head">
         <div>
           <h2>{title}</h2>
-          {snap && (
+          {snap && !ways && (
             <p className="muted" data-testid="jobs-freshness">
               {freshnessLabel(snap.fetchedAt)} ({when(snap.fetchedAt)} Pacific). Refreshes every {REFRESH_HOURS} hours.
             </p>
@@ -104,10 +114,19 @@ export default function JobsPanel({
           ×
         </button>
       </div>
+      <div className="tabs" role="tablist" aria-label="Jobs">
+        <button type="button" role="tab" aria-selected={!ways} className={ways ? "tab" : "tab tab--active"} onClick={() => onChange({ tab: "" })}>
+          Open jobs
+        </button>
+        <button type="button" role="tab" aria-selected={ways} className={ways ? "tab tab--active" : "tab"} onClick={() => onChange({ tab: "ways" })}>
+          Ways in
+        </button>
+      </div>
       <div className="panel__body">
-        {snap === undefined && <p className="muted">Loading open jobs…</p>}
-        {snap === null && <p className="note">We couldn&apos;t load open jobs just now. Try again in a few minutes.</p>}
-        {snap && (
+        {ways && <WaysIn pathways={pathways as Pathway[]} />}
+        {!ways && snap === undefined && <p className="muted">Loading open jobs…</p>}
+        {!ways && snap === null && <p className="note">We couldn&apos;t load open jobs just now. Try again in a few minutes.</p>}
+        {!ways && snap && (
           <>
             {place ? (
               <div className="place-actions">

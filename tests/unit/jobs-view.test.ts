@@ -13,7 +13,7 @@ const j = (id: string, city: string | null, category: Job["category"] = "operati
   category,
 });
 
-const ALL: JobsView = { role: "", employer: "", city: "", near: "" };
+const ALL: JobsView = { role: "", employer: "", city: "", near: "", tab: "" };
 
 describe("parseJobsView and viewQuery", () => {
   it("reads nothing when the jobs layer isn't open", () => {
@@ -23,11 +23,13 @@ describe("parseJobsView and viewQuery", () => {
 
   it("reads the open layer and its filters from the address", () => {
     expect(parseJobsView("?jobs=1&role=electrical&employer=Digital+Realty&near=Santa+Clara")).toEqual({
+      ...ALL,
       role: "electrical",
       employer: "Digital Realty",
-      city: "",
       near: "Santa Clara",
     });
+    expect(parseJobsView("?jobs=1&tab=ways")).toEqual({ ...ALL, tab: "ways" });
+    expect(parseJobsView("?jobs=1&tab=nonsense")).toEqual(ALL);
     expect(parseJobsView("?jobs=1&city=San+Jose")).toEqual({ ...ALL, city: "San Jose" });
   });
 
@@ -45,6 +47,7 @@ describe("parseJobsView and viewQuery", () => {
     expect(parseJobsView(viewQuery(v))).toEqual(v);
     expect(viewQuery(null)).toBe("");
     expect(jobsHref({ employer: "Equinix", near: "San Jose" })).toBe("/?jobs=1&employer=Equinix&near=San+Jose");
+    expect(viewQuery({ ...ALL, tab: "ways" })).toBe("?jobs=1&tab=ways");
   });
 });
 

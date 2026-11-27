@@ -25,6 +25,15 @@ describe("collectLinks", () => {
   });
 });
 
+describe("collectLinks with ways in", () => {
+  it("checks each program's page and its extra links", () => {
+    const ways = [{ id: "w", url: "https://way.example", more: [{ label: "More", url: "https://way-more.example" }] }];
+    const links = collectLinks(data, FEEDS, ways);
+    expect(links.map((l: { url: string }) => l.url)).toEqual(expect.arrayContaining(["https://way.example", "https://way-more.example"]));
+    expect(links.find((l: { url: string }) => l.url === "https://way.example").where).toMatch(/pathway w/);
+  });
+});
+
 describe("classify", () => {
   it("treats 2xx and 3xx as working", () => {
     expect(classify(200)).toBe("ok");

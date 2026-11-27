@@ -27,7 +27,7 @@ async function openSite(page: Page, name: string) {
 test("the map shows one marker per site and a legend", async ({ page }) => {
   const errors = await openMap(page);
   await expect(page.getByText("Operating", { exact: true })).toBeVisible();
-  await expect(page.getByText(`${data.sites.length} sites`)).toBeVisible();
+  await expect(page.locator(".badge")).toHaveText(`Beta · ${data.sites.length} sites`);
   expect(errors).toEqual([]);
 });
 

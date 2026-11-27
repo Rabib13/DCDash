@@ -12,9 +12,9 @@ export const REFRESH_HOURS = 6;
 export const NEAR_MILES = 10;
 
 /** At most one of `city` (that city only) and `near` (within NEAR_MILES of it) is set. */
-export type JobsView = { role: string; employer: string; city: string; near: string };
+export type JobsView = { role: string; employer: string; city: string; near: string; tab: "" | "ways" };
 
-export const EMPTY_VIEW: JobsView = { role: "", employer: "", city: "", near: "" };
+export const EMPTY_VIEW: JobsView = { role: "", employer: "", city: "", near: "", tab: "" };
 
 /** One color per role type, used for the rings on the map and the dots by each filter. */
 export const CATEGORY_COLOR: Record<Category, string> = {
@@ -41,6 +41,7 @@ export function parseJobsView(search: string): JobsView | null {
     employer: q.get("employer") ?? "",
     city,
     near: city ? "" : q.get("near") ?? "",
+    tab: q.get("tab") === "ways" ? "ways" : "",
   };
 }
 
@@ -48,7 +49,7 @@ export function parseJobsView(search: string): JobsView | null {
 export function viewQuery(view: JobsView | null): string {
   if (!view) return "";
   const q = new URLSearchParams({ jobs: "1" });
-  for (const k of ["role", "employer", "city", "near"] as const) if (view[k]) q.set(k, view[k]);
+  for (const k of ["role", "employer", "city", "near", "tab"] as const) if (view[k]) q.set(k, view[k]);
   return `?${q}`;
 }
 

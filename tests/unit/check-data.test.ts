@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error plain JS module shared with the build script
-import { checkData, checkFeeds } from "../../scripts/check-data.mjs";
+import { checkData, checkFeeds, checkPathways } from "../../scripts/check-data.mjs";
 
 const valid = () => ({
   asOf: "2026-11-27",
@@ -161,6 +161,22 @@ describe("job counts from filings", () => {
   });
 });
 
+describe("community benefits", () => {
+  const withBenefit = (fact: Record<string, unknown>) => (d: Data) => {
+    (d.sources as Record<string, unknown>).f = { title: "Staff report", publisher: "City", url: "https://f.example", published: "2025-05-22", accessed: "2026-11-27" };
+    (d.sites[0].facts as Record<string, unknown>).community_benefits = fact;
+  };
+
+  it("accepts a benefit quoted from a dated source", () => {
+    expect(errorsFor(withBenefit({ value: "$1.5 million package", sources: ["f"], quote: "a Public Benefits Package worth $1,500,000" }))).toEqual([]);
+  });
+
+  it("needs the source's own words and a date, since a promise is only as good as where it's written", () => {
+    expect(errorsFor(withBenefit({ value: "$1.5 million package", sources: ["f"] })).join()).toMatch(/community_benefits: needs a quote/);
+    expect(errorsFor(withBenefit({ value: "x", sources: ["a"], quote: "x" })).join()).toMatch(/community_benefits: source "a" needs a published date/);
+  });
+});
+
 describe("checkFeeds", () => {
   const feed = () => ({ employer: "Op", kind: "greenhouse", board: "op", careersUrl: "https://op.example/careers" });
 
@@ -204,5 +220,39 @@ describe("job count ranges", () => {
 describe("link-only job feeds", () => {
   it("need only an employer and careers page", () => {
     expect(checkFeeds([{ employer: "Op", kind: "link", careersUrl: "https://op.example/careers" }])).toEqual([]);
+  });
+});
+
+describe("checkPathways", () => {
+  const way = () => ({
+    id: "etasv",
+    name: "Inside Wireman apprenticeship",
+    provider: "Electrical Training Alliance of Silicon Valley",
+    kind: "apprenticeship",
+    city: "Milpitas",
+    url: "https://www.etasv.org/inside-commercial-wireman",
+    quote: "Apprenticeship training program will be five (5) years in duration.",
+    checked: "2026-11-27",
+  });
+
+  it("accepts a valid list and the real data/pathways.json", () => {
+    expect(checkPathways([way()])).toEqual([]);
+    expect(checkPathways(JSON.parse(readFileSync(new URL("../../data/pathways.json", import.meta.url), "utf8")))).toEqual([]);
+  });
+
+  it("needs the program's own page, its words, and the day it was checked, so nothing is made up", () => {
+    expect(checkPathways([{ ...way(), url: "http://x.example" }]).join()).toMatch(/etasv: url must be https/);
+    expect(checkPathways([{ ...way(), quote: "" }]).join()).toMatch(/etasv: needs a quote from its page/);
+    expect(checkPathways([{ ...way(), checked: "soon" }]).join()).toMatch(/etasv: checked must be a date/);
+  });
+
+  it("rejects an unknown kind, a missing provider, or the same id twice", () => {
+    expect(checkPathways([{ ...way(), kind: "bootcamp" }]).join()).toMatch(/unknown kind "bootcamp"/);
+    expect(checkPathways([{ ...way(), provider: "" }]).join()).toMatch(/etasv: needs a provider/);
+    expect(checkPathways([way(), way()]).join()).toMatch(/etasv: listed twice/);
+  });
+
+  it("checks extra links too", () => {
+    expect(checkPathways([{ ...way(), more: [{ label: "Wages", url: "http://x.example" }] }]).join()).toMatch(/etasv: more links must be https/);
   });
 });

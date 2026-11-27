@@ -9,7 +9,9 @@ import { spreadApart } from "@/lib/layout";
 import { CATEGORY_LABEL, citiesWithin, type Category } from "@/lib/jobfeeds";
 import { bubbleSize, bubbleText, CATEGORY_COLOR, NEAR_MILES, cityBubbles, EMPTY_VIEW, matchesView, parseJobsView, ringGradient, viewQuery, type JobsView } from "@/lib/jobs-view";
 import { useJobs } from "@/lib/useJobs";
-import { buildoutSummary } from "@/lib/buildout";
+import { buildoutSummary, waysInSummary } from "@/lib/buildout";
+import pathways from "@/data/pathways.json";
+import type { Pathway } from "@/lib/types";
 import BuildoutBanner from "./BuildoutBanner";
 import JobsPanel from "./JobsPanel";
 import SitePanel from "./SitePanel";
@@ -45,6 +47,8 @@ export default function SiteMap() {
 
   // The summary banner shows until a visitor hides it; that choice is remembered on this device.
   const [bannerHidden, setBannerHidden] = useState<boolean | null>(null);
+  // Once a visitor moves the map, the banner shrinks to one line so it never covers sites.
+  const [bannerCompact, setBannerCompact] = useState(false);
   const hideBanner = (hidden: boolean) => {
     setBannerHidden(hidden);
     try {
@@ -131,6 +135,7 @@ export default function SiteMap() {
     m.on("moveend", layout);
     m.on("resize", layout);
     m.on("click", () => setSelected(null));
+    m.on("movestart", () => setBannerCompact(true));
 
     return () => {
       m.remove();
@@ -155,7 +160,8 @@ export default function SiteMap() {
     const m = map.current;
     bubbleMarkers.current.forEach((b) => b.remove());
     bubbleMarkers.current = [];
-    if (!m || !jobs) return;
+    // The ways-in list is about training, not places, so the job circles step aside.
+    if (!m || !jobs || jobs.tab === "ways") return;
     const placed = bubbles.map((b) => {
       const el = document.createElement("button");
       el.type = "button";
@@ -188,7 +194,7 @@ export default function SiteMap() {
       m.off("moveend", layout);
       m.off("resize", layout);
     };
-  }, [bubbles, jobs === null]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [bubbles, jobs === null, jobs?.tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When the layer opens, frame every circle in the part of the map the panel doesn't cover.
   const framed = useRef(false);
@@ -230,6 +236,8 @@ export default function SiteMap() {
   }, [highlightKey, bubbles, jobs === null]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const localCount = snap ? snap.jobs.filter((j) => !j.alsoElsewhere).length : null;
+  const summary = buildoutSummary(snap, SITES);
+  const ways = waysInSummary(pathways as Pathway[]);
   const legendRoles = (Object.keys(CATEGORY_LABEL) as Category[]).filter((c) => filtered.some((j) => j.category === c));
 
   return (
@@ -272,8 +280,21 @@ export default function SiteMap() {
           <span><i className="swatch swatch--planned" />Proposed</span>
         </div>
       )}
-      {bannerHidden === false && !selected && !jobs && (
-        <BuildoutBanner summary={buildoutSummary(snap, SITES)} onSeeJobs={() => openJobs({})} onHide={() => hideBanner(true)} />
+      {bannerHidden === false && !selected && !jobs && !bannerCompact && (
+        <BuildoutBanner
+          summary={summary}
+          ways={ways}
+          onSeeJobs={() => openJobs({})}
+          onSeeWays={() => openJobs({ tab: "ways" })}
+          onHide={() => hideBanner(true)}
+        />
+      )}
+      {bannerHidden === false && !selected && !jobs && bannerCompact && (
+        <button type="button" className="buildout-pill" onClick={() => setBannerCompact(false)}>
+          {summary.open === null ? "What the AI buildout brings here" : `${summary.open} jobs open now`}
+          {ways.apprenticeships > 0 && ` · ${ways.apprenticeships} paid apprenticeships`}
+          <span aria-hidden="true"> ▾</span>
+        </button>
       )}
       {selected && <SitePanel site={selected} onClose={() => setSelected(null)} onOpenJobs={openJobs} />}
       {jobs && !selected && <JobsPanel snap={snap} view={jobs} onChange={changeJobs} onClose={() => setJobs(null)} />}

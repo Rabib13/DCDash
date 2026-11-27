@@ -45,7 +45,9 @@ describe("buildoutSummary", () => {
 
   it("counts sites with a documented community benefit, and says none when there are none", () => {
     expect(buildoutSummary(null, [site({})]).benefitSites).toBe(0);
-    expect(buildoutSummary(null, [site({ community_benefits: { value: "Grant fund", sources: ["x"] } }), site({})]).benefitSites).toBe(1);
+    const b = buildoutSummary(null, [site({ community_benefits: { value: "$40,000 tree fund", sources: ["x"] } }), site({})]);
+    expect(b.benefitSites).toBe(1);
+    expect(b.benefitExample).toEqual({ value: "$40,000 tree fund", site: "S", city: "Santa Clara" });
   });
 });
 
@@ -54,5 +56,15 @@ describe("about", () => {
     const { about } = await import("@/lib/buildout");
     expect(about(2834)).toBe("about 2,800");
     expect(about(539)).toBe("about 540");
+  });
+});
+
+describe("ways in", () => {
+  it("counts paid apprenticeships, how many are free to join, and other programs", async () => {
+    const { waysInSummary } = await import("@/lib/buildout");
+    const w = (kind: string, extra: object = {}) => ({ id: Math.random().toString(), kind, ...extra }) as never;
+    expect(
+      waysInSummary([w("apprenticeship", { paid: true, free: true }), w("apprenticeship", { paid: true }), w("college"), w("training", { free: true })]),
+    ).toEqual({ apprenticeships: 2, freeApprenticeships: 1, other: 2 });
   });
 });

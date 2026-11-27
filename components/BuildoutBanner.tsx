@@ -2,9 +2,23 @@
 
 import { about, type BuildoutSummary } from "@/lib/buildout";
 
+type WaysIn = { apprenticeships: number; freeApprenticeships: number; other: number };
+
 /** What the AI buildout brings Bay Area residents, shown on the map without a click. Only sourced numbers. */
-export default function BuildoutBanner({ summary, onSeeJobs, onHide }: { summary: BuildoutSummary; onSeeJobs: () => void; onHide: () => void }) {
-  const { open, topEmployers, moreEmployers, kinds, planned, benefitSites } = summary;
+export default function BuildoutBanner({
+  summary,
+  ways,
+  onSeeJobs,
+  onSeeWays,
+  onHide,
+}: {
+  summary: BuildoutSummary;
+  ways: WaysIn;
+  onSeeJobs: () => void;
+  onSeeWays: () => void;
+  onHide: () => void;
+}) {
+  const { open, topEmployers, moreEmployers, kinds, planned, benefitSites, benefitExample, siteCount } = summary;
   return (
     <section className="buildout" data-testid="buildout-banner" aria-label="What the AI buildout brings here">
       <div className="buildout__head">
@@ -35,6 +49,18 @@ export default function BuildoutBanner({ summary, onSeeJobs, onHide }: { summary
             See open jobs
           </button>
         </div>
+        {ways.apprenticeships > 0 && (
+          <div className="buildout__stat">
+            <p>
+              <strong>Ways in without a degree:</strong> {ways.apprenticeships} paid apprenticeships nearby
+              {ways.freeApprenticeships > 0 ? `, ${ways.freeApprenticeships} with no tuition` : ""}
+              {ways.other > 0 ? `, plus ${ways.other} college and free training programs` : ""}
+            </p>
+            <button type="button" className="button button--quiet" onClick={onSeeWays}>
+              See ways in
+            </button>
+          </div>
+        )}
         {planned.filings > 0 && (
           <div className="buildout__stat">
             <p>
@@ -44,11 +70,12 @@ export default function BuildoutBanner({ summary, onSeeJobs, onHide }: { summary
           </div>
         )}
       </div>
-      {benefitSites === 0 ? (
+      {benefitSites === 0 || !benefitExample ? (
         <p className="muted buildout__note">No community benefit agreements or local grants are documented for these sites yet.</p>
       ) : (
         <p className="muted buildout__note">
-          {benefitSites} site{benefitSites === 1 ? " has" : "s have"} a documented community benefit. Tap a site to see it.
+          {benefitSites} of {siteCount} sites have documented community benefits, such as {benefitExample.value} at {benefitExample.site} in{" "}
+          {benefitExample.city}. Most have none on record. Each site&apos;s Community tab has the details.
         </p>
       )}
     </section>

@@ -63,3 +63,28 @@ export type Dataset = {
 };
 
 export type Confidence = "confirmed" | "reported" | "not_disclosed";
+
+/** A sourced way into data center work: an apprenticeship, college program or free training. */
+export type Pathway = {
+  id: string;
+  name: string;
+  provider: string;
+  kind: "apprenticeship" | "college" | "training";
+  city: string;
+  /** The program's own page. */
+  url: string;
+  /** Words from that page, so every listing can be checked. */
+  quote: string;
+  paid?: boolean;
+  /** No tuition or class fees. */
+  free?: boolean;
+  pay?: string;
+  cost?: string;
+  length?: string;
+  who?: string;
+  /** Application timing, when the page states it. */
+  status?: string;
+  more?: { label: string; url: string }[];
+  /** The day the page was last read. */
+  checked: string;
+};

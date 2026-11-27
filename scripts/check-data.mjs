@@ -17,6 +17,8 @@ export const MIN_MW = 20;
 
 /** Facts holding job counts stated in a site's filings. */
 export const JOB_COUNT_FACTS = new Set(["construction_jobs", "permanent_jobs"]);
+/** Facts that must quote a dated source: job plans and community benefits. */
+const QUOTED_FACTS = new Set([...JOB_COUNT_FACTS, "community_benefits"]);
 
 export const FEED_KINDS = new Set(["greenhouse", "lever", "ashby", "smartrecruiters", "workday", "oracle", "amazon", "eightfold", "neogov", "jobvite-xml", "link"]);
 
@@ -45,6 +47,30 @@ export function checkFeeds(feeds) {
     else if (isTrackingLink(f.careersUrl)) errors.push(`${where}: careersUrl is a tracking link`);
   }
   if (!Array.isArray(feeds)) errors.push("job feeds must be a list");
+  return errors;
+}
+
+const PATHWAY_KINDS = new Set(["apprenticeship", "college", "training"]);
+
+/** Ways into data center work, in data/pathways.json: each from the program's own page, quoted and dated. */
+export function checkPathways(list) {
+  const errors = [];
+  const ids = new Set();
+  for (const [i, p] of (Array.isArray(list) ? list : []).entries()) {
+    const where = `pathway ${p.id || `#${i}`}`;
+    if (!p.id) errors.push(`${where}: needs an id`);
+    if (ids.has(p.id)) errors.push(`${where}: listed twice`);
+    ids.add(p.id);
+    if (!p.name) errors.push(`${where}: needs a name`);
+    if (!p.provider) errors.push(`${where}: needs a provider`);
+    if (!p.city) errors.push(`${where}: needs a city`);
+    if (!PATHWAY_KINDS.has(p.kind)) errors.push(`${where}: unknown kind "${p.kind}"`);
+    if (typeof p.url !== "string" || !p.url.startsWith("https://")) errors.push(`${where}: url must be https`);
+    if (!p.quote || typeof p.quote !== "string") errors.push(`${where}: needs a quote from its page`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(p.checked ?? "")) errors.push(`${where}: checked must be a date (YYYY-MM-DD)`);
+    if ((p.more ?? []).some((m) => typeof m?.url !== "string" || !m.url.startsWith("https://"))) errors.push(`${where}: more links must be https`);
+  }
+  if (!Array.isArray(list)) errors.push("pathways must be a list");
   return errors;
 }
 
@@ -101,9 +127,9 @@ export function checkData(data) {
       if ("upTo" in fact && !(typeof fact.upTo === "number" && typeof fact.value === "number" && fact.upTo > fact.value))
         errors.push(`${where}.${name}: upTo must be a number above value`);
       // Job counts are plans in a filing: a number, in the filing's own words, from a dated document.
-      if (JOB_COUNT_FACTS.has(name)) {
-        if (typeof fact.value !== "number") errors.push(`${where}.${name}: must be a number`);
-        if (!fact.quote) errors.push(`${where}.${name}: needs a quote from the filing`);
+      if (JOB_COUNT_FACTS.has(name) && typeof fact.value !== "number") errors.push(`${where}.${name}: must be a number`);
+      if (QUOTED_FACTS.has(name)) {
+        if (!fact.quote) errors.push(`${where}.${name}: needs a quote from the ${JOB_COUNT_FACTS.has(name) ? "filing" : "source"}`);
         for (const ref of fact.sources ?? [])
           if (sources[ref] && !sources[ref].published) errors.push(`${where}.${name}: source "${ref}" needs a published date`);
       }

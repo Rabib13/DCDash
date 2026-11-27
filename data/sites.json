@@ -397,6 +397,41 @@
       "url": "https://ceqanet.lci.ca.gov/2025100607/1/Attachment/YaxuJ9",
       "published": "2025-10",
       "accessed": "2026-11-27"
+    },
+    "hayward-svy03a-staff-report": {
+      "title": "STACK data center (PH 25-022): Planning Commission staff report, Attachment I",
+      "publisher": "City of Hayward",
+      "url": "https://hayward.legistar.com/View.ashx?M=F&ID=14211369&GUID=9E2C54A0-1531-4EDA-B508-289992F366ED",
+      "published": "2025-05-22",
+      "accessed": "2026-11-27"
+    },
+    "hayward-svy03a-conditions": {
+      "title": "STACK data center (PH 25-022): Conditions of Approval, Attachment III",
+      "publisher": "City of Hayward",
+      "url": "https://hayward.legistar.com/View.ashx?M=F&ID=14211380&GUID=180FFDA7-1C53-4CF2-B784-210A045D03F0",
+      "published": "2025-05-22",
+      "accessed": "2026-11-27"
+    },
+    "cbd-pittsburg-settlement": {
+      "title": "Settlement agreement, Center for Biological Diversity v. City of Pittsburg (Pittsburg Data Hub)",
+      "publisher": "Center for Biological Diversity",
+      "url": "https://biologicaldiversity.org/programs/urban/pdfs/2025-12-16-Pittsburg-data-center-legal-agreement.pdf",
+      "published": "2025-12-16",
+      "accessed": "2026-11-27"
+    },
+    "sjspotlight-tzp-2023": {
+      "title": "Data centers destined for North San Jose",
+      "publisher": "San José Spotlight",
+      "url": "https://sanjosespotlight.com/data-centers-destined-for-north-san-jose",
+      "published": "2023-05-10",
+      "accessed": "2026-11-27"
+    },
+    "svvoice-bowers-2024": {
+      "title": "Council approves data center in spite of Planning Commission objection",
+      "publisher": "The Silicon Valley Voice",
+      "url": "https://www.svvoice.com/council-approves-data-center-in-spite-of-planning-commission-objection/",
+      "published": "2024-08-30",
+      "accessed": "2026-11-27"
     }
   },
   "operators": {
@@ -922,6 +957,15 @@
           ],
           "quote": "The project would employ an estimated 45 operations workers.",
           "note": "Final Initial Study page 5.15-4"
+        },
+        "community_benefits": {
+          "value": "a $1.5 million public benefits package",
+          "sources": [
+            "hayward-svy03a-staff-report",
+            "hayward-svy03a-conditions"
+          ],
+          "quote": "the applicant proposes a Public Benefits Package worth $1,500,000 to justify their proposed height increase.",
+          "note": "A condition of approval, paid before the building opens, in exchange for a taller building. It includes $200,000 for small business grants, $200,000 for La Vista Park, $100,000 for Hayward schools and $150,000 for the Bay Trail. The staff report names the project STACK SVY03A, at 26062 Eden Landing Road. A later city paper puts the package at $2 million"
         }
       }
     },
@@ -1063,6 +1107,14 @@
           ],
           "quote": "there would be 33 to 35 people in the building on an average day, with 17 to 30 people in the building at the same time.",
           "note": "people in the building on an average day, which may include tenants and visitors; Final EIR page 4.15-6"
+        },
+        "community_benefits": {
+          "value": "a $30,000 donation promised to Santa Clara schools",
+          "sources": [
+            "svvoice-bowers-2024"
+          ],
+          "quote": "has been promised a $30,000 donation from the GI Partners for STEAM education",
+          "note": "Promised, not a condition of approval. The owner also pays for the new electrical substation"
         }
       }
     },
@@ -1570,6 +1622,14 @@
           ],
           "quote": "There would be approximately 269 employees for the advanced manufacturing building and 70 employees for the SVY Data Center (DayZenLLC 2022n).",
           "note": "data center only; Draft EIR page 4.14-4"
+        },
+        "community_benefits": {
+          "value": "an extra $40,000 for San José's District 4 tree-planting fund",
+          "sources": [
+            "sjspotlight-tzp-2023"
+          ],
+          "quote": "toss in an extra $40,000 toward the District 4 \"One Thousand Tree Project\" fund",
+          "note": "Reported when the City Council approved the project in May 2023, on top of $326,275 in standard tree fees"
         }
       }
     },
@@ -2412,6 +2472,14 @@
           ],
           "quote": "The data center is expected to staff between 20 and 30 full-time employees.",
           "note": "Initial Study page 5.14-5"
+        },
+        "community_benefits": {
+          "value": "a $750,000 grant fund for Pittsburg communities, plus 100% carbon-free power and recycled water for cooling",
+          "sources": [
+            "cbd-pittsburg-settlement"
+          ],
+          "quote": "Owner will pay a total of $750,000 (\"Mitigation Grants Payment\") to a foundation to be identified by the Center for Biological Diversity",
+          "note": "From a December 2025 legal settlement. Grants favor disadvantaged communities in Pittsburg. Half is due within 90 days of the first building permit and the rest at opening; we found no record of payment yet"
         }
       }
     },
