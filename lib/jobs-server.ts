@@ -19,8 +19,10 @@ function loadFixture(path: string): JobsSnapshot {
 
 const cache = createJobsCache({
   ttlMs: REFRESH_HOURS * 3600_000,
-  load: async (previous) =>
-    process.env.JOBS_FIXTURE ? loadFixture(process.env.JOBS_FIXTURE) : fetchFeeds(feeds as FeedConfig[], { previous }),
+  // On a fresh start, wait this long for job boards before showing what has arrived so far.
+  waitMs: 8000,
+  load: async (previous, onProgress) =>
+    process.env.JOBS_FIXTURE ? loadFixture(process.env.JOBS_FIXTURE) : fetchFeeds(feeds as FeedConfig[], { previous, onProgress }),
 });
 
 export const getJobs = () => cache.get();

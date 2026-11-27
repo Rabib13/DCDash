@@ -262,3 +262,33 @@ describe("freshnessLabel", () => {
     expect(freshnessLabel("2026-11-25T18:00:00Z", NOW)).toBe("Updated 2 days ago");
   });
 });
+
+describe("jobs listed in several places", () => {
+  it("flags a job that can also be based outside the Bay Area", () => {
+    const [multi, local] = parseGreenhouse("Co", {
+      jobs: [
+        { id: 1, title: "Paralegal", absolute_url: "https://g.example/1", location: { name: "Dallas, TX, United States; San Francisco, CA, United States" } },
+        { id: 2, title: "Technician", absolute_url: "https://g.example/2", location: { name: "Santa Clara, CA" } },
+      ],
+    });
+    expect(multi).toMatchObject({ city: "San Francisco", alsoElsewhere: true });
+    expect(local.alsoElsewhere).toBeUndefined();
+  });
+
+  it("reads Mt. View as Mountain View", () => {
+    expect(bayAreaCity("Mt. View California")).toBe("Mountain View");
+  });
+});
+
+describe("fetchFeeds progress", () => {
+  it("reports partial results as each employer's feed finishes", async () => {
+    const fetchImpl = fakeFetch({
+      "https://boards-api.greenhouse.io/v1/boards/greenco/jobs": {
+        jobs: [{ id: 1, title: "Tech", absolute_url: "https://g.example/1", location: { name: "San Jose, CA" } }],
+      },
+    });
+    const partials: number[] = [];
+    await fetchFeeds([GH, LV], { fetchImpl, now: NOW, onProgress: (p) => partials.push(p.feeds.length) });
+    expect(partials.sort()).toEqual([1, 2]);
+  });
+});

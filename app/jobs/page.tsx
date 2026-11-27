@@ -75,7 +75,9 @@ function FilingJobs() {
 export default async function JobsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
   const snap = await getJobs();
-  const employers = new Set(snap.jobs.map((j) => j.employer)).size;
+  const local = snap.jobs.filter((j) => !j.alsoElsewhere);
+  const multi = snap.jobs.length - local.length;
+  const employers = new Set(local.map((j) => j.employer)).size;
   const problems = snap.feeds.filter((f) => !f.ok);
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
   return (
@@ -86,11 +88,19 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
         </Link>
         <h1>Data center jobs in the Bay Area</h1>
         <p className="headline" data-testid="jobs-headline">
-          {snap.jobs.length} open jobs at {employers} data center companies
+          {local.length} open jobs based in the Bay Area at {employers} data center companies
         </p>
+        {multi > 0 && (
+          <p data-testid="jobs-multi">
+            Plus {multi} more that can be based here or elsewhere.
+          </p>
+        )}
         <p className="muted" data-testid="jobs-freshness">
           {freshnessLabel(snap.fetchedAt)} ({when(snap.fetchedAt)} Pacific). The list refreshes every {REFRESH_HOURS} hours.
         </p>
+        {snap.refreshing && (
+          <p className="note">We&apos;re still reading some employers&apos; job boards, so this list is incomplete. Reload in a minute or two.</p>
+        )}
         {problems.length > 0 && (
           <ul className="note feed-problems" data-testid="feed-problems">
             {problems.map((f) => (

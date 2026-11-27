@@ -85,6 +85,7 @@ export default function JobsBrowser({ jobs, initial }: { jobs: Job[]; initial: F
                 {j.employer} · {j.city ?? j.location} · {CATEGORY_LABEL[j.category]}
                 {j.posted ? ` · posted ${j.posted}` : ""}
               </span>
+              {j.alsoElsewhere && <span className="muted">Also based outside the Bay Area: {j.location}</span>}
             </li>
           ))}
         </ul>

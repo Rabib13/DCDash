@@ -20,8 +20,11 @@ test("the jobs page leads with how many jobs are open and how fresh the list is"
   const errors = await stubOutside(page);
   await page.goto("/jobs");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Data center jobs in the Bay Area");
-  const employers = new Set(fixture.jobs.map((j) => j.employer)).size;
-  await expect(page.getByTestId("jobs-headline")).toHaveText(`${fixture.jobs.length} open jobs at ${employers} data center companies`);
+  const local = fixture.jobs.filter((j) => !(j as { alsoElsewhere?: boolean }).alsoElsewhere);
+  const employers = new Set(local.map((j) => j.employer)).size;
+  await expect(page.getByTestId("jobs-headline")).toHaveText(`${local.length} open jobs based in the Bay Area at ${employers} data center companies`);
+  // Jobs that list other states too are counted apart, so they can't inflate the headline.
+  await expect(page.getByTestId("jobs-multi")).toHaveText("Plus 1 more that can be based here or elsewhere.");
   await expect(page.getByTestId("jobs-freshness")).toHaveText(/^Updated 2 hours ago/);
   await expect(jobLinks(page)).toHaveCount(fixture.jobs.length);
   expect(errors).toEqual([]);
@@ -45,12 +48,12 @@ test("filters narrow the list and stay in the address, so a filtered view can be
 
   await page.getByRole("button", { name: /^All roles/ }).click();
   await page.getByLabel("Employer").selectOption("Equinix");
-  await expect(jobLinks(page)).toHaveCount(2);
+  await expect(jobLinks(page)).toHaveCount(3);
   await expect(page).toHaveURL(/employer=Equinix/);
 
   await page.reload();
   await expect(page.getByLabel("Employer")).toHaveValue("Equinix");
-  await expect(jobLinks(page)).toHaveCount(2);
+  await expect(jobLinks(page)).toHaveCount(3);
 });
 
 test("the near filter includes neighboring cities, not just the exact one", async ({ page }) => {
@@ -61,6 +64,13 @@ test("the near filter includes neighboring cities, not just the exact one", asyn
   expect(titles).toContain("Critical Facilities Engineer");
   expect(titles).toContain("Network Engineer");
   expect(titles).not.toContain("Security Officer");
+});
+
+test("a job that also lists other states says so", async ({ page }) => {
+  await stubOutside(page);
+  await page.goto("/jobs");
+  await expect(page.locator(".joblist li", { hasText: "Data Center Capacity Analyst" })).toContainText("Also based outside the Bay Area");
+  await expect(page.locator(".joblist li", { hasText: "HVAC Technician" })).not.toContainText("Also based outside");
 });
 
 test("a filter that matches nothing says so", async ({ page }) => {

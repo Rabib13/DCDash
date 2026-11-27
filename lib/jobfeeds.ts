@@ -41,6 +41,8 @@ export type Job = {
   /** Day the job was posted (YYYY-MM-DD), only when the feed gives an exact date. */
   posted?: string;
   category: Category;
+  /** The posting also lists places outside the Bay Area, so it may not be based here. */
+  alsoElsewhere?: boolean;
 };
 
 export type FeedStatus = {
@@ -56,7 +58,13 @@ export type FeedStatus = {
   error?: string;
 };
 
-export type JobsSnapshot = { fetchedAt: string; feeds: FeedStatus[]; jobs: Job[] };
+export type JobsSnapshot = {
+  fetchedAt: string;
+  feeds: FeedStatus[];
+  jobs: Job[];
+  /** True while the first read of the job boards is still running, so the list is incomplete. */
+  refreshing?: boolean;
+};
 
 /** Bay Area cities a job can be in. Longest names first so "South San Francisco" wins over "San Francisco". */
 const BAY_AREA_CITIES = [
@@ -87,7 +95,12 @@ const BAY_AREA_CITIES = [
 /** States that would make a same-named city not ours, like Newark, NJ. */
 const OTHER_STATE = /,\s*(?!ca\b|california\b|us\b|usa\b|united states\b)[a-z]{2,}/i;
 
-const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const fold = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/\bmt\.?\s+view\b/g, "mountain view");
 
 /** The Bay Area city in a job's location text, or null when it's elsewhere, remote, or vague ("3 Locations"). */
 export function bayAreaCity(location: string): string | null {
@@ -130,6 +143,7 @@ function job(employer: string, id: unknown, title: unknown, location: unknown, u
   if (!t || !u.startsWith("https://")) return null;
   const loc = String(location ?? "").trim();
   const j: Job = { id: `${employer}:${id}`, employer, title: t, location: loc, city: bayAreaCity(loc), url: u, category: categorize(t) };
+  if (j.city && loc.split(/;|\|/).some((part) => part.trim() && !bayAreaCity(part))) j.alsoElsewhere = true;
   const p = day(posted);
   if (p) j.posted = p;
   return j;
@@ -223,10 +237,40 @@ export const KEEP_FAILED_MS = 7 * 24 * 3600_000;
 /** Reads every feed. A feed that fails keeps its previous jobs, marked with when they were last refreshed. */
 export async function fetchFeeds(
   feeds: FeedConfig[],
-  { fetchImpl = fetch as FetchLike, now = new Date(), previous }: { fetchImpl?: FetchLike; now?: Date; previous?: JobsSnapshot } = {},
+  {
+    fetchImpl = fetch as FetchLike,
+    now = new Date(),
+    previous,
+    onProgress,
+  }: { fetchImpl?: FetchLike; now?: Date; previous?: JobsSnapshot; onProgress?: (partial: JobsSnapshot) => void } = {},
 ): Promise<JobsSnapshot> {
+  const done: { status: FeedStatus; jobs: Job[] }[] = [];
   const results = await Promise.all(
     feeds.map(async (feed) => {
+      const r = await readOne(feed);
+      done.push(r);
+      onProgress?.(combine(done.map((x) => ({ status: { ...x.status }, jobs: x.jobs }))));
+      return r;
+    }),
+  );
+  return combine(results);
+
+  function combine(rs: { status: FeedStatus; jobs: Job[] }[]): JobsSnapshot {
+    const seen = new Set<string>();
+    const jobs: Job[] = [];
+    for (const r of rs) {
+      r.status.count = 0;
+      for (const j of r.jobs) {
+        if (seen.has(j.url)) continue;
+        seen.add(j.url);
+        jobs.push(j);
+        r.status.count++;
+      }
+    }
+    return { fetchedAt: now.toISOString(), feeds: rs.map((r) => r.status), jobs };
+  }
+
+  async function readOne(feed: FeedConfig): Promise<{ status: FeedStatus; jobs: Job[] }> {
       try {
         const jobs = (await readFeed(feed, fetchImpl)).filter((j) => j.city !== null);
         const status: FeedStatus = { employer: feed.employer, careersUrl: feed.careersUrl, ok: true, count: 0, refreshedAt: now.toISOString() };
@@ -241,19 +285,7 @@ export async function fetchFeeds(
         if (fresh) status.refreshedAt = before?.refreshedAt;
         return { status, jobs };
       }
-    }),
-  );
-  const seen = new Set<string>();
-  const jobs: Job[] = [];
-  for (const r of results) {
-    for (const j of r.jobs) {
-      if (seen.has(j.url)) continue;
-      seen.add(j.url);
-      jobs.push(j);
-      r.status.count++;
-    }
   }
-  return { fetchedAt: now.toISOString(), feeds: results.map((r) => r.status), jobs };
 }
 
 type Count<K> = { key: K; count: number };
