@@ -40,12 +40,6 @@
       "url": "https://datacenterhawk.com/marketplace/providers/digital-realty/641-walsh-avenue/sjc37",
       "accessed": "2026-11-27"
     },
-    "dchawk-svy02a": {
-      "title": "STACK Infrastructure SVY02A, 1200 Memorex Dr",
-      "publisher": "datacenterHawk",
-      "url": "https://datacenterhawk.com/marketplace/providers/stack-infrastructure/1200-memorex-dr/svy02a",
-      "accessed": "2026-11-27"
-    },
     "stack-svy02-page": {
       "title": "Silicon Valley SVY02",
       "publisher": "STACK Infrastructure",
@@ -73,13 +67,6 @@
       "published": "2026-03-05",
       "accessed": "2026-11-27"
     },
-    "baaqmd-memorex-2020": {
-      "title": "Memorex Data Center, Notice of Preparation: comment letter",
-      "publisher": "Bay Area Air Quality Management District",
-      "url": "https://www.baaqmd.gov/~/media/files/planning-and-research/ceqa-letters/2020/comment-letter-for-memorex-data-center-nop-pdf.pdf",
-      "published": "2020-08-13",
-      "accessed": "2026-11-27"
-    },
     "ecl-csc1-release-2026-04": {
       "title": "ECL announces CSC-1, a 35MW FlexGrid data center in Santa Clara",
       "publisher": "ECL (press release on Business Wire)",
@@ -103,6 +90,85 @@
       "title": "Digital Realty jobs in Santa Clara, CA (Indeed search)",
       "publisher": "Indeed",
       "url": "https://www.indeed.com/jobs?q=Digital+Realty&l=Santa+Clara%2C+CA",
+      "accessed": "2026-11-27"
+    },
+    "cec-sj-data-center": {
+      "title": "San Jose Data Center (19-SPPE-04)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/san-jose-data-center",
+      "accessed": "2026-11-27"
+    },
+    "cec-sj04": {
+      "title": "San José Data Center 04 (22-SPPE-02)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/san-jose-data-center-04",
+      "accessed": "2026-11-27"
+    },
+    "cec-svy03a": {
+      "title": "STACK SVY03A Data Center Campus (23-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/stack-svy03a-data-center-campus",
+      "accessed": "2026-11-27"
+    },
+    "cec-northtown": {
+      "title": "NorthTown Backup Generating Facility (25-SPPE-02)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/northtown-backup-generating-facility",
+      "accessed": "2026-11-27"
+    },
+    "cec-bowers": {
+      "title": "Bowers Backup Generating Facility (22-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/bowers-backup-generating-facility",
+      "accessed": "2026-11-27"
+    },
+    "cec-laurelwood": {
+      "title": "Laurelwood Data Center (19-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/laurelwood-data-center",
+      "accessed": "2026-11-27"
+    },
+    "cec-ca3": {
+      "title": "CA3 Backup Generating Facility (21-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/ca3-backup-generating-facility",
+      "accessed": "2026-11-27"
+    },
+    "cec-walsh": {
+      "title": "Walsh Data Center (19-SPPE-02)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/walsh-data-center",
+      "accessed": "2026-11-27"
+    },
+    "cec-sequoia": {
+      "title": "Sequoia Data Center (19-SPPE-03)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/sequoia-data-center",
+      "accessed": "2026-11-27"
+    },
+    "cec-mission-college": {
+      "title": "Mission College Data Center (19-SPPE-05)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/mission-college-data-center",
+      "accessed": "2026-11-27"
+    },
+    "cec-martin": {
+      "title": "Martin Backup Generating Facility (22-SPPE-03)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/martin-backup-generating-facility-mbgf",
+      "accessed": "2026-11-27"
+    },
+    "cec-sc1": {
+      "title": "Santa Clara SC-1 Data Center (11-SPPE-01)",
+      "publisher": "California Energy Commission",
+      "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/santa-clara-sc-1-data-center",
+      "accessed": "2026-11-27"
+    },
+    "ceqanet-stack-tzp": {
+      "title": "STACK Trade Zone Park, Notice of Preparation of a Draft EIR (SCH 2022060141)",
+      "publisher": "California State Clearinghouse (CEQAnet)",
+      "url": "https://ceqanet.lci.ca.gov/2022060141",
+      "published": "2022-06-07",
       "accessed": "2026-11-27"
     }
   },
@@ -266,8 +332,7 @@
             "stack-svy02-page",
             "stack-svy02a-brochure"
           ],
-          "quote": "also designed for 48 megawatts",
-          "note": "datacenterHawk lists 42 MW"
+          "quote": "also designed for 48 megawatts"
         },
         "ai_use": {
           "value": "Built for AI-era workloads",
@@ -285,12 +350,6 @@
             "realdeal-2025-11"
           ],
           "quote": "committed power through Silicon Valley Power (SVP) for inital 12MW"
-        },
-        "address": {
-          "value": "1200 Memorex Dr, Santa Clara, CA",
-          "sources": [
-            "dchawk-svy02a"
-          ]
         },
         "owner": {
           "value": "Blue Owl Capital, which bought Stack in 2025",
@@ -344,26 +403,8 @@
           ],
           "quote": "Closed-loop water cooling systems provide optimal cooling for highdensity workloads",
           "note": "no water volume published"
-        },
-        "air_permit": {
-          "value": "24 diesel backup generators. The air district asked the city to study health risks, because homes are downwind.",
-          "sources": [
-            "baaqmd-memorex-2020"
-          ],
-          "quote": "concerned about the 24 diesel-fueled backup generators",
-          "note": "letter is about the Memorex Data Center at 1200-1300 Memorex Dr, matched to SVY02A by address"
         }
-      },
-      "documents": [
-        {
-          "title": "Air district comments on the Memorex Data Center plan (Aug 2020)",
-          "kind": "environmental_review",
-          "url": "https://www.baaqmd.gov/~/media/files/planning-and-research/ceqa-letters/2020/comment-letter-for-memorex-data-center-nop-pdf.pdf",
-          "sources": [
-            "baaqmd-memorex-2020"
-          ]
-        }
-      ]
+      }
     },
     {
       "id": "ecl-csc1",
@@ -484,6 +525,1455 @@
           "sources": [
             "autonocion-2026-07"
           ]
+        }
+      }
+    },
+    {
+      "id": "msft-sj-alviso-milpitas",
+      "name": "San Jose Data Center",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "approved",
+      "facts": {
+        "owner": {
+          "value": "Microsoft Corporation",
+          "sources": [
+            "cec-sj-data-center"
+          ]
+        },
+        "address": {
+          "value": "1657 Alviso-Milpitas Road, San Jose",
+          "sources": [
+            "cec-sj-data-center"
+          ]
+        },
+        "capacity_mw": {
+          "value": 99,
+          "sources": [
+            "cec-sj-data-center"
+          ],
+          "quote": "The maximum electrical load of the project would be up to 99 megawatts (MW)",
+          "note": "estimated load 77 MW"
+        },
+        "power_source": {
+          "value": "Backup: 224 renewable natural gas generators, plus two diesel generators",
+          "sources": [
+            "cec-sj-data-center"
+          ],
+          "quote": "224 0.45 MW renewable natural gas generators"
+        },
+        "energy_commission": {
+          "value": "Exemption adopted July 2022",
+          "sources": [
+            "cec-sj-data-center"
+          ]
+        }
+      }
+    },
+    {
+      "id": "msft-sj04",
+      "name": "San José Data Center 04",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "in_review",
+      "facts": {
+        "owner": {
+          "value": "Microsoft Corporation",
+          "sources": [
+            "cec-sj04"
+          ]
+        },
+        "operator": {
+          "value": "Microsoft",
+          "sources": [
+            "cec-sj04",
+            "compute-atlas-bay-area"
+          ]
+        },
+        "address": {
+          "value": "Orchard Parkway and Component Drive, San José",
+          "sources": [
+            "cec-sj04"
+          ]
+        },
+        "capacity_mw": {
+          "value": 97.8,
+          "sources": [
+            "cec-sj04",
+            "compute-atlas-bay-area"
+          ],
+          "quote": "The total maximum electrical demand of the project would be 97.8 megawatts (MW)."
+        },
+        "power_source": {
+          "value": "Backup: 32 diesel generators of 3 MW each, plus smaller units",
+          "sources": [
+            "cec-sj04"
+          ]
+        },
+        "energy_commission": {
+          "value": "Review in progress",
+          "sources": [
+            "cec-sj04"
+          ]
+        },
+        "status": {
+          "value": "Proposed",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "stack-svy03a",
+      "name": "SVY03A",
+      "city": "Hayward",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "approved",
+      "facts": {
+        "owner": {
+          "value": "STACK Infrastructure",
+          "sources": [
+            "cec-svy03a"
+          ]
+        },
+        "address": {
+          "value": "26203 Production Avenue, Hayward",
+          "sources": [
+            "cec-svy03a"
+          ]
+        },
+        "capacity_mw": {
+          "value": 76.6,
+          "sources": [
+            "cec-svy03a"
+          ],
+          "note": "backup generating capacity filed with the Energy Commission"
+        },
+        "power_source": {
+          "value": "Backup: 28 emergency generators",
+          "sources": [
+            "cec-svy03a"
+          ]
+        },
+        "energy_commission": {
+          "value": "Exemption granted",
+          "sources": [
+            "cec-svy03a"
+          ]
+        }
+      }
+    },
+    {
+      "id": "northtown",
+      "name": "NorthTown Data Center",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "in_review",
+      "facts": {
+        "owner": {
+          "value": "GIC San Jose, LLC",
+          "sources": [
+            "cec-northtown"
+          ]
+        },
+        "operator": {
+          "value": "Goodman Group",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "address": {
+          "value": "West Trimble Road and Orchard Parkway, San José",
+          "sources": [
+            "cec-northtown"
+          ]
+        },
+        "capacity_mw": {
+          "value": 97.3,
+          "sources": [
+            "cec-northtown",
+            "compute-atlas-bay-area"
+          ],
+          "note": "backup generating capacity filed with the Energy Commission"
+        },
+        "power_source": {
+          "value": "Backup: 42 diesel generators",
+          "sources": [
+            "cec-northtown"
+          ]
+        },
+        "energy_commission": {
+          "value": "Review in progress",
+          "sources": [
+            "cec-northtown"
+          ]
+        },
+        "status": {
+          "value": "Proposed",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "bowers",
+      "name": "Bowers Data Center",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "approved",
+      "facts": {
+        "owner": {
+          "value": "GI Partners",
+          "sources": [
+            "cec-bowers"
+          ]
+        },
+        "operator": {
+          "value": "CoreSite",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "address": {
+          "value": "2805 Bowers Avenue, Santa Clara",
+          "sources": [
+            "cec-bowers"
+          ]
+        },
+        "capacity_mw": {
+          "value": 72,
+          "sources": [
+            "cec-bowers",
+            "compute-atlas-bay-area"
+          ],
+          "note": "backup generating capacity filed with the Energy Commission"
+        },
+        "power_source": {
+          "value": "Backup: 32 diesel generators",
+          "sources": [
+            "cec-bowers"
+          ]
+        },
+        "energy_commission": {
+          "value": "Exemption granted",
+          "sources": [
+            "cec-bowers"
+          ]
+        },
+        "status": {
+          "value": "Permitted",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "laurelwood",
+      "name": "Laurelwood Data Center",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "owner": {
+          "value": "MECP1 Santa Clara 1, LLC",
+          "sources": [
+            "cec-laurelwood"
+          ]
+        },
+        "operator": {
+          "value": "EdgeCore Digital Infrastructure",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 99,
+          "sources": [
+            "cec-laurelwood"
+          ],
+          "quote": "The maximum electrical load of the LDC would be 99 MW",
+          "note": "Compute Atlas lists 72 MW"
+        },
+        "power_source": {
+          "value": "Backup: 56 diesel generators of 3 MW each",
+          "sources": [
+            "cec-laurelwood"
+          ]
+        },
+        "energy_commission": {
+          "value": "Exemption approved February 2020",
+          "sources": [
+            "cec-laurelwood"
+          ]
+        },
+        "status": {
+          "value": "Operating",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "vantage-ca3",
+      "name": "CA3",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "owner": {
+          "value": "Vantage",
+          "sources": [
+            "cec-ca3"
+          ]
+        },
+        "operator": {
+          "value": "Vantage Data Centers",
+          "sources": [
+            "cec-ca3",
+            "compute-atlas-bay-area"
+          ]
+        },
+        "address": {
+          "value": "2590 Walsh Avenue, Santa Clara",
+          "sources": [
+            "cec-ca3"
+          ]
+        },
+        "capacity_mw": {
+          "value": 96,
+          "sources": [
+            "cec-ca3"
+          ],
+          "note": "backup generating capacity filed with the Energy Commission; Compute Atlas lists 64 MW"
+        },
+        "power_source": {
+          "value": "Backup: 44 diesel generators",
+          "sources": [
+            "cec-ca3"
+          ]
+        },
+        "energy_commission": {
+          "value": "Exemption approved August 2022",
+          "sources": [
+            "cec-ca3"
+          ]
+        },
+        "status": {
+          "value": "Operating",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "sequoia",
+      "name": "Sequoia Data Center",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "approved",
+      "facts": {
+        "owner": {
+          "value": "Tishman Speyer, which bought the site from CyrusOne in July 2026",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "address": {
+          "value": "2600 De La Cruz Boulevard, Santa Clara",
+          "sources": [
+            "cec-sequoia",
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 96.5,
+          "sources": [
+            "cec-sequoia"
+          ],
+          "note": "Energy Commission filing; Compute Atlas lists 67.5 MW"
+        },
+        "power_source": {
+          "value": "Backup: 54 diesel generators",
+          "sources": [
+            "cec-sequoia"
+          ]
+        },
+        "energy_commission": {
+          "value": "Exemption granted",
+          "sources": [
+            "cec-sequoia"
+          ]
+        },
+        "status": {
+          "value": "Permitted",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "walsh",
+      "name": "Walsh Data Center",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "approved",
+      "facts": {
+        "owner": {
+          "value": "651 Walsh Partners, LLC",
+          "sources": [
+            "cec-walsh"
+          ]
+        },
+        "address": {
+          "value": "651 Walsh Avenue, Santa Clara",
+          "sources": [
+            "cec-walsh"
+          ]
+        },
+        "capacity_mw": {
+          "value": 98,
+          "sources": [
+            "cec-walsh"
+          ],
+          "note": "backup generating capacity; maximum building load 80 MW"
+        },
+        "power_source": {
+          "value": "Backup: 32 diesel generators of 3 MW each, plus one 2 MW generator",
+          "sources": [
+            "cec-walsh"
+          ]
+        },
+        "energy_commission": {
+          "value": "Exemption granted",
+          "sources": [
+            "cec-walsh"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mission-college",
+      "name": "Mission College Data Center",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "approved",
+      "facts": {
+        "owner": {
+          "value": "Oppidan",
+          "sources": [
+            "cec-mission-college"
+          ]
+        },
+        "address": {
+          "value": "2305 Mission College Boulevard, Santa Clara",
+          "sources": [
+            "cec-mission-college"
+          ]
+        },
+        "capacity_mw": {
+          "value": 78.1,
+          "sources": [
+            "cec-mission-college"
+          ],
+          "note": "backup generating capacity filed with the Energy Commission"
+        },
+        "power_source": {
+          "value": "Backup: 43 diesel generators of 2.5 MW each",
+          "sources": [
+            "cec-mission-college"
+          ]
+        },
+        "energy_commission": {
+          "value": "Exemption granted",
+          "sources": [
+            "cec-mission-college"
+          ]
+        }
+      }
+    },
+    {
+      "id": "martin",
+      "name": "Martin Data Center",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "approved",
+      "facts": {
+        "owner": {
+          "value": "Martin Avenue Properties, LLC",
+          "sources": [
+            "cec-martin"
+          ]
+        },
+        "address": {
+          "value": "651 Martin Avenue, Santa Clara",
+          "sources": [
+            "cec-martin"
+          ]
+        },
+        "capacity_mw": {
+          "value": 96,
+          "sources": [
+            "cec-martin"
+          ],
+          "note": "backup generating capacity filed with the Energy Commission"
+        },
+        "power_source": {
+          "value": "Backup: 44 diesel generators",
+          "sources": [
+            "cec-martin"
+          ]
+        },
+        "energy_commission": {
+          "value": "Exemption granted",
+          "sources": [
+            "cec-martin"
+          ]
+        }
+      }
+    },
+    {
+      "id": "sc1",
+      "name": "SC-1",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "owner": {
+          "value": "Xeres Ventures, LLC, a DuPont Fabros Technology subsidiary (as filed)",
+          "sources": [
+            "cec-sc1"
+          ]
+        },
+        "address": {
+          "value": "555 Reed Street, Santa Clara",
+          "sources": [
+            "cec-sc1"
+          ]
+        },
+        "capacity_mw": {
+          "value": 72,
+          "sources": [
+            "cec-sc1"
+          ],
+          "note": "backup generating capacity filed with the Energy Commission"
+        },
+        "energy_commission": {
+          "value": "Exemption approved March 2012",
+          "sources": [
+            "cec-sc1"
+          ]
+        },
+        "status": {
+          "value": "Online since 2015",
+          "sources": [
+            "cec-sc1"
+          ],
+          "note": "per the Energy Commission"
+        }
+      }
+    },
+    {
+      "id": "stack-trade-zone-park",
+      "name": "Trade Zone Park",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "approved",
+      "facts": {
+        "operator": {
+          "value": "Stack Infrastructure",
+          "sources": [
+            "ceqanet-stack-tzp",
+            "compute-atlas-bay-area"
+          ]
+        },
+        "address": {
+          "value": "2400 Ringwood Avenue and 1849 Fortune Drive, San Jose",
+          "sources": [
+            "ceqanet-stack-tzp"
+          ]
+        },
+        "capacity_mw": {
+          "value": 90,
+          "sources": [
+            "ceqanet-stack-tzp",
+            "compute-atlas-bay-area"
+          ],
+          "quote": "a 90 MW backup generating facility"
+        },
+        "power_source": {
+          "value": "Backup: 36 diesel generators of 3 MW each, plus two 1 MW",
+          "sources": [
+            "ceqanet-stack-tzp"
+          ]
+        },
+        "environmental_review": {
+          "value": "Draft environmental impact report started June 2022, with the Energy Commission as lead agency",
+          "sources": [
+            "ceqanet-stack-tzp"
+          ]
+        },
+        "status": {
+          "value": "Permitted",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "prologis-stem-park",
+      "name": "STEM Park",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "proposed",
+      "facts": {
+        "operator": {
+          "value": "Prologis",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 396,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "address": {
+          "value": "Zanker Road, San Jose",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "status": {
+          "value": "Proposed",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "google-disk-drive",
+      "name": "Disk Drive Compute Campus",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "proposed",
+      "facts": {
+        "operator": {
+          "value": "Google",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 250,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "address": {
+          "value": "5079–5087 Disk Drive, San Jose",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "status": {
+          "value": "Proposed",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "westbank-terraine",
+      "name": "323 Terraine Street Data Center",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "proposed",
+      "facts": {
+        "operator": {
+          "value": "Westbank",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 200,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "address": {
+          "value": "323 Terraine Street, San Jose",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "status": {
+          "value": "Proposed",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "menlo-great-oaks",
+      "name": "5601 Great Oaks Parkway Data Center",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "proposed",
+      "facts": {
+        "operator": {
+          "value": "Menlo Equities",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 100,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "address": {
+          "value": "5601 Great Oaks Parkway, San Jose",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "status": {
+          "value": "Proposed",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "stack-svy01",
+      "name": "SVY01",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "operator": {
+          "value": "Stack Infrastructure",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 100,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "status": {
+          "value": "Operational",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "prologis-charcot",
+      "name": "326 Charcot Avenue Data Center",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "proposed",
+      "facts": {
+        "operator": {
+          "value": "Prologis",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 99,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "address": {
+          "value": "326 Charcot Avenue, San Jose",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "status": {
+          "value": "Proposed",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "prologis-silver-creek",
+      "name": "Silver Creek Valley Road Data Center",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "proposed",
+      "facts": {
+        "operator": {
+          "value": "Prologis",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 99,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "status": {
+          "value": "Proposed",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "aws-gilroy",
+      "name": "Gilroy Data Center",
+      "city": "Gilroy",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "under_construction",
+      "facts": {
+        "operator": {
+          "value": "Amazon Web Services",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 98,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "status": {
+          "value": "Under construction",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "valley-oak-shinn",
+      "name": "Shinn Street Data Center",
+      "city": "Fremont",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "proposed",
+      "facts": {
+        "operator": {
+          "value": "Valley Oak Partners",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 90,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "status": {
+          "value": "Proposed",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "llnl-lcc",
+      "name": "Livermore Computing Center",
+      "city": "Livermore",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "operator": {
+          "value": "Lawrence Livermore National Laboratory",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 85,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "status": {
+          "value": "Operational",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "vantage-ca1",
+      "name": "CA1",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "operator": {
+          "value": "Vantage Data Centers",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 77,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "status": {
+          "value": "Operational",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "vantage-ca2",
+      "name": "CA2",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "operator": {
+          "value": "Vantage Data Centers",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 75,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "status": {
+          "value": "Operational",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "dlr-sjc36",
+      "name": "SJC36 (Lafayette Data Center)",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "approved",
+      "facts": {
+        "operator": {
+          "value": "Digital Realty",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 66,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "address": {
+          "value": "2825 Lafayette Street, Santa Clara",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "status": {
+          "value": "Permitted",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "skybox-memorex",
+      "name": "Skybox Santa Clara",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "under_construction",
+      "facts": {
+        "operator": {
+          "value": "Skybox Datacenters",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 60,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "address": {
+          "value": "1200 Memorex Drive, Santa Clara",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "status": {
+          "value": "Under construction",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "hines-hayward-92",
+      "name": "Hayward Exchange @92",
+      "city": "Hayward",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "operator": {
+          "value": "Hines",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 49,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "status": {
+          "value": "Operational",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "menlo-digital-sv1",
+      "name": "MD-SV1",
+      "city": "Sunnyvale",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "proposed",
+      "facts": {
+        "operator": {
+          "value": "Menlo Digital",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 49,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "address": {
+          "value": "888–894 Ross Drive, Sunnyvale",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "status": {
+          "value": "Proposed",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "prologis-rue-ferrari",
+      "name": "5853 Rue Ferrari",
+      "city": "San Jose",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "approved",
+      "facts": {
+        "operator": {
+          "value": "Prologis",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 49,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "address": {
+          "value": "5853 Rue Ferrari, San Jose",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "status": {
+          "value": "Permitted",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "csquare-sfo2",
+      "name": "SFO2",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "operator": {
+          "value": "Csquare",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 43.2,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "status": {
+          "value": "Operational",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "csquare-sfo4",
+      "name": "SFO4",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "operator": {
+          "value": "Csquare",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 43.1,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "status": {
+          "value": "Operational",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "aws-sf011",
+      "name": "SF011",
+      "city": "Hayward",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "operator": {
+          "value": "Amazon Web Services",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 35,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "address": {
+          "value": "26415 Corporate Avenue, Hayward",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "status": {
+          "value": "Operational",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "csquare-sfo1",
+      "name": "SFO1",
+      "city": "Santa Clara",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "operator": {
+          "value": "Csquare",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 34.5,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "status": {
+          "value": "Operational",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
+        }
+      }
+    },
+    {
+      "id": "aws-sf09",
+      "name": "SF09",
+      "city": "Hayward",
+      "location": {
+        "lat": null,
+        "lon": null,
+        "precision": "city"
+      },
+      "stage": "operating",
+      "facts": {
+        "operator": {
+          "value": "Amazon Web Services",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "capacity_mw": {
+          "value": 24,
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "Compute Atlas list; it doesn't say whether this is IT or total power"
+        },
+        "address": {
+          "value": "26464 Corporate Avenue, Hayward",
+          "sources": [
+            "compute-atlas-bay-area"
+          ]
+        },
+        "status": {
+          "value": "Operational",
+          "sources": [
+            "compute-atlas-bay-area"
+          ],
+          "note": "per Compute Atlas"
         }
       }
     }

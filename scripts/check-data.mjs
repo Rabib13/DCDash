@@ -11,6 +11,9 @@ export const STAGES = new Set([
   "operating",
 ]);
 
+/** Sites larger than this go on the map even without AI evidence (Rabib, 2026-11-27). */
+export const MIN_MW = 20;
+
 const TRACKING_HOSTS = new Set(["to.indeed.com"]);
 const TRACKING_PARAMS = ["from", "utm_source", "utm_medium", "utm_campaign", "tk"];
 
@@ -54,7 +57,10 @@ export function checkData(data) {
     ids.add(site.id);
     if (!site.name || !site.city) errors.push(`${where}: needs a name and city`);
     if (!STAGES.has(site.stage)) errors.push(`${where}: unknown stage "${site.stage}"`);
-    if (!site.facts?.ai_use) errors.push(`${where}: no ai_use fact. Only sites a source ties to AI belong on the map`);
+    const mw = site.facts?.capacity_mw?.value;
+    if (site.facts?.capacity_mw && typeof mw !== "number") errors.push(`${where}: capacity_mw must be a number`);
+    if (!site.facts?.ai_use && !(typeof mw === "number" && mw > MIN_MW))
+      errors.push(`${where}: only sites over ${MIN_MW} MW, or tied to AI by a source, belong on the map`);
     for (const [name, fact] of Object.entries(site.facts ?? {})) {
       if (fact.value === undefined || fact.value === null || fact.value === "") errors.push(`${where}.${name}: empty value`);
       checkRefs(`${where}.${name}`, fact.sources);

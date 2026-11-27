@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import data from "../../data/sites.json" with { type: "json" };
+import { CITY_CENTER as CENTERS } from "../../lib/sites";
 
 // Map tiles come from a third-party server. Serve a blank style so tests don't depend on it.
 const BLANK_STYLE = { version: 8, sources: {}, layers: [{ id: "bg", type: "background", paint: { "background-color": "#f2efe8" } }] };
@@ -17,6 +18,9 @@ async function openMap(page: Page) {
 }
 
 async function openSite(page: Page, name: string) {
+  // Many sites share a city, so zoom into the city first, as a visitor would.
+  const city = data.sites.find((s) => s.name === name)!.city;
+  await page.evaluate((c) => (window as unknown as { __dcMap: { jumpTo: (o: object) => void } }).__dcMap.jumpTo({ center: c, zoom: 12 }), centerOf(city));
   await page.getByRole("button", { name: new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")},`) }).click();
   await expect(page.getByRole("complementary", { name: `${name} details` })).toBeVisible();
 }
@@ -24,7 +28,7 @@ async function openSite(page: Page, name: string) {
 test("the map shows one marker per site and a legend", async ({ page }) => {
   const errors = await openMap(page);
   await expect(page.getByText("Operating", { exact: true })).toBeVisible();
-  await expect(page.getByText(`${data.sites.length} AI sites`)).toBeVisible();
+  await expect(page.getByText(`${data.sites.length} sites`)).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -113,4 +117,54 @@ for (const font of ["Inter", "DejaVu Sans"]) {
       expect(await tab.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), await tab.innerText()).toBe(true);
     }
   });
+}
+
+test("a big site with no AI source says so instead of guessing", async ({ page }) => {
+  await openMap(page);
+  await openSite(page, "Walsh Data Center");
+  const ai = page.locator(".fact", { hasText: "AI use" });
+  await expect(ai).toContainText("Not disclosed yet");
+  await expect(page.locator(".fact", { hasText: "Size (MW)" })).toContainText("98");
+  await expect(page.getByText("Owned by 651 Walsh Partners, LLC")).toBeVisible();
+});
+
+test("a site with no named operator explains why it has no openings", async ({ page }) => {
+  await openMap(page);
+  await openSite(page, "Walsh Data Center");
+  await page.getByRole("tab", { name: "Jobs" }).click();
+  await expect(page.getByText(/don't name who runs this site/)).toBeVisible();
+  await expect(page.getByRole("link", { name: "near Santa Clara" }).first()).toBeVisible();
+});
+
+test("Energy Commission filings show on the Environment tab", async ({ page }) => {
+  await openMap(page);
+  await openSite(page, "CA3");
+  await page.getByRole("tab", { name: "Environment" }).click();
+  const cec = page.locator(".fact", { hasText: "Energy Commission" });
+  await expect(cec).toContainText("Exemption approved August 2022");
+  await expect(cec.getByRole("link", { name: "California Energy Commission" })).toHaveAttribute("href", /energy\.ca\.gov/);
+});
+
+test("every marker can be clicked once you zoom into its city", async ({ page }) => {
+  test.setTimeout(120_000);
+  await openMap(page);
+  const cities = [...new Set(data.sites.map((s) => s.city))];
+  for (const city of cities) {
+    const names = data.sites.filter((s) => s.city === city).map((s) => s.name);
+    // Zoom so the city fills the view, the way a visitor would.
+    await page.evaluate((c) => (window as unknown as { __dcMap: { jumpTo: (o: object) => void } }).__dcMap.jumpTo({ center: c, zoom: 12 }), centerOf(city));
+    for (const name of names) {
+      const marker = page.getByRole("button", { name: new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")},`) });
+      const box = await marker.boundingBox();
+      expect(box, `${name} is on screen`).not.toBeNull();
+      const hit = await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest(".marker")?.getAttribute("aria-label") ?? "", [box!.x + box!.width / 2, box!.y + box!.height / 2]);
+      expect(hit, `${name} is not covered by another marker`).toMatch(new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")},`));
+    }
+  }
+});
+
+function centerOf(city: string): [number, number] {
+  const site = data.sites.find((s) => s.city === city)!;
+  // Sites without an address sit at the city center; read it from the first such site's marker data.
+  return CENTERS[city] ?? [site.location.lon ?? -122.2, site.location.lat ?? 37.6];
 }

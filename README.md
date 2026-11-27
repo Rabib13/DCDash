@@ -1,6 +1,6 @@
 # DC Dash (working name)
 
-A map of AI data centers in California, starting with the Bay Area. For each site it shows what is built or planned, where the water and power come from, the public documents, the jobs it creates, and what the community gets back.
+A map of large and AI data centers in California, starting with the Bay Area. For each site it shows what is built or planned, where the water and power come from, the public documents, the jobs it creates, and what the community gets back.
 
 **The rule:** every fact on the site links to the source it came from, and carries a confidence label:
 
@@ -8,7 +8,7 @@ A map of AI data centers in California, starting with the Bay Area. For each sit
 - `reported` — one source
 - `not_disclosed` — no public source found
 
-Only sites where a source says the facility runs or is built for AI / GPU workloads appear on the map.
+A site appears on the map when a source puts it over 20 MW, or when a source ties it to AI / GPU workloads. Each card says whether a source ties the site to AI, or shows "Not disclosed yet".
 
 ## Status
 
@@ -36,8 +36,8 @@ New code starts with a failing test.
 ## Data
 
 - `data/sites.json` is what the map shows. Each fact lists the keys of the sources it came from. The app works out the confidence label from how many different publishers back it.
-- `npm run validate` fails if a fact has no source, a source is missing, or a site has no `ai_use` fact.
+- `npm run validate` fails if a fact has no source, a source is missing, or a site is neither over 20 MW nor tied to AI by a source.
 - Sites with no sourced address are drawn at their city center, and the site card says so.
-- `data/candidates/` holds sites found in public filings that have no source yet tying them to AI. They stay off the map until one turns up.
+- Sites come from California Energy Commission filings (backup generator exemptions), state environmental review records, and the Compute Atlas Bay Area list, cross-checked where more than one covers a site.
 
 The map uses free [OpenFreeMap](https://openfreemap.org) tiles with [MapLibre](https://maplibre.org).

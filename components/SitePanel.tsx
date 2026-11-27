@@ -9,6 +9,7 @@ import {
   factSection,
   SECTION_EXPECTED,
   SECTION_LABEL,
+  runBy,
   sitePosition,
   stageGroup,
   STAGE_LABEL,
@@ -56,11 +57,14 @@ function MissingRow({ name }: { name: string }) {
   );
 }
 
-function JobsSection({ site, operator }: { site: Site; operator: string }) {
-  const op = dataset.operators[operator];
+function JobsSection({ site, operator }: { site: Site; operator: string | null }) {
+  const op = operator ? dataset.operators[operator] : undefined;
   const { near, elsewhere } = splitByDistance(site.city, op?.openings?.items ?? []);
   return (
     <>
+      {!operator ? (
+        <p className="note">Public sources don&apos;t name who runs this site yet, so we can&apos;t list its openings.</p>
+      ) : (
       <section>
         <h3>Openings at {operator} near this site</h3>
         {op?.careersNote ? (
@@ -98,6 +102,7 @@ function JobsSection({ site, operator }: { site: Site; operator: string }) {
           </>
         )}
       </section>
+      )}
       <section>
         <h3>Data center jobs anywhere</h3>
         <p className="muted">Common roles at data centers, across all operators.</p>
@@ -129,14 +134,15 @@ export default function SitePanel({ site, onClose }: { site: Site; onClose: () =
   const [tab, setTab] = useState<Section>("overview");
   useEffect(() => setTab("overview"), [site.id]);
 
-  const operator = site.facts.operator ? String(site.facts.operator.value) : "Operator not disclosed";
+  const who = runBy(site);
+  const operator = site.facts.operator ? String(site.facts.operator.value) : null;
   const { approximate } = sitePosition(site, dataset.sites);
   const order = Object.keys(FACT_LABEL);
   const rank = (k: string) => (order.includes(k) ? order.indexOf(k) : order.length);
   const entries = Object.entries(site.facts)
     .filter(([k]) => factSection(k) === tab)
     .sort(([a], [b]) => rank(a) - rank(b));
-  const missing = tab === "overview" ? [] : SECTION_EXPECTED[tab].filter((k) => !site.facts[k]);
+  const missing = SECTION_EXPECTED[tab].filter((k) => !site.facts[k]);
   const docs = tab === "environment" ? site.documents ?? [] : [];
   const usedSources = Array.from(
     new Set([
@@ -151,7 +157,7 @@ export default function SitePanel({ site, onClose }: { site: Site; onClose: () =
         <div>
           <h2>{site.name}</h2>
           <p className="muted">
-            Run by {operator} · {site.city}
+            {who ? `${who.label} ${who.name}` : "Operator not disclosed"} · {site.city}
           </p>
         </div>
         <button type="button" className="close" onClick={onClose} aria-label="Close site details">
