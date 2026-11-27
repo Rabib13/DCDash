@@ -93,12 +93,6 @@
       "url": "https://convergedigest.com/ecl-unveils-35mw-flexgrid-data-center-in-santa-clara-to-tackle-ai-power-constraints/",
       "accessed": "2026-11-27"
     },
-    "ecl-lever": {
-      "title": "ECL job openings",
-      "publisher": "ECL",
-      "url": "https://jobs.lever.co/ecldc",
-      "accessed": "2026-11-27"
-    },
     "stack-careers": {
       "title": "Careers at STACK",
       "publisher": "STACK Infrastructure",
@@ -114,56 +108,7 @@
   },
   "operators": {
     "ECL": {
-      "careers": {
-        "url": "https://jobs.lever.co/ecldc",
-        "sources": [
-          "ecl-lever"
-        ]
-      },
-      "openings": {
-        "checked": "2026-11-27",
-        "sources": [
-          "ecl-lever"
-        ],
-        "items": [
-          {
-            "title": "Data Center Operation - Engineer",
-            "location": "Mountain View, CA",
-            "team": "Data Center Operations",
-            "url": "https://jobs.lever.co/ecldc/a2c77d43-98d0-4994-a33b-0b4a9d2188ad"
-          },
-          {
-            "title": "Data Center Operation Tech",
-            "location": "Mountain View, CA",
-            "team": "Data Center Operations",
-            "url": "https://jobs.lever.co/ecldc/6a207176-3493-4067-bcf5-576e16e0b625"
-          },
-          {
-            "title": "Data Center Cooling and Thermodynamics Engineer",
-            "location": "Mountain View, CA",
-            "team": "Engineering",
-            "url": "https://jobs.lever.co/ecldc/1cfaa4d7-2429-444d-b347-626df1a4a541"
-          },
-          {
-            "title": "Senior Electrical Power Engineering",
-            "location": "Mountain View, CA",
-            "team": "Engineering",
-            "url": "https://jobs.lever.co/ecldc/2fdcfc1d-ff23-48b1-b364-87ed168270bb"
-          },
-          {
-            "title": "Staff Software Engineer- Individual contributor",
-            "location": "Mountain View, CA",
-            "team": "Engineering",
-            "url": "https://jobs.lever.co/ecldc/75a21650-d848-4625-8668-fef182115153"
-          },
-          {
-            "title": "Senior Manager, Global Supply Chain & Procurement - Individual Contributor role",
-            "location": "Mountain View, CA",
-            "team": "Sourcing / Procurement",
-            "url": "https://jobs.lever.co/ecldc/ee48e465-0e6d-49dc-a89a-6cc20e6ac7e1"
-          }
-        ]
-      }
+      "careersNote": "ECL's public job board (jobs.lever.co/ecldc) returned \"not found\" when we checked on 2026-11-27, so we can't link to its openings right now."
     },
     "Stack Infrastructure": {
       "careers": {
@@ -189,7 +134,7 @@
           {
             "title": "Manager Engineering Operations",
             "location": "Santa Clara, CA",
-            "url": "https://to.indeed.com/aawkzdcsy6zd"
+            "url": "https://www.indeed.com/viewjob?jk=0f5d217fcce4fb91"
           }
         ]
       }

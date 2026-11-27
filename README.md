@@ -21,7 +21,17 @@ npm install
 npm run dev        # http://localhost:3000
 npm run validate   # checks data/sites.json against the sourcing rules
 npm run build      # validate + production build
+npm test           # unit tests, data check, build, then browser tests
+npm run check-links  # opens every source, careers and job link and fails on dead ones
 ```
+
+## Tests
+
+New code starts with a failing test.
+
+- `tests/unit/` (Vitest): the sourcing rules (`scripts/check-data.mjs`), confidence labels, map positions, tab grouping, job matching and search links, and the link checker. It also runs the rules against the real `data/sites.json`.
+- `tests/e2e/` (Playwright, desktop and phone): the map loads, every site's five tabs open without errors, every link is https and opens in a new tab, a job link really opens, and missing facts say "Not disclosed yet". Map tiles and outside pages are stubbed, so the tests never touch the internet.
+- GitHub Actions runs `npm test` on every pull request. `npm run check-links` runs on data changes and every Monday, because job postings close.
 
 ## Data
 

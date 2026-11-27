@@ -52,6 +52,8 @@ export type JobOpening = {
 };
 
 export type Operator = {
+  /** Shown instead of jobs when the operator's job board can't be linked, e.g. it is down. */
+  careersNote?: string;
   /** The operator's own careers page or job board. */
   careers?: { url: string; sources: string[] };
   /** Snapshot of openings read from the careers page. Always link out for the live list. */

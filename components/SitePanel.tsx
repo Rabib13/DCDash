@@ -14,6 +14,7 @@ import {
   STAGE_LABEL,
   type Section,
 } from "@/lib/sites";
+import { jobSearchUrl, ROLE_SEARCHES, splitByDistance } from "@/lib/jobs";
 import type { Fact, Site } from "@/lib/types";
 
 const SECTIONS: Section[] = ["overview", "power", "environment", "jobs", "community"];
@@ -55,71 +56,64 @@ function MissingRow({ name }: { name: string }) {
   );
 }
 
-function jobSearchUrl(q: string, l: string) {
-  return `https://www.indeed.com/jobs?q=${encodeURIComponent(q)}&l=${encodeURIComponent(l)}`;
-}
-
 function JobsSection({ site, operator }: { site: Site; operator: string }) {
   const op = dataset.operators[operator];
-  const near = (op?.openings?.items ?? []).filter((j) => j.location.startsWith(site.city) || isNearby(site.city, j.location));
-  const elsewhere = (op?.openings?.items ?? []).filter((j) => !near.includes(j));
+  const { near, elsewhere } = splitByDistance(site.city, op?.openings?.items ?? []);
   return (
     <>
       <section>
         <h3>Openings at {operator} near this site</h3>
-        {near.length > 0 ? (
-          <ul className="jobs">
-            {near.map((j) => (
-              <li key={j.url}>
-                <a href={j.url} target="_blank" rel="noopener noreferrer">
-                  {j.title}
-                </a>
-                <span className="muted">
-                  {j.location}
-                  {j.team ? ` · ${j.team}` : ""}
-                </span>
-              </li>
-            ))}
-          </ul>
+        {op?.careersNote ? (
+          <p className="note">{op.careersNote}</p>
         ) : (
-          <p className="note">No openings near this site found on {operator}&apos;s job board when we last checked.</p>
-        )}
-        {elsewhere.length > 0 && <p className="muted">{elsewhere.length} more {operator} openings in other places.</p>}
-        {op?.openings && (
-          <p className="muted">
-            Checked {op.openings.checked}. Openings change often, so use the link below for the live list.
-          </p>
-        )}
-        {op?.careers ? (
-          <a className="button" href={op.careers.url} target="_blank" rel="noopener noreferrer">
-            All {operator} jobs
-          </a>
-        ) : (
-          <p className="note">We haven&apos;t verified {operator}&apos;s careers page yet.</p>
+          <>
+            {near.length > 0 ? (
+              <ul className="jobs">
+                {near.map((j) => (
+                  <li key={j.url}>
+                    <a href={j.url} target="_blank" rel="noopener noreferrer">
+                      {j.title}
+                    </a>
+                    <span className="muted">
+                      {j.location}
+                      {j.team ? ` · ${j.team}` : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="note">No openings near this site found when we last checked.</p>
+            )}
+            {elsewhere.length > 0 && <p className="muted">{elsewhere.length} more {operator} openings in other places.</p>}
+            {op?.openings && (
+              <p className="muted">Checked {op.openings.checked}. Openings change often, so use the link below for the live list.</p>
+            )}
+            {op?.careers ? (
+              <a className="button" href={op.careers.url} target="_blank" rel="noopener noreferrer">
+                All {operator} jobs
+              </a>
+            ) : (
+              <p className="note">We haven&apos;t verified {operator}&apos;s careers page yet.</p>
+            )}
+          </>
         )}
       </section>
       <section>
         <h3>Data center jobs anywhere</h3>
         <p className="muted">Common roles at data centers, across all operators.</p>
         <ul className="jobs">
-          {[
-            ["Data center technician", "Data center technician"],
-            ["Critical facilities engineer", "Critical facilities engineer"],
-            ["Electrician", "Data center electrician"],
-            ["HVAC and cooling technician", "Data center HVAC"],
-            ["Construction", "Data center construction"],
-          ].map(([label, q]) => (
+          {ROLE_SEARCHES.map(({ label, query }) => (
             <li key={label}>
               {label}:{" "}
-              <a href={jobSearchUrl(q, `${site.city}, CA`)} target="_blank" rel="noopener noreferrer">
+              <a href={jobSearchUrl(query, `${site.city}, CA`)} target="_blank" rel="noopener noreferrer">
                 near {site.city}
               </a>
               {" · "}
-              <a href={jobSearchUrl(q, "remote")} target="_blank" rel="noopener noreferrer">
+              <a href={jobSearchUrl(query, "remote")} target="_blank" rel="noopener noreferrer">
                 remote
               </a>
               {" · "}
-              <a href={jobSearchUrl(q, "")} target="_blank" rel="noopener noreferrer">
+              <a href={jobSearchUrl(query, "")} target="_blank" rel="noopener noreferrer">
                 anywhere in the US
               </a>
             </li>
@@ -129,15 +123,6 @@ function JobsSection({ site, operator }: { site: Site; operator: string }) {
       </section>
     </>
   );
-}
-
-/** Cities close enough to count as "near" each other for job listings. */
-const NEARBY: Record<string, string[]> = {
-  "Santa Clara": ["San Jose", "Sunnyvale", "Mountain View", "Milpitas", "Cupertino"],
-  "Mountain View": ["Sunnyvale", "Palo Alto", "Santa Clara", "Los Altos"],
-};
-function isNearby(city: string, location: string) {
-  return (NEARBY[city] ?? []).some((c) => location.startsWith(c));
 }
 
 export default function SitePanel({ site, onClose }: { site: Site; onClose: () => void }) {
