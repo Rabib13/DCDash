@@ -8,6 +8,7 @@ export const STAGES = new Set([
   "approved",
   "under_construction",
   "built_not_energized",
+  "built",
   "operating",
 ]);
 

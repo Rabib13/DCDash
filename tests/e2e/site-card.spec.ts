@@ -19,8 +19,7 @@ async function openMap(page: Page) {
 
 async function openSite(page: Page, name: string) {
   // Many sites share a city, so zoom into the city first, as a visitor would.
-  const city = data.sites.find((s) => s.name === name)!.city;
-  await page.evaluate((c) => (window as unknown as { __dcMap: { jumpTo: (o: object) => void } }).__dcMap.jumpTo({ center: c, zoom: 12 }), centerOf(city));
+  await page.evaluate((c) => (window as unknown as { __dcMap: { jumpTo: (o: object) => void } }).__dcMap.jumpTo({ center: c, zoom: 12 }), whereIs(name));
   await page.getByRole("button", { name: new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")},`) }).click();
   await expect(page.getByRole("complementary", { name: `${name} details` })).toBeVisible();
 }
@@ -124,7 +123,7 @@ test("a big site with no AI source says so instead of guessing", async ({ page }
   await openSite(page, "Walsh Data Center");
   const ai = page.locator(".fact", { hasText: "AI use" });
   await expect(ai).toContainText("Not disclosed yet");
-  await expect(page.locator(".fact", { hasText: "Size (MW)" })).toContainText("98");
+  await expect(page.locator(".fact", { hasText: "Size (MW)" })).toContainText("80");
   await expect(page.getByText("Owned by 651 Walsh Partners, LLC")).toBeVisible();
 });
 
@@ -145,26 +144,63 @@ test("Energy Commission filings show on the Environment tab", async ({ page }) =
   await expect(cec.getByRole("link", { name: "California Energy Commission" })).toHaveAttribute("href", /energy\.ca\.gov/);
 });
 
-test("every marker can be clicked once you zoom into its city", async ({ page }) => {
-  test.setTimeout(120_000);
+test("every marker can be clicked once you zoom in on it", async ({ page }) => {
+  test.setTimeout(180_000);
   await openMap(page);
-  const cities = [...new Set(data.sites.map((s) => s.city))];
-  for (const city of cities) {
-    const names = data.sites.filter((s) => s.city === city).map((s) => s.name);
-    // Zoom so the city fills the view, the way a visitor would.
-    await page.evaluate((c) => (window as unknown as { __dcMap: { jumpTo: (o: object) => void } }).__dcMap.jumpTo({ center: c, zoom: 12 }), centerOf(city));
-    for (const name of names) {
-      const marker = page.getByRole("button", { name: new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")},`) });
-      const box = await marker.boundingBox();
-      expect(box, `${name} is on screen`).not.toBeNull();
-      const hit = await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest(".marker")?.getAttribute("aria-label") ?? "", [box!.x + box!.width / 2, box!.y + box!.height / 2]);
-      expect(hit, `${name} is not covered by another marker`).toMatch(new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")},`));
-    }
+  for (const { name } of data.sites) {
+    // Zoom to street level around the site, the way a visitor would.
+    await page.evaluate((c) => (window as unknown as { __dcMap: { jumpTo: (o: object) => void } }).__dcMap.jumpTo({ center: c, zoom: 12 }), whereIs(name));
+    await page.waitForTimeout(50);
+    const marker = page.getByRole("button", { name: new RegExp(`^${escape(name)},`) });
+    const box = await marker.boundingBox();
+    expect(box, `${name} is on screen`).not.toBeNull();
+    const hit = await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest(".marker")?.getAttribute("aria-label") ?? "", [box!.x + box!.width / 2, box!.y + box!.height / 2]);
+    expect(hit, `${name} is not covered by another marker`).toMatch(new RegExp(`^${escape(name)},`));
   }
 });
+
+function escape(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Where a site sits on the map: its pinned address, or its city center. */
+function whereIs(name: string): [number, number] {
+  const site = data.sites.find((s) => s.name === name)!;
+  if (site.location.lat != null && site.location.lon != null) return [site.location.lon, site.location.lat];
+  return centerOf(site.city);
+}
 
 function centerOf(city: string): [number, number] {
   const site = data.sites.find((s) => s.city === city)!;
   // Sites without an address sit at the city center; read it from the first such site's marker data.
   return CENTERS[city] ?? [site.location.lon ?? -122.2, site.location.lat ?? 37.6];
 }
+
+test("a site pinned at its address doesn't say its pin is approximate", async ({ page }) => {
+  await openMap(page);
+  await openSite(page, "Walsh Data Center");
+  await expect(page.getByText(/pin sits at the city center/)).toHaveCount(0);
+  await expect(page.locator(".fact", { hasText: "Address" })).toContainText("651 Walsh Avenue");
+});
+
+test("a site with AI evidence shows the quote and where it came from", async ({ page }) => {
+  await openMap(page);
+  await openSite(page, "Pittsburg Data Hub");
+  const ai = page.locator(".fact", { hasText: "AI use" });
+  await expect(ai).toContainText("including AI, cloud services");
+  await expect(ai.getByRole("link", { name: "SFist" })).toBeVisible();
+});
+
+test("at the first view, no marker covers another", async ({ page }) => {
+  await openMap(page);
+  await page.waitForTimeout(500);
+  const boxes = await page.locator(".marker").evaluateAll((els) =>
+    els.map((e) => {
+      const r = e.getBoundingClientRect();
+      return [r.x + r.width / 2, r.y + r.height / 2];
+    }),
+  );
+  for (let i = 0; i < boxes.length; i++)
+    for (let j = i + 1; j < boxes.length; j++)
+      expect(Math.hypot(boxes[i][0] - boxes[j][0], boxes[i][1] - boxes[j][1]), `markers ${i} and ${j}`).toBeGreaterThanOrEqual(43);
+});

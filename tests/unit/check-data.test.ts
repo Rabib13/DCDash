@@ -132,3 +132,9 @@ describe("which sites belong on the map", () => {
     expect(errorsFor(capacity("48 MW")).join()).toMatch(/capacity_mw must be a number/);
   });
 });
+
+describe("stages", () => {
+  it("accepts built, for a finished building not yet confirmed as operating", () => {
+    expect(errorsFor((d) => (d.sites[0].stage = "built"))).toEqual([]);
+  });
+});

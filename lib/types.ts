@@ -5,6 +5,7 @@ export type Stage =
   | "approved"
   | "under_construction"
   | "built_not_energized"
+  | "built"
   | "operating";
 
 export type Source = {

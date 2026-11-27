@@ -23,13 +23,14 @@ export const STAGE_LABEL: Record<Stage, string> = {
   approved: "Approved",
   under_construction: "Under construction",
   built_not_energized: "Built, waiting for power",
+  built: "Built",
   operating: "Operating",
 };
 
 /** Marker style group: operating, being built (incl. waiting for power), or planned. */
 export function stageGroup(stage: Stage): "operating" | "building" | "planned" {
   if (stage === "operating") return "operating";
-  if (stage === "under_construction" || stage === "built_not_energized") return "building";
+  if (stage === "under_construction" || stage === "built_not_energized" || stage === "built") return "building";
   return "planned";
 }
 
@@ -80,6 +81,8 @@ export const CITY_CENTER: Record<string, [number, number]> = {
   Gilroy: [-121.568, 37.006],
   Livermore: [-121.768, 37.682],
   Newark: [-122.04, 37.53],
+  Pittsburg: [-121.885, 38.028],
+  Fairfield: [-122.04, 38.249],
 };
 
 /**
@@ -90,13 +93,15 @@ export function sitePosition(
   site: Site,
   all: Site[],
 ): { lngLat: [number, number]; offset: [number, number]; approximate: boolean } {
-  if (site.location.lat != null && site.location.lon != null) {
-    return { lngLat: [site.location.lon, site.location.lat], offset: [0, 0], approximate: false };
-  }
-  const center = CITY_CENTER[site.city] ?? [-122.2, 37.6];
-  const sameCity = all.filter((s) => s.city === site.city && s.location.lat == null);
+  const base = (s: Site): [number, number] =>
+    s.location.lat != null && s.location.lon != null ? [s.location.lon, s.location.lat] : CITY_CENTER[s.city] ?? [-122.2, 37.6];
+  const approximate = site.location.lat == null;
+  const center = base(site);
+  // Sites closer than about 100 m, or sharing a city center, would sit on top of each other: fan them out.
+  const near = (p: [number, number]) => Math.abs(p[0] - center[0]) < 0.001 && Math.abs(p[1] - center[1]) < 0.001;
+  const sameCity = all.filter((s) => near(base(s)));
   const i = sameCity.findIndex((s) => s.id === site.id);
-  if (sameCity.length <= 1) return { lngLat: center, offset: [0, 0], approximate: true };
+  if (sameCity.length <= 1) return { lngLat: center, offset: [0, 0], approximate };
   // Fill rings outward, each ring holding as many 44 px markers as fit with a small gap.
   const GAP = 48;
   let ring = 0;
@@ -107,7 +112,7 @@ export function sitePosition(
     const inRing = Math.min(capacity, sameCity.length - start);
     if (i < start + inRing) {
       const angle = (2 * Math.PI * (i - start)) / inRing - Math.PI / 2;
-      return { lngLat: center, offset: [Math.round(r * Math.cos(angle)), Math.round(r * Math.sin(angle))], approximate: true };
+      return { lngLat: center, offset: [Math.round(r * Math.cos(angle)), Math.round(r * Math.sin(angle))], approximate };
     }
     start += inRing;
     ring++;

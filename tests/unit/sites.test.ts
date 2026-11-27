@@ -95,6 +95,20 @@ describe("sitePosition", () => {
     for (const s of dataset.sites) expect(CITY_CENTER[s.city], s.city).toBeDefined();
   });
 
+  it("fans out pinned sites at nearly the same spot, like neighbors on one street", () => {
+    const a = site("a", "Santa Clara", 37.3701, -121.94749);
+    const b = site("b", "Santa Clara", 37.37009, -121.9476);
+    const [pa, pb] = [sitePosition(a, [a, b]), sitePosition(b, [a, b])];
+    expect(pa.approximate).toBe(false);
+    expect(Math.hypot(pa.offset[0] - pb.offset[0], pa.offset[1] - pb.offset[1])).toBeGreaterThanOrEqual(44);
+  });
+
+  it("leaves a pinned site alone when nothing is near it", () => {
+    const a = site("a", "Santa Clara", 37.3701, -121.94749);
+    const b = site("b", "Hayward", 37.6282, -122.11952);
+    expect(sitePosition(a, [a, b]).offset).toEqual([0, 0]);
+  });
+
   it("falls back to a Bay Area center for an unknown city", () => {
     const s = site("a", "Nowhere");
     expect(sitePosition(s, [s]).lngLat).toEqual([-122.2, 37.6]);
@@ -185,5 +199,27 @@ describe("siteBounds", () => {
     expect(s).toBeGreaterThanOrEqual(MAP_BOUNDS[0][1]);
     expect(e).toBeLessThanOrEqual(MAP_BOUNDS[1][0]);
     expect(n).toBeLessThanOrEqual(MAP_BOUNDS[1][1]);
+  });
+});
+
+describe("data quality", () => {
+  it("never lists two sites at the same address, which would mean one site counted twice", () => {
+    const norm = (a: string) => a.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const seen = new Map<string, string>();
+    for (const s of dataset.sites) {
+      const a = s.facts.address?.value;
+      if (typeof a !== "string") continue;
+      expect(seen.get(norm(a)), `${s.id} shares an address with ${seen.get(norm(a))}`).toBeUndefined();
+      seen.set(norm(a), s.id);
+    }
+  });
+
+  it("pins exact coordinates only for sites with a sourced address", () => {
+    for (const s of dataset.sites) if (s.location.lat != null) expect(s.facts.address, s.id).toBeDefined();
+  });
+
+  it("groups a finished-but-unconfirmed building with sites being built", () => {
+    expect(stageGroup("built" as Stage)).toBe("building");
+    expect(STAGE_LABEL["built" as Stage]).toBe("Built");
   });
 });
