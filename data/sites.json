@@ -1,0 +1,82 @@
+{
+  "asOf": "2026-11-27",
+  "sources": {
+    "toms-2025-11": {
+      "title": "Data centers in Nvidia's hometown sit idle as grid struggles to keep up",
+      "publisher": "Tom's Hardware",
+      "url": "https://www.tomshardware.com/tech-industry/data-centers-in-nvidias-hometown-sit-idle-as-grid-struggles-to-keep-up",
+      "published": "2025-11-10",
+      "accessed": "2026-11-27"
+    },
+    "autonocion-2026-07": {
+      "title": "A California data center has run for two years with no power line at all...",
+      "publisher": "Autonocion",
+      "url": "https://www.autonocion.com/us/california-data-center-hydrogen-gpus/",
+      "published": "2026-07-27",
+      "accessed": "2026-11-27"
+    },
+    "compute-atlas-bay-area": {
+      "title": "Data centers in Bay Area & Silicon Valley",
+      "publisher": "Compute Atlas",
+      "url": "https://www.compute-atlas.com/metros/bay-area",
+      "accessed": "2026-11-27"
+    }
+  },
+  "sites": [
+    {
+      "id": "dlr-sjc37",
+      "name": "SJC37",
+      "city": "Santa Clara",
+      "location": { "lat": null, "lon": null, "precision": "city" },
+      "stage": "built_not_energized",
+      "facts": {
+        "operator": { "value": "Digital Realty", "sources": ["toms-2025-11"] },
+        "capacity_mw": { "value": 48, "note": "critical load the building was designed for", "sources": ["toms-2025-11"], "quote": "built for 48 megawatts of critical load" },
+        "size_sqft": { "value": 430000, "sources": ["toms-2025-11"] },
+        "ai_use": { "value": "Built for AI-era workloads", "sources": ["toms-2025-11"], "quote": "Two major facilities built for AI-era workloads remain unpowered" },
+        "power_status": { "value": "Complete but waiting for power, no firm timeline", "sources": ["toms-2025-11"], "quote": "no firm timeline for full energization" }
+      }
+    },
+    {
+      "id": "stack-svy02a",
+      "name": "SVY02A",
+      "city": "Santa Clara",
+      "location": { "lat": null, "lon": null, "precision": "city" },
+      "stage": "built_not_energized",
+      "facts": {
+        "operator": { "value": "Stack Infrastructure", "sources": ["toms-2025-11"] },
+        "capacity_mw": { "value": 48, "sources": ["toms-2025-11"], "quote": "also designed for 48 megawatts" },
+        "ai_use": { "value": "Built for AI-era workloads", "sources": ["toms-2025-11"], "quote": "Two major facilities built for AI-era workloads remain unpowered" },
+        "power_status": { "value": "Complete but waiting for power", "sources": ["toms-2025-11"] }
+      }
+    },
+    {
+      "id": "ecl-csc1",
+      "name": "CSC-1 FlexGrid AI Data Center",
+      "city": "Santa Clara",
+      "location": { "lat": null, "lon": null, "precision": "city" },
+      "stage": "proposed",
+      "facts": {
+        "operator": { "value": "ECL", "sources": ["autonocion-2026-07", "compute-atlas-bay-area"] },
+        "capacity_mw": { "value": 35, "note": "at full build, first phase 2.5 MW", "sources": ["autonocion-2026-07", "compute-atlas-bay-area"] },
+        "ai_use": { "value": "AI data center campus", "sources": ["autonocion-2026-07", "compute-atlas-bay-area"], "quote": "headed to an AI data center campus in Santa Clara, California" },
+        "power_source": { "value": "Hydrogen fuel cells (off-grid design)", "sources": ["autonocion-2026-07"] }
+      }
+    },
+    {
+      "id": "ecl-mv1",
+      "name": "MV-1",
+      "city": "Mountain View",
+      "location": { "lat": null, "lon": null, "precision": "city" },
+      "stage": "operating",
+      "facts": {
+        "operator": { "value": "ECL", "sources": ["autonocion-2026-07"] },
+        "capacity_mw": { "value": 1, "sources": ["autonocion-2026-07"], "quote": "1 MW in about 1,000 square feet" },
+        "ai_use": { "value": "About 1,800 GPUs leased to an AI hosting company", "sources": ["autonocion-2026-07"], "quote": "cooling its 1,800 GPUs with the water that drips out of the fuel cells" },
+        "power_source": { "value": "Hydrogen fuel cells, no grid connection", "sources": ["autonocion-2026-07"] },
+        "water": { "value": "Cooling uses water produced by the fuel cells", "sources": ["autonocion-2026-07"] },
+        "opened": { "value": "2024", "sources": ["autonocion-2026-07"] }
+      }
+    }
+  ]
+}
