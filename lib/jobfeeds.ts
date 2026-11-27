@@ -14,7 +14,9 @@ export type FeedKind =
   | "amazon"
   | "eightfold"
   | "neogov"
-  | "jobvite-xml";
+  | "jobvite-xml"
+  /** The employer's job board turns away automated readers, so we only link to its careers page. */
+  | "link";
 
 export type FeedConfig = {
   /** The name shown to visitors. */
@@ -65,6 +67,8 @@ export type FeedStatus = {
   aliases?: string[];
   careersUrl: string;
   ok: boolean;
+  /** True when we only link to this employer's careers page, because its board turns away automated readers. */
+  linkOnly?: boolean;
   /** Bay Area jobs listed for this employer. */
   count: number;
   /** When this employer's jobs were last read successfully. */
@@ -425,6 +429,8 @@ async function readFeed(feed: FeedConfig, ctx: Ctx): Promise<Job[]> {
     }
     case "neogov":
       return parseNeogov(feed.employer, await getText(ctx, `https://www.governmentjobs.com/SearchEngine/JobsFeed?agency=${feed.board}`), feed.department);
+    case "link":
+      return [];
     case "jobvite-xml": {
       const [site, company] = feed.board.split(":");
       return parseJobviteXml(feed.employer, site, await getText(ctx, `https://app.jobvite.com/CompanyJobs/Xml.aspx?c=${company}`));
@@ -484,6 +490,11 @@ export async function fetchFeeds(
   }
 
   async function readOne(feed: FeedConfig): Promise<{ status: FeedStatus; jobs: Job[] }> {
+    if (feed.kind === "link") {
+      const status: FeedStatus = { employer: feed.employer, careersUrl: feed.careersUrl, ok: true, count: 0, linkOnly: true };
+      if (feed.aliases?.length) status.aliases = feed.aliases;
+      return { status, jobs: [] };
+    }
       try {
         const only = feed.titleFilter ? new RegExp(feed.titleFilter, "i") : null;
         const jobs = (await readFeed(feed, ctx)).filter((j) => j.city !== null && (!only || only.test(j.title)));

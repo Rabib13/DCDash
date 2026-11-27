@@ -7,19 +7,19 @@
   },
   {
     "employer": "Equinix",
-    "kind": "workday",
-    "board": "https://equinix.wd1.myworkdayjobs.com/External",
+    "kind": "link",
     "careersUrl": "https://careers.equinix.com/"
   },
   {
     "employer": "Vantage Data Centers",
-    "kind": "workday",
-    "board": "https://vantagedc.wd1.myworkdayjobs.com/Vantage",
+    "kind": "link",
     "careersUrl": "https://vantage-dc.com/company/careers/"
   },
   {
     "employer": "Stack Infrastructure",
-    "aliases": ["STACK Infrastructure"],
+    "aliases": [
+      "STACK Infrastructure"
+    ],
     "kind": "workday",
     "board": "https://stackinfra.wd108.myworkdayjobs.com/STACK_AMER",
     "careersUrl": "https://www.stackinfra.com/about/careers/"
@@ -32,9 +32,7 @@
   },
   {
     "employer": "Prologis",
-    "kind": "workday",
-    "board": "https://prologis.wd5.myworkdayjobs.com/Prologis_External_Careers",
-    "titleFilter": "data cent",
+    "kind": "link",
     "careersUrl": "https://www.prologis.com/careers"
   },
   {
@@ -45,9 +43,10 @@
   },
   {
     "employer": "Microsoft",
-    "aliases": ["Microsoft Corporation"],
-    "kind": "eightfold",
-    "board": "https://apply.careers.microsoft.com/api/pcsx/search?domain=microsoft.com&query=datacenter&location=",
+    "aliases": [
+      "Microsoft Corporation"
+    ],
+    "kind": "link",
     "careersUrl": "https://apply.careers.microsoft.com/careers?query=datacenter"
   },
   {
@@ -66,15 +65,15 @@
   },
   {
     "employer": "Rosendin",
-    "kind": "workday",
-    "board": "https://rosendin.wd1.myworkdayjobs.com/en-US/Careers",
+    "kind": "link",
     "careersUrl": "https://rosendin.wd1.myworkdayjobs.com/en-US/Careers"
   },
   {
     "employer": "Cupertino Electric",
     "kind": "jobvite-xml",
     "board": "cei:qCzaVfw0",
-    "careersUrl": "https://www.cei.com/careers/current-openings"
+    "careersUrl": "https://www.cei.com/careers/current-openings",
+    "titleFilter": "electric|foreman|apprentice|journey|substation|voltage|data cent|superintendent|project engineer|estimator|technician|safety"
   },
   {
     "employer": "DPR Construction",

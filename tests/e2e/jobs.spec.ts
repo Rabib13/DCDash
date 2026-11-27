@@ -73,6 +73,23 @@ test("a job that also lists other states says so", async ({ page }) => {
   await expect(page.locator(".joblist li", { hasText: "HVAC Technician" })).not.toContainText("Also based outside");
 });
 
+test("employers whose job boards turn away automated readers are linked, not counted", async ({ page }) => {
+  await stubOutside(page);
+  await page.goto("/jobs");
+  const note = page.getByTestId("link-only");
+  await expect(note).toContainText("don't allow automated reading");
+  await expect(note.getByRole("link", { name: "Prologis" })).toHaveAttribute("href", "https://careers.prologis.example/");
+  await expect(page.getByTestId("feed-problems")).not.toContainText("Prologis");
+});
+
+test("a site run by such an employer links to its careers page instead of a count", async ({ page }) => {
+  await stubOutside(page);
+  await openSiteJobs(page, "STEM Park");
+  const box = page.getByTestId("site-openings");
+  await expect(box).toContainText("Prologis's job board doesn't allow automated reading");
+  await expect(box.getByRole("link", { name: "See Prologis jobs on its own site" })).toHaveAttribute("href", "https://careers.prologis.example/");
+});
+
 test("a filter that matches nothing says so", async ({ page }) => {
   await stubOutside(page);
   await page.goto("/jobs?employer=Equinix&role=security");

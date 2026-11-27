@@ -195,3 +195,9 @@ describe("job count ranges", () => {
     expect(errorsFor(withRange("21")).join()).toMatch(/upTo must be a number above value/);
   });
 });
+
+describe("link-only job feeds", () => {
+  it("need only an employer and careers page", () => {
+    expect(checkFeeds([{ employer: "Op", kind: "link", careersUrl: "https://op.example/careers" }])).toEqual([]);
+  });
+});

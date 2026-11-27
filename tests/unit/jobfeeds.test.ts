@@ -514,3 +514,16 @@ describe("Jobvite XML, against a real Cupertino Electric feed", () => {
     expect(jobs[1]).toMatchObject({ title: "Senior Estimator II - Substation & High Voltage", url: "https://jobs.jobvite.com/cei/job/oF0EAfwD" });
   });
 });
+
+describe("employers whose job boards turn away automated readers", () => {
+  it("are listed with their careers page but never fetched", async () => {
+    const calls: string[] = [];
+    const snap = await fetchFeeds([{ employer: "Link Co", kind: "link", board: "", careersUrl: "https://link.example/careers" }], {
+      fetchImpl: fakeFetch({}, calls),
+      now: NOW,
+      sleep: noWait,
+    });
+    expect(calls).toEqual([]);
+    expect(snap.feeds).toEqual([{ employer: "Link Co", careersUrl: "https://link.example/careers", ok: true, count: 0, linkOnly: true }]);
+  });
+});

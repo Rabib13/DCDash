@@ -79,6 +79,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   const multi = snap.jobs.length - local.length;
   const employers = new Set(local.map((j) => j.employer)).size;
   const problems = snap.feeds.filter((f) => !f.ok);
+  const linkOnly = snap.feeds.filter((f) => f.linkOnly);
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
   return (
     <div className="page">
@@ -111,6 +112,20 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
               </li>
             ))}
           </ul>
+        )}
+        {linkOnly.length > 0 && (
+          <p className="note" data-testid="link-only">
+            These employers&apos; job boards don&apos;t allow automated reading, so their jobs aren&apos;t counted here. See them on their own sites:{" "}
+            {linkOnly.map((f, i) => (
+              <span key={f.employer}>
+                {i > 0 && ", "}
+                <a href={f.careersUrl} target="_blank" rel="noopener noreferrer">
+                  {f.employer}
+                </a>
+              </span>
+            ))}
+            .
+          </p>
         )}
         <JobsBrowser
           jobs={snap.jobs}

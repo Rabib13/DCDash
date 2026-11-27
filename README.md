@@ -43,7 +43,8 @@ New code starts with a failing test.
 ## Jobs
 
 - `/jobs` lists open Bay Area jobs read live from employers' own public job boards. The employers are listed in `data/job-feeds.json`, and `npm run validate` checks that file too.
-- The server keeps the jobs for 6 hours. After that, the next visitor still gets the last list right away while a fresh one loads in the background, because some boards (Workday, Eightfold) only allow slow reads.
+- The server keeps the jobs for 6 hours. After that, the next visitor still gets the last list right away while a fresh one loads in the background, because some boards are slow to read.
+- Some employers' job boards turn away automated readers. Those are listed with `"kind": "link"`: the page links to their careers site and doesn't count their jobs. We don't try to get around a board that blocks us.
 - If a board fails, its last jobs stay up for at most 7 days, labeled "couldn't refresh since". Closed postings drop off on the next refresh.
 - Jobs that also list places outside the Bay Area are counted separately from jobs based only here.
 - Site cards count the operator's openings within 10 miles. Postings name a city, not a building, so no job is tied to one site.

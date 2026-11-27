@@ -94,6 +94,7 @@ const jobsLink = (params: Record<string, string>) => `/jobs?${new URLSearchParam
 function JobsSection({ site, operator }: { site: Site; operator: string | null }) {
   const snap = useJobs();
   const employer = snap ? employerFor(site, snap.feeds) : null;
+  const linkOnly = snap?.feeds.find((f) => f.employer === employer && f.linkOnly);
   const op = operator ? dataset.operators[operator] : undefined;
   const near = snap && employer ? openingsNear(snap.jobs, employer, site.city, NEAR_MILES) : [];
   const nearCities = new Set(citiesWithin(site.city, NEAR_MILES));
@@ -107,7 +108,15 @@ function JobsSection({ site, operator }: { site: Site; operator: string | null }
         )}
         {snap === undefined && <p className="muted">Loading open jobs…</p>}
         {snap === null && <p className="note">We couldn&apos;t load open jobs just now. Try again in a few minutes.</p>}
-        {snap && employer && (
+        {snap && employer && linkOnly && (
+          <p className="note">
+            {employer}&apos;s job board doesn&apos;t allow automated reading, so we can&apos;t count its openings.{" "}
+            <a href={linkOnly.careersUrl} target="_blank" rel="noopener noreferrer">
+              See {employer} jobs on its own site
+            </a>
+          </p>
+        )}
+        {snap && employer && !linkOnly && (
           <>
             <p>
               {near.length} opening{near.length === 1 ? "" : "s"} at {employer} within {NEAR_MILES} miles of {site.city}

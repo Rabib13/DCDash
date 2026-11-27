@@ -18,7 +18,7 @@ export const MIN_MW = 20;
 /** Facts holding job counts stated in a site's filings. */
 export const JOB_COUNT_FACTS = new Set(["construction_jobs", "permanent_jobs"]);
 
-export const FEED_KINDS = new Set(["greenhouse", "lever", "ashby", "smartrecruiters", "workday", "oracle", "amazon", "eightfold", "neogov", "jobvite-xml"]);
+export const FEED_KINDS = new Set(["greenhouse", "lever", "ashby", "smartrecruiters", "workday", "oracle", "amazon", "eightfold", "neogov", "jobvite-xml", "link"]);
 
 /** Rules for data/job-feeds.json, the employers whose public job feeds the jobs page reads. */
 export function checkFeeds(feeds) {
@@ -30,7 +30,7 @@ export function checkFeeds(feeds) {
     if (names.has(f.employer)) errors.push(`${where}: listed twice`);
     names.add(f.employer);
     if (!FEED_KINDS.has(f.kind)) errors.push(`${where}: unknown kind "${f.kind}"`);
-    if (!f.board) errors.push(`${where}: needs a board`);
+    if (!f.board && f.kind !== "link") errors.push(`${where}: needs a board`);
     else if (f.kind === "workday" && !/^https:\/\/[a-z0-9-]+\.wd\d+\.myworkdayjobs\.com\/[^/]+/i.test(f.board))
       errors.push(`${where}: Workday board must be like https://name.wd1.myworkdayjobs.com/Site`);
     if (typeof f.careersUrl !== "string" || !f.careersUrl.startsWith("https://")) errors.push(`${where}: careersUrl must be https`);

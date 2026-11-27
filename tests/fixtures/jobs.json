@@ -39,6 +39,13 @@
       "ok": false,
       "count": 0,
       "error": "HTTP 500"
+    },
+    {
+      "employer": "Prologis",
+      "careersUrl": "https://careers.prologis.example/",
+      "ok": true,
+      "count": 0,
+      "linkOnly": true
     }
   ],
   "jobs": [
