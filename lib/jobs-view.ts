@@ -105,3 +105,6 @@ export function ringGradient(roles: { role: Category; count: number }[]): string
 
 /** Circle diameter in pixels: grows with the square root of the count, so area tracks jobs. */
 export const bubbleSize = (count: number) => Math.round(Math.min(72, 30 + 7 * Math.sqrt(count)));
+
+/** The number inside a circle: jobs based only here, or "+N" when every job there also lists other places. */
+export const bubbleText = (b: CityBubble) => (b.count === 0 && b.elsewhere > 0 ? `+${b.elsewhere}` : String(b.count));

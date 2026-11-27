@@ -7,7 +7,7 @@ import { dataset, MAP_BOUNDS, onMap, runBy, siteBounds, sitePosition, stageGroup
 import type { Site } from "@/lib/types";
 import { spreadApart } from "@/lib/layout";
 import { CATEGORY_LABEL, citiesWithin, type Category } from "@/lib/jobfeeds";
-import { bubbleSize, CATEGORY_COLOR, NEAR_MILES, cityBubbles, EMPTY_VIEW, matchesView, parseJobsView, ringGradient, viewQuery, type JobsView } from "@/lib/jobs-view";
+import { bubbleSize, bubbleText, CATEGORY_COLOR, NEAR_MILES, cityBubbles, EMPTY_VIEW, matchesView, parseJobsView, ringGradient, viewQuery, type JobsView } from "@/lib/jobs-view";
 import { useJobs } from "@/lib/useJobs";
 import JobsPanel from "./JobsPanel";
 import SitePanel from "./SitePanel";
@@ -145,7 +145,7 @@ export default function SiteMap() {
         "aria-label",
         `${b.city}: ${b.count} open job${b.count === 1 ? "" : "s"}${b.elsewhere ? `, plus ${b.elsewhere} also listed elsewhere` : ""}`,
       );
-      el.innerHTML = `<span class="jobbubble__count">${b.count}</span>`;
+      el.innerHTML = `<span class="jobbubble__count">${bubbleText(b)}</span>`;
       el.addEventListener("click", (e) => {
         e.stopPropagation();
         setJobs((v) => ({ ...(v ?? EMPTY_VIEW), city: b.city, near: "" }));

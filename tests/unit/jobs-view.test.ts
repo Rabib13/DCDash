@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cacheControl, cityBubbles, CATEGORY_COLOR, jobsHref, matchesView, parseJobsView, ringGradient, viewQuery, type JobsView } from "@/lib/jobs-view";
+import { bubbleText, cacheControl, cityBubbles, CATEGORY_COLOR, jobsHref, matchesView, parseJobsView, ringGradient, viewQuery, type JobsView } from "@/lib/jobs-view";
 import { CATEGORY_LABEL, bayAreaCity, citiesWithin, type Job } from "@/lib/jobfeeds";
 import { CITY_CENTER } from "@/lib/sites";
 
@@ -130,4 +130,10 @@ describe("cacheControl", () => {
   it("lets browsers keep a complete list for 5 minutes", () => {
     expect(cacheControl({ fetchedAt: "x", feeds: [], jobs: [] })).toBe("public, max-age=300");
   });
+});
+
+describe("bubbleText", () => {
+  const b = (count: number, elsewhere: number) => ({ city: "Fremont", lngLat: [0, 0] as [number, number], count, elsewhere, roles: [] });
+  it("shows the jobs based only here", () => expect(bubbleText(b(34, 25))).toBe("34"));
+  it("shows +N instead of a bare 0 when every job there also lists other places", () => expect(bubbleText(b(0, 3))).toBe("+3"));
 });
