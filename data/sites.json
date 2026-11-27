@@ -432,6 +432,13 @@
       "url": "https://www.svvoice.com/council-approves-data-center-in-spite-of-planning-commission-objection/",
       "published": "2024-08-30",
       "accessed": "2026-11-27"
+    },
+    "hayward-exchange92-conditions": {
+      "title": "Hayward Exchange @ 92 (Application 201906718): Conditions of Approval",
+      "publisher": "City of Hayward",
+      "url": "https://hayward.legistar.com/View.ashx?M=F&ID=9164639&GUID=3FFF7FE7-7FD3-4334-AD0A-CBB4A8F5FD22",
+      "published": "2021-02-11",
+      "accessed": "2026-11-27"
     }
   },
   "operators": {
@@ -2089,6 +2096,14 @@
             "compute-atlas-bay-area"
           ],
           "note": "per Compute Atlas"
+        },
+        "community_benefits": {
+          "value": "$500,000 toward the Highway 92 interchange and about $50,000 for Clawiter Road bike lanes, plus public art",
+          "sources": [
+            "hayward-exchange92-conditions"
+          ],
+          "quote": "Applicant shall make a financial contribution of $500,000.00 to the City of Hayward Public Works Department to fund future transportation improvements",
+          "note": "Conditions of approval from February 2021. Public art is set at 0.33% of construction cost"
         }
       }
     },

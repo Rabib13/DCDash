@@ -29,6 +29,7 @@ describe("parseJobsView and viewQuery", () => {
       near: "Santa Clara",
     });
     expect(parseJobsView("?jobs=1&tab=ways")).toEqual({ ...ALL, tab: "ways" });
+    expect(parseJobsView("?jobs=1&tab=community")).toEqual({ ...ALL, tab: "community" });
     expect(parseJobsView("?jobs=1&tab=nonsense")).toEqual(ALL);
     expect(parseJobsView("?jobs=1&city=San+Jose")).toEqual({ ...ALL, city: "San Jose" });
   });

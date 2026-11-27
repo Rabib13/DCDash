@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error plain JS module shared with the build script
-import { checkData, checkFeeds, checkPathways } from "../../scripts/check-data.mjs";
+import { checkData, checkFeeds, checkLocalBenefits, checkPathways } from "../../scripts/check-data.mjs";
 
 const valid = () => ({
   asOf: "2026-11-27",
@@ -254,5 +254,31 @@ describe("checkPathways", () => {
 
   it("checks extra links too", () => {
     expect(checkPathways([{ ...way(), more: [{ label: "Wages", url: "http://x.example" }] }]).join()).toMatch(/etasv: more links must be https/);
+  });
+});
+
+describe("checkLocalBenefits", () => {
+  const item = () => ({
+    id: "sc-housing",
+    place: "Santa Clara",
+    value: "about $4 million in affordable housing fees since 2019",
+    quote: "the estimated $4 million in affordable housing funds",
+    url: "https://www.kqed.org/news/x",
+    publisher: "KQED",
+    published: "2026-10-08",
+    checked: "2026-11-27",
+  });
+
+  it("accepts a valid list and the real data/local-benefits.json", () => {
+    expect(checkLocalBenefits([item()])).toEqual([]);
+    expect(checkLocalBenefits(JSON.parse(readFileSync(new URL("../../data/local-benefits.json", import.meta.url), "utf8")))).toEqual([]);
+  });
+
+  it("needs a quote, an https source with its publisher, and the day it was checked", () => {
+    expect(checkLocalBenefits([{ ...item(), quote: "" }]).join()).toMatch(/sc-housing: needs a quote/);
+    expect(checkLocalBenefits([{ ...item(), url: "http://x" }]).join()).toMatch(/sc-housing: url must be https/);
+    expect(checkLocalBenefits([{ ...item(), publisher: "" }]).join()).toMatch(/sc-housing: needs a publisher/);
+    expect(checkLocalBenefits([{ ...item(), checked: "" }]).join()).toMatch(/sc-housing: checked must be a date/);
+    expect(checkLocalBenefits([item(), item()]).join()).toMatch(/sc-housing: listed twice/);
   });
 });

@@ -8,6 +8,7 @@ import pathways from "@/data/pathways.json";
 import type { Pathway } from "@/lib/types";
 import JobsBrowser from "./JobsBrowser";
 import WaysIn from "./WaysIn";
+import Benefits from "./Benefits";
 
 const SITES = dataset.sites.filter(onMap);
 
@@ -84,17 +85,23 @@ export default function JobsPanel({
   view,
   onChange,
   onClose,
+  onOpenSite,
 }: {
   snap: JobsSnapshot | null | undefined;
   view: JobsView;
   onChange: (patch: Partial<JobsView>) => void;
   onClose: () => void;
+  onOpenSite: (id: string) => void;
 }) {
   const place = view.city || view.near;
   const ways = view.tab === "ways";
+  const community = view.tab === "community";
+  const jobsTab = !ways && !community;
   const title = ways
     ? "Ways into data center work"
-    : view.city
+    : community
+      ? "Community benefits"
+      : view.city
       ? `Jobs in ${view.city}`
       : view.near
         ? `Jobs within ${NEAR_MILES} miles of ${view.near}`
@@ -104,7 +111,7 @@ export default function JobsPanel({
       <div className="panel__head">
         <div>
           <h2>{title}</h2>
-          {snap && !ways && (
+          {snap && jobsTab && (
             <p className="muted" data-testid="jobs-freshness">
               {freshnessLabel(snap.fetchedAt)} ({when(snap.fetchedAt)} Pacific). Refreshes every {REFRESH_HOURS} hours.
             </p>
@@ -115,18 +122,31 @@ export default function JobsPanel({
         </button>
       </div>
       <div className="tabs" role="tablist" aria-label="Jobs">
-        <button type="button" role="tab" aria-selected={!ways} className={ways ? "tab" : "tab tab--active"} onClick={() => onChange({ tab: "" })}>
-          Open jobs
-        </button>
-        <button type="button" role="tab" aria-selected={ways} className={ways ? "tab tab--active" : "tab"} onClick={() => onChange({ tab: "ways" })}>
-          Ways in
-        </button>
+        {(
+          [
+            ["", "Open jobs"],
+            ["ways", "Ways in"],
+            ["community", "Community"],
+          ] as const
+        ).map(([t, label]) => (
+          <button
+            key={t}
+            type="button"
+            role="tab"
+            aria-selected={view.tab === t}
+            className={view.tab === t ? "tab tab--active" : "tab"}
+            onClick={() => onChange({ tab: t })}
+          >
+            {label}
+          </button>
+        ))}
       </div>
       <div className="panel__body">
         {ways && <WaysIn pathways={pathways as Pathway[]} />}
-        {!ways && snap === undefined && <p className="muted">Loading open jobs…</p>}
-        {!ways && snap === null && <p className="note">We couldn&apos;t load open jobs just now. Try again in a few minutes.</p>}
-        {!ways && snap && (
+        {community && <Benefits onOpenSite={onOpenSite} />}
+        {jobsTab && snap === undefined && <p className="muted">Loading open jobs…</p>}
+        {jobsTab && snap === null && <p className="note">We couldn&apos;t load open jobs just now. Try again in a few minutes.</p>}
+        {jobsTab && snap && (
           <>
             {place ? (
               <div className="place-actions">

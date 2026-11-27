@@ -50,7 +50,8 @@ async function main() {
   const data = JSON.parse(readFileSync(new URL("../data/sites.json", import.meta.url), "utf8"));
   const feeds = JSON.parse(readFileSync(new URL("../data/job-feeds.json", import.meta.url), "utf8"));
   const pathways = JSON.parse(readFileSync(new URL("../data/pathways.json", import.meta.url), "utf8"));
-  const links = collectLinks(data, feeds, pathways);
+  const local = JSON.parse(readFileSync(new URL("../data/local-benefits.json", import.meta.url), "utf8"));
+  const links = collectLinks(data, feeds, [...pathways, ...local]);
   const results = await Promise.all(links.map(async (l) => ({ ...l, status: await statusOf(l.url) })));
   const dead = results.filter((r) => classify(r.status) === "dead");
   const unknown = results.filter((r) => classify(r.status) === "unknown");

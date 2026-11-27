@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import data from "../../data/sites.json" with { type: "json" };
 import pathways from "../../data/pathways.json" with { type: "json" };
+import localBenefits from "../../data/local-benefits.json" with { type: "json" };
 import { about, buildoutSummary, waysInSummary } from "../../lib/buildout";
 import type { Pathway } from "../../lib/types";
 import type { Site } from "../../lib/types";
@@ -112,4 +113,33 @@ test("ways in can be narrowed to apprenticeships, college programs or free train
   const apprenticeships = pathways.filter((p) => p.kind === "apprenticeship").length;
   await panel.getByRole("button", { name: new RegExp(`^Apprenticeships \\(${apprenticeships}\\)`) }).click();
   await expect(panel.locator(".pathways li")).toHaveCount(apprenticeships);
+});
+
+test("See community benefits lists each documented benefit with its source, and opens the site's Community tab", async ({ page, context }) => {
+  await openMap(page);
+  const withBenefits = data.sites.filter((s) => (s.facts as Record<string, unknown>).community_benefits);
+  await banner(page).getByRole("button", { name: "See community benefits" }).click();
+  const panel = page.getByRole("complementary", { name: "Open jobs" });
+  await expect(panel.getByRole("tab", { name: "Community" })).toHaveAttribute("aria-selected", "true");
+  await expect(page).toHaveURL(/\?jobs=1&tab=community$/);
+  const items = panel.locator(".benefits li");
+  await expect(items).toHaveCount(withBenefits.length);
+  // Citywide money and rules follow, each with its source.
+  await expect(panel.locator(".local-benefits li")).toHaveCount(localBenefits.length);
+  await expect(panel.locator(".local-benefits")).toContainText(localBenefits[0].quote);
+  // It says plainly how many sites have none.
+  await expect(panel).toContainText(`${data.sites.length - withBenefits.length} sites have no community benefit on record`);
+  for (const link of await panel.locator(".benefits a[href^='https']").all()) await expect(link).toHaveAttribute("target", "_blank");
+  const first = withBenefits[0];
+  const fact = (first.facts as unknown as Record<string, { value: string; quote: string }>).community_benefits;
+  const item = items.filter({ hasText: first.name });
+  await expect(item).toContainText(fact.value, { ignoreCase: true });
+  await expect(item).toContainText(fact.quote);
+  // Job circles step aside while the list is about community benefits.
+  await expect(page.locator(".jobbubble")).toHaveCount(0);
+  // Tapping the site opens its card on the Community tab.
+  await item.getByRole("button", { name: `Open ${first.name}` }).click();
+  await expect(page.getByRole("complementary", { name: `${first.name} details` })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Community" })).toHaveAttribute("aria-selected", "true");
+  void context;
 });

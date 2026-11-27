@@ -10,12 +10,14 @@ export default function BuildoutBanner({
   ways,
   onSeeJobs,
   onSeeWays,
+  onSeeBenefits,
   onHide,
 }: {
   summary: BuildoutSummary;
   ways: WaysIn;
   onSeeJobs: () => void;
   onSeeWays: () => void;
+  onSeeBenefits: () => void;
   onHide: () => void;
 }) {
   const { open, topEmployers, moreEmployers, kinds, planned, benefitSites, benefitExample, siteCount } = summary;
@@ -70,14 +72,19 @@ export default function BuildoutBanner({
           </div>
         )}
       </div>
-      {benefitSites === 0 || !benefitExample ? (
-        <p className="muted buildout__note">No community benefit agreements or local grants are documented for these sites yet.</p>
-      ) : (
-        <p className="muted buildout__note">
-          {benefitSites} of {siteCount} sites have documented community benefits, such as {benefitExample.value} at {benefitExample.site} in{" "}
-          {benefitExample.city}. Most have none on record. Each site&apos;s Community tab has the details.
-        </p>
-      )}
+      <div className="buildout__stat buildout__stat--note">
+        {benefitSites === 0 || !benefitExample ? (
+          <p className="muted">No community benefit agreements or local grants are documented for these sites yet.</p>
+        ) : (
+          <p className="muted">
+            {benefitSites} of {siteCount} sites have documented community benefits, such as {benefitExample.value} at {benefitExample.site} in{" "}
+            {benefitExample.city}. Most have none on record.
+          </p>
+        )}
+        <button type="button" className="button button--quiet" onClick={onSeeBenefits}>
+          See community benefits
+        </button>
+      </div>
     </section>
   );
 }

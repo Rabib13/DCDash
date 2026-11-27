@@ -190,9 +190,19 @@ function JobsSection({ site, operator, onOpenJobs }: { site: Site; operator: str
   );
 }
 
-export default function SitePanel({ site, onClose, onOpenJobs }: { site: Site; onClose: () => void; onOpenJobs: OpenJobs }) {
-  const [tab, setTab] = useState<Section>("overview");
-  useEffect(() => setTab("overview"), [site.id]);
+export default function SitePanel({
+  site,
+  initialTab = "overview",
+  onClose,
+  onOpenJobs,
+}: {
+  site: Site;
+  initialTab?: Section;
+  onClose: () => void;
+  onOpenJobs: OpenJobs;
+}) {
+  const [tab, setTab] = useState<Section>(initialTab);
+  useEffect(() => setTab(initialTab), [site.id, initialTab]);
 
   const who = runBy(site);
   const operator = site.facts.operator ? String(site.facts.operator.value) : null;

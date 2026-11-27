@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { dataset, MAP_BOUNDS, onMap, runBy, siteBounds, sitePosition, stageGroup, STAGE_LABEL } from "@/lib/sites";
+import { dataset, MAP_BOUNDS, onMap, runBy, siteBounds, sitePosition, stageGroup, STAGE_LABEL, type Section } from "@/lib/sites";
 import type { Site } from "@/lib/types";
 import { spreadApart } from "@/lib/layout";
 import { CATEGORY_LABEL, citiesWithin, type Category } from "@/lib/jobfeeds";
@@ -33,6 +33,7 @@ const MARKER_GAP = 46;
 /** Job circles may overlap a little, but never sit right on top of each other. */
 const BUBBLE_GAP = 48;
 const BANNER_KEY = "dcdash.summaryHidden";
+const FAR_ZOOM = 11;
 
 export default function SiteMap() {
   const container = useRef<HTMLDivElement>(null);
@@ -49,6 +50,8 @@ export default function SiteMap() {
   const [bannerHidden, setBannerHidden] = useState<boolean | null>(null);
   // Once a visitor moves the map, the banner shrinks to one line so it never covers sites.
   const [bannerCompact, setBannerCompact] = useState(false);
+  // Zoomed out, job circles come forward; zoomed in, site markers stay on top so every site can be tapped.
+  const [far, setFar] = useState(true);
   const hideBanner = (hidden: boolean) => {
     setBannerHidden(hidden);
     try {
@@ -79,10 +82,18 @@ export default function SiteMap() {
     setSelected(null);
     setJobs({ ...EMPTY_VIEW, ...view });
   };
-  const openSite = useRef<(site: Site) => void>(() => {});
-  openSite.current = (site: Site) => {
+  // Which tab a site card opens on: Overview from the map, Community from the benefits list.
+  const [siteTab, setSiteTab] = useState<Section>("overview");
+  const openSite = useRef<(site: Site, tab?: Section) => void>(() => {});
+  openSite.current = (site: Site, tab: Section = "overview") => {
     setJobs(null);
+    setSiteTab(tab);
     setSelected(site);
+  };
+  const showSite = (site: Site, tab: Section) => {
+    openSite.current(site, tab);
+    const { lngLat } = sitePosition(site, SITES);
+    map.current?.easeTo({ center: lngLat, zoom: Math.max(map.current.getZoom(), 12), duration: 400 });
   };
 
   useEffect(() => {
@@ -136,6 +147,9 @@ export default function SiteMap() {
     m.on("resize", layout);
     m.on("click", () => setSelected(null));
     m.on("movestart", () => setBannerCompact(true));
+    const zoomLevel = () => setFar(m.getZoom() < FAR_ZOOM);
+    m.on("zoomend", zoomLevel);
+    m.on("load", zoomLevel);
 
     return () => {
       m.remove();
@@ -150,7 +164,7 @@ export default function SiteMap() {
 
   // Circles follow the role and employer filters; the place filter only highlights.
   const filtered = useMemo(
-    () => (snap && jobs ? snap.jobs.filter((j) => matchesView(j, { ...jobs, city: "", near: "" })) : []),
+    () => (snap ? snap.jobs.filter((j) => matchesView(j, { ...(jobs ?? EMPTY_VIEW), city: "", near: "" })) : []),
     [snap, jobs?.role, jobs?.employer], // eslint-disable-line react-hooks/exhaustive-deps
   );
   const bubbles = useMemo(() => cityBubbles(filtered), [filtered]);
@@ -161,7 +175,8 @@ export default function SiteMap() {
     bubbleMarkers.current.forEach((b) => b.remove());
     bubbleMarkers.current = [];
     // The ways-in list is about training, not places, so the job circles step aside.
-    if (!m || !jobs || jobs.tab === "ways") return;
+    // Circles show by default. They step aside while the panel lists training or community benefits.
+    if (!m || jobs?.tab === "ways" || jobs?.tab === "community") return;
     const placed = bubbles.map((b) => {
       const el = document.createElement("button");
       el.type = "button";
@@ -176,6 +191,7 @@ export default function SiteMap() {
       el.innerHTML = `<span class="jobbubble__count">${bubbleText(b)}</span>`;
       el.addEventListener("click", (e) => {
         e.stopPropagation();
+        setSelected(null);
         setJobs((v) => ({ ...(v ?? EMPTY_VIEW), city: b.city, near: "" }));
       });
       const marker = new maplibregl.Marker({ element: el }).setLngLat(b.lngLat).addTo(m);
@@ -194,7 +210,7 @@ export default function SiteMap() {
       m.off("moveend", layout);
       m.off("resize", layout);
     };
-  }, [bubbles, jobs === null, jobs?.tab]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [bubbles, jobs?.tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When the layer opens, frame every circle in the part of the map the panel doesn't cover.
   const framed = useRef(false);
@@ -204,7 +220,7 @@ export default function SiteMap() {
       framed.current = false;
       return;
     }
-    if (!m || framed.current || bubbles.length === 0) return;
+    if (!m || framed.current || bubbles.length === 0 || jobs.tab) return;
     framed.current = true;
     const phone = window.innerWidth <= 640;
     const lngs = bubbles.map((b) => b.lngLat[0]);
@@ -222,7 +238,7 @@ export default function SiteMap() {
         duration: 0,
       },
     );
-  }, [bubbles, jobs === null]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [bubbles, jobs === null, jobs?.tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const highlightKey = highlighted.join("|");
   useEffect(() => {
@@ -242,7 +258,7 @@ export default function SiteMap() {
 
   return (
     <>
-      <div className={["map-wrap", selected || jobs ? "map-wrap--panel" : "", jobs ? "map-wrap--jobs" : ""].filter(Boolean).join(" ")}>
+      <div className={["map-wrap", selected || jobs ? "map-wrap--panel" : "", jobs ? "map-wrap--jobs" : "", far ? "map-wrap--far" : ""].filter(Boolean).join(" ")}>
         <div ref={container} className="map" />
       </div>
       <header className="topbar">
@@ -263,7 +279,7 @@ export default function SiteMap() {
           </button>
         )}
       </header>
-      {jobs ? (
+      {jobs && !jobs.tab ? (
         <div className="legend legend--jobs">
           <span>Circle: jobs based in that city · gray halo: more that also list other places</span>
           {legendRoles.map((c) => (
@@ -275,6 +291,7 @@ export default function SiteMap() {
         </div>
       ) : (
         <div className="legend">
+          <span><i className="swatch swatch--jobs" />Open jobs in a city</span>
           <span><i className="swatch swatch--operating" />Operating</span>
           <span><i className="swatch swatch--building" />Building or waiting for power</span>
           <span><i className="swatch swatch--planned" />Proposed</span>
@@ -286,6 +303,7 @@ export default function SiteMap() {
           ways={ways}
           onSeeJobs={() => openJobs({})}
           onSeeWays={() => openJobs({ tab: "ways" })}
+          onSeeBenefits={() => openJobs({ tab: "community" })}
           onHide={() => hideBanner(true)}
         />
       )}
@@ -296,8 +314,10 @@ export default function SiteMap() {
           <span aria-hidden="true"> ▾</span>
         </button>
       )}
-      {selected && <SitePanel site={selected} onClose={() => setSelected(null)} onOpenJobs={openJobs} />}
-      {jobs && !selected && <JobsPanel snap={snap} view={jobs} onChange={changeJobs} onClose={() => setJobs(null)} />}
+      {selected && <SitePanel site={selected} initialTab={siteTab} onClose={() => setSelected(null)} onOpenJobs={openJobs} />}
+      {jobs && !selected && (
+        <JobsPanel snap={snap} view={jobs} onChange={changeJobs} onClose={() => setJobs(null)} onOpenSite={(id) => showSite(SITES.find((s) => s.id === id)!, "community")} />
+      )}
     </>
   );
 }

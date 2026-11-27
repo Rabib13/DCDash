@@ -190,12 +190,33 @@ test("the panel shows the jobs the projects' filings expect, with the filing for
   }
 });
 
-test("closing the jobs layer brings the map back as it was", async ({ page }) => {
+test("job circles show on the map by default, and tapping one opens that city's jobs", async ({ page }) => {
+  await stubOutside(page);
+  await page.goto("/");
+  await expect(bubbles(page)).toHaveCount(4);
+  await expect(panel(page)).toHaveCount(0);
+  await expect(page.locator(".map-wrap--jobs")).toHaveCount(0);
+  await page.getByRole("button", { name: /^San Jose:/ }).click();
+  await expect(panel(page).getByRole("heading", { level: 2 })).toHaveText("Jobs in San Jose");
+  await expect(page).toHaveURL(/\?jobs=1&city=San\+Jose$/);
+});
+
+test("zoomed in, site markers sit on top of the circles, so every site can still be tapped", async ({ page }) => {
+  await stubOutside(page);
+  await page.goto("/");
+  await expect(bubbles(page)).toHaveCount(4);
+  await page.evaluate((c) => (window as unknown as { __dcMap: { jumpTo: (o: object) => void } }).__dcMap.jumpTo({ center: c, zoom: 12 }), CITY_CENTER["San Jose"]);
+  await expect(page.locator(".map-wrap--far")).toHaveCount(0);
+  const z = (sel: string) => page.locator(sel).first().evaluate((el) => Number(getComputedStyle(el).zIndex));
+  expect(await z(".marker")).toBeGreaterThan(await z(".jobbubble"));
+});
+
+test("closing the jobs panel keeps the circles and brings the sites back to the front", async ({ page }) => {
   await stubOutside(page);
   await openJobs(page);
   await page.getByRole("button", { name: "Close jobs" }).click();
   await expect(panel(page)).toHaveCount(0);
-  await expect(bubbles(page)).toHaveCount(0);
+  await expect(bubbles(page)).toHaveCount(4);
   await expect(page.locator(".map-wrap--jobs")).toHaveCount(0);
   await expect(page).toHaveURL(/\/$/);
 });

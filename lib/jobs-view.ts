@@ -12,7 +12,7 @@ export const REFRESH_HOURS = 6;
 export const NEAR_MILES = 10;
 
 /** At most one of `city` (that city only) and `near` (within NEAR_MILES of it) is set. */
-export type JobsView = { role: string; employer: string; city: string; near: string; tab: "" | "ways" };
+export type JobsView = { role: string; employer: string; city: string; near: string; tab: "" | "ways" | "community" };
 
 export const EMPTY_VIEW: JobsView = { role: "", employer: "", city: "", near: "", tab: "" };
 
@@ -41,7 +41,7 @@ export function parseJobsView(search: string): JobsView | null {
     employer: q.get("employer") ?? "",
     city,
     near: city ? "" : q.get("near") ?? "",
-    tab: q.get("tab") === "ways" ? "ways" : "",
+    tab: q.get("tab") === "ways" || q.get("tab") === "community" ? (q.get("tab") as JobsView["tab"]) : "",
   };
 }
 

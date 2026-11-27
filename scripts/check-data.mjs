@@ -74,6 +74,26 @@ export function checkPathways(list) {
   return errors;
 }
 
+/** Citywide money and rules tied to data centers, in data/local-benefits.json: each quoted from a named source. */
+export function checkLocalBenefits(list) {
+  const errors = [];
+  const ids = new Set();
+  for (const [i, b] of (Array.isArray(list) ? list : []).entries()) {
+    const where = `local benefit ${b.id || `#${i}`}`;
+    if (!b.id) errors.push(`${where}: needs an id`);
+    if (ids.has(b.id)) errors.push(`${where}: listed twice`);
+    ids.add(b.id);
+    if (!b.place) errors.push(`${where}: needs a place`);
+    if (!b.value) errors.push(`${where}: needs a value`);
+    if (!b.quote) errors.push(`${where}: needs a quote from its source`);
+    if (!b.publisher) errors.push(`${where}: needs a publisher`);
+    if (typeof b.url !== "string" || !b.url.startsWith("https://")) errors.push(`${where}: url must be https`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(b.checked ?? "")) errors.push(`${where}: checked must be a date (YYYY-MM-DD)`);
+  }
+  if (!Array.isArray(list)) errors.push("local benefits must be a list");
+  return errors;
+}
+
 const TRACKING_HOSTS = new Set(["to.indeed.com"]);
 const TRACKING_PARAMS = ["from", "utm_source", "utm_medium", "utm_campaign", "tk"];
 
