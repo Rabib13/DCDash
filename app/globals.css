@@ -75,11 +75,12 @@ h3 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing
 .sources a { color: var(--op); }
 
 @media (max-width: 640px) {
+  .tab { font-size: 12px; padding: 4px 2px; }
   .panel { top: auto; left: 8px; right: 8px; width: auto; height: 70%; }
 }
 
-.tabs { display: flex; gap: 0; padding: 6px 8px 0; border-bottom: 1px solid var(--line); overflow-x: auto; flex-shrink: 0; scrollbar-width: none; }
-.tab { flex: 1 0 auto; min-height: 44px; padding: 0 6px; border: none; background: none; border-bottom: 3px solid transparent; font: inherit; font-size: 13px; font-weight: 600; color: var(--ink-2); cursor: pointer; }
+.tabs { display: flex; gap: 0; padding: 4px 4px 0; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+.tab { flex: 1 1 auto; min-width: min-content; min-height: 44px; padding: 4px 4px; border: none; background: none; border-bottom: 3px solid transparent; font: inherit; font-size: 12.5px; line-height: 1.15; font-weight: 600; color: var(--ink-2); cursor: pointer; text-align: center; }
 .tab:hover { color: var(--ink); }
 .tab--active { color: var(--ink); border-bottom-color: var(--op); }
 .panel__body > * { flex-shrink: 0; }

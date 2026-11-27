@@ -95,10 +95,22 @@ test("the panel resets to Overview when another site is picked, and closes", asy
   await expect(page.getByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
 });
 
-test("all five tabs fit without scrolling on this screen size", async ({ page }) => {
-  await openMap(page);
-  await openSite(page, "SJC37");
-  const fits = await page.locator(".tabs").evaluate((el) => el.scrollWidth <= el.clientWidth + 1);
-  test.skip(!fits && (page.viewportSize()?.width ?? 0) < 500, "Tabs scroll sideways on phones by design");
-  expect(fits).toBe(true);
-});
+// Visitors without the Inter font get a wider fallback, which once pushed the last tab off screen.
+// Force a wide font to test the worst case, on both desktop and phone.
+for (const font of ["Inter", "DejaVu Sans"]) {
+  test(`all five tabs stay on screen with the ${font} font`, async ({ page }) => {
+    await openMap(page);
+    await page.addStyleTag({ content: `.tabs, .tab { font-family: "${font}", sans-serif !important; }` });
+    await openSite(page, "SJC37");
+    const tabs = page.locator(".tabs");
+    expect(await tabs.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+    const box = (await tabs.boundingBox())!;
+    for (const tab of await page.getByRole("tab").all()) {
+      const t = (await tab.boundingBox())!;
+      expect(t.x).toBeGreaterThanOrEqual(box.x - 1);
+      expect(t.x + t.width).toBeLessThanOrEqual(box.x + box.width + 1);
+      // The label itself must fit inside its tab, not spill into the next one.
+      expect(await tab.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), await tab.innerText()).toBe(true);
+    }
+  });
+}
