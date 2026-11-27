@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error plain JS module shared with the build script
-import { checkData } from "../../scripts/check-data.mjs";
+import { checkData, checkFeeds, checkLocalBenefits, checkPathways } from "../../scripts/check-data.mjs";
 
 const valid = () => ({
   asOf: "2026-11-27",
@@ -9,7 +9,6 @@ const valid = () => ({
   operators: {
     Op: {
       careers: { url: "https://jobs.example", sources: ["a"] },
-      openings: { checked: "2026-11-27", sources: ["a"], items: [{ title: "Tech", location: "Santa Clara, CA", url: "https://jobs.example/1" }] },
     },
   },
   sites: [
@@ -84,18 +83,18 @@ describe("checkData", () => {
     expect(errorsFor((d) => (d.sites[0].documents[0].url = "ftp://x")).join()).toMatch(/documents\[0\]: url must be https/);
   });
 
-  it("rejects job data without a checked date, source, or https link", () => {
-    expect(errorsFor((d) => (d.operators.Op.openings.checked = "")).join()).toMatch(/needs a checked date/);
-    expect(errorsFor((d) => (d.operators.Op.openings.sources = [])).join()).toMatch(/openings: no source/);
-    expect(errorsFor((d) => (d.operators.Op.openings.items[0].url = "javascript:alert(1)")).join()).toMatch(/url must be https/);
+  it("rejects careers links that aren't https", () => {
     expect(errorsFor((d) => (d.operators.Op.careers.url = "http://jobs.example")).join()).toMatch(/careers: url must be https/);
+  });
+
+  it("rejects copied job openings, which go stale; jobs come from live feeds", () => {
+    expect(
+      errorsFor((d) => Object.assign(d.operators.Op, { openings: { checked: "2026-11-27", sources: ["a"], items: [] } })).join(),
+    ).toMatch(/openings go stale/);
   });
 });
 
 describe("checkData link rules", () => {
-  it("rejects short-lived tracking links for jobs, which stop working", () => {
-    expect(errorsFor((d) => (d.operators.Op.openings.items[0].url = "https://to.indeed.com/aawkzdcsy6zd")).join()).toMatch(/tracking link/);
-  });
   it("rejects careers links with a tracking parameter", () => {
     expect(errorsFor((d) => (d.operators.Op.careers.url = "https://jobs.example/?from=mcp-claude-jobsearch")).join()).toMatch(/tracking link/);
   });
@@ -136,5 +135,150 @@ describe("which sites belong on the map", () => {
 describe("stages", () => {
   it("accepts built, for a finished building not yet confirmed as operating", () => {
     expect(errorsFor((d) => (d.sites[0].stage = "built"))).toEqual([]);
+  });
+});
+
+describe("job counts from filings", () => {
+  const withCount = (key: string, fact: Record<string, unknown>) => (d: Data) => {
+    (d.sources as Record<string, unknown>).f = { title: "Filing", publisher: "CEC", url: "https://f.example", published: "2022-03-01", accessed: "2026-11-27" };
+    (d.sites[0].facts as Record<string, unknown>)[key] = fact;
+  };
+
+  it("accepts a sourced, quoted number from a dated filing", () => {
+    expect(errorsFor(withCount("construction_jobs", { value: 300, sources: ["f"], quote: "peak workforce of 300" }))).toEqual([]);
+  });
+
+  it("rejects a count that isn't a number", () => {
+    expect(errorsFor(withCount("permanent_jobs", { value: "about 30", sources: ["f"], quote: "30" })).join()).toMatch(/permanent_jobs: must be a number/);
+  });
+
+  it("rejects a count without the filing's exact words", () => {
+    expect(errorsFor(withCount("construction_jobs", { value: 300, sources: ["f"] })).join()).toMatch(/construction_jobs: needs a quote/);
+  });
+
+  it("rejects a count from a source with no published date, since readers need to know how old the plan is", () => {
+    expect(errorsFor(withCount("permanent_jobs", { value: 30, sources: ["a"], quote: "30 employees" })).join()).toMatch(/permanent_jobs: source "a" needs a published date/);
+  });
+});
+
+describe("community benefits", () => {
+  const withBenefit = (fact: Record<string, unknown>) => (d: Data) => {
+    (d.sources as Record<string, unknown>).f = { title: "Staff report", publisher: "City", url: "https://f.example", published: "2025-05-22", accessed: "2026-11-27" };
+    (d.sites[0].facts as Record<string, unknown>).community_benefits = fact;
+  };
+
+  it("accepts a benefit quoted from a dated source", () => {
+    expect(errorsFor(withBenefit({ value: "$1.5 million package", sources: ["f"], quote: "a Public Benefits Package worth $1,500,000" }))).toEqual([]);
+  });
+
+  it("needs the source's own words and a date, since a promise is only as good as where it's written", () => {
+    expect(errorsFor(withBenefit({ value: "$1.5 million package", sources: ["f"] })).join()).toMatch(/community_benefits: needs a quote/);
+    expect(errorsFor(withBenefit({ value: "x", sources: ["a"], quote: "x" })).join()).toMatch(/community_benefits: source "a" needs a published date/);
+  });
+});
+
+describe("checkFeeds", () => {
+  const feed = () => ({ employer: "Op", kind: "greenhouse", board: "op", careersUrl: "https://op.example/careers" });
+
+  it("accepts a valid feed list and the real data/job-feeds.json", () => {
+    expect(checkFeeds([feed()])).toEqual([]);
+    expect(checkFeeds(JSON.parse(readFileSync(new URL("../../data/job-feeds.json", import.meta.url), "utf8")))).toEqual([]);
+  });
+
+  it("rejects an unknown feed type, a missing board, or a non-https careers page", () => {
+    expect(checkFeeds([{ ...feed(), kind: "indeed" }]).join()).toMatch(/unknown kind "indeed"/);
+    expect(checkFeeds([{ ...feed(), board: "" }]).join()).toMatch(/needs a board/);
+    expect(checkFeeds([{ ...feed(), careersUrl: "http://op.example" }]).join()).toMatch(/careersUrl must be https/);
+  });
+
+  it("rejects a Workday board that isn't a full https address", () => {
+    expect(checkFeeds([{ ...feed(), kind: "workday", board: "op" }]).join()).toMatch(/Workday board must be/);
+  });
+
+  it("rejects a title filter that isn't a valid pattern", () => {
+    expect(checkFeeds([{ ...feed(), titleFilter: "(" }]).join()).toMatch(/Op: titleFilter is not a valid pattern/);
+    expect(checkFeeds([{ ...feed(), titleExclude: "[" }]).join()).toMatch(/Op: titleExclude is not a valid pattern/);
+  });
+
+  it("rejects the same employer listed twice, which would count its jobs twice", () => {
+    expect(checkFeeds([feed(), feed()]).join()).toMatch(/Op: listed twice/);
+  });
+});
+
+describe("job count ranges", () => {
+  const withRange = (upTo: unknown) => (d: Data) => {
+    (d.sources as Record<string, unknown>).f = { title: "Filing", publisher: "CEC", url: "https://f.example", published: "2022-03", accessed: "2026-11-27" };
+    (d.sites[0].facts as Record<string, unknown>).permanent_jobs = { value: 19, upTo, sources: ["f"], quote: "19-21 employees" };
+  };
+  it("accepts a range like 19 to 21 as value and upTo", () => expect(errorsFor(withRange(21))).toEqual([]));
+  it("rejects an upTo that isn't a number above the value", () => {
+    expect(errorsFor(withRange(19)).join()).toMatch(/upTo must be a number above value/);
+    expect(errorsFor(withRange("21")).join()).toMatch(/upTo must be a number above value/);
+  });
+});
+
+describe("link-only job feeds", () => {
+  it("need only an employer and careers page", () => {
+    expect(checkFeeds([{ employer: "Op", kind: "link", careersUrl: "https://op.example/careers" }])).toEqual([]);
+  });
+});
+
+describe("checkPathways", () => {
+  const way = () => ({
+    id: "etasv",
+    name: "Inside Wireman apprenticeship",
+    provider: "Electrical Training Alliance of Silicon Valley",
+    kind: "apprenticeship",
+    city: "Milpitas",
+    url: "https://www.etasv.org/inside-commercial-wireman",
+    quote: "Apprenticeship training program will be five (5) years in duration.",
+    checked: "2026-11-27",
+  });
+
+  it("accepts a valid list and the real data/pathways.json", () => {
+    expect(checkPathways([way()])).toEqual([]);
+    expect(checkPathways(JSON.parse(readFileSync(new URL("../../data/pathways.json", import.meta.url), "utf8")))).toEqual([]);
+  });
+
+  it("needs the program's own page, its words, and the day it was checked, so nothing is made up", () => {
+    expect(checkPathways([{ ...way(), url: "http://x.example" }]).join()).toMatch(/etasv: url must be https/);
+    expect(checkPathways([{ ...way(), quote: "" }]).join()).toMatch(/etasv: needs a quote from its page/);
+    expect(checkPathways([{ ...way(), checked: "soon" }]).join()).toMatch(/etasv: checked must be a date/);
+  });
+
+  it("rejects an unknown kind, a missing provider, or the same id twice", () => {
+    expect(checkPathways([{ ...way(), kind: "bootcamp" }]).join()).toMatch(/unknown kind "bootcamp"/);
+    expect(checkPathways([{ ...way(), provider: "" }]).join()).toMatch(/etasv: needs a provider/);
+    expect(checkPathways([way(), way()]).join()).toMatch(/etasv: listed twice/);
+  });
+
+  it("checks extra links too", () => {
+    expect(checkPathways([{ ...way(), more: [{ label: "Wages", url: "http://x.example" }] }]).join()).toMatch(/etasv: more links must be https/);
+  });
+});
+
+describe("checkLocalBenefits", () => {
+  const item = () => ({
+    id: "sc-housing",
+    place: "Santa Clara",
+    value: "about $4 million in affordable housing fees since 2019",
+    quote: "the estimated $4 million in affordable housing funds",
+    url: "https://www.kqed.org/news/x",
+    publisher: "KQED",
+    published: "2026-10-08",
+    checked: "2026-11-27",
+  });
+
+  it("accepts a valid list and the real data/local-benefits.json", () => {
+    expect(checkLocalBenefits([item()])).toEqual([]);
+    expect(checkLocalBenefits(JSON.parse(readFileSync(new URL("../../data/local-benefits.json", import.meta.url), "utf8")))).toEqual([]);
+  });
+
+  it("needs a quote, an https source with its publisher, and the day it was checked", () => {
+    expect(checkLocalBenefits([{ ...item(), quote: "" }]).join()).toMatch(/sc-housing: needs a quote/);
+    expect(checkLocalBenefits([{ ...item(), url: "http://x" }]).join()).toMatch(/sc-housing: url must be https/);
+    expect(checkLocalBenefits([{ ...item(), publisher: "" }]).join()).toMatch(/sc-housing: needs a publisher/);
+    expect(checkLocalBenefits([{ ...item(), checked: "" }]).join()).toMatch(/sc-housing: checked must be a date/);
+    expect(checkLocalBenefits([item(), item()]).join()).toMatch(/sc-housing: listed twice/);
   });
 });

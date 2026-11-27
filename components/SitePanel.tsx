@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import {
   CONFIDENCE_LABEL,
   confidence,
   dataset,
+  employerFor,
   FACT_LABEL,
+  factValueText,
   factSection,
   SECTION_EXPECTED,
   SECTION_LABEL,
@@ -15,10 +17,21 @@ import {
   STAGE_LABEL,
   type Section,
 } from "@/lib/sites";
-import { jobSearchUrl, ROLE_SEARCHES, splitByDistance } from "@/lib/jobs";
+import { jobSearchUrl, ROLE_SEARCHES } from "@/lib/jobs";
+import { citiesWithin, freshnessLabel, openingsNear } from "@/lib/jobfeeds";
+import { jobsHref, NEAR_MILES, type JobsView } from "@/lib/jobs-view";
+import { useJobs } from "@/lib/useJobs";
 import type { Fact, Site } from "@/lib/types";
 
 const SECTIONS: Section[] = ["overview", "power", "environment", "jobs", "community"];
+
+/** The year of the newest dated source behind a fact. */
+const planYear = (fact: Fact) =>
+  fact.sources
+    .map((id) => dataset.sources[id]?.published?.slice(0, 4))
+    .filter(Boolean)
+    .sort()
+    .at(-1);
 
 function FactRow({ name, fact }: { name: string; fact: Fact }) {
   const c = confidence(fact);
@@ -27,10 +40,13 @@ function FactRow({ name, fact }: { name: string; fact: Fact }) {
       <dt>{FACT_LABEL[name] ?? name}</dt>
       <dd>
         <span>
-          {typeof fact.value === "number" ? fact.value.toLocaleString("en-US") : fact.value}
+          {factValueText(fact)}
           {fact.note ? <span className="muted"> ({fact.note})</span> : null}
         </span>
         {fact.quote && <q className="quote">{fact.quote}</q>}
+        {(name === "construction_jobs" || name === "permanent_jobs") && planYear(fact) && (
+          <span className="muted">Plan in a {planYear(fact)} filing, not a count of today&apos;s staff.</span>
+        )}
         <span className="fact__meta">
           <span className={`tag tag--${c}`}>{CONFIDENCE_LABEL[c]}</span>
           {fact.sources
@@ -57,52 +73,96 @@ function MissingRow({ name }: { name: string }) {
   );
 }
 
-function JobsSection({ site, operator }: { site: Site; operator: string | null }) {
+type OpenJobs = (view: Partial<JobsView>) => void;
+
+/** A link to the map's jobs layer. It works as a plain link too (new tab, copy link), but a normal click opens the layer in place. */
+function JobsLink({ view, onOpenJobs, className, children }: { view: Partial<JobsView>; onOpenJobs: OpenJobs; className?: string; children: ReactNode }) {
+  const open = (e: MouseEvent) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    onOpenJobs(view);
+  };
+  return (
+    <a className={className} href={jobsHref(view)} onClick={open}>
+      {children}
+    </a>
+  );
+}
+
+function JobsSection({ site, operator, onOpenJobs }: { site: Site; operator: string | null; onOpenJobs: OpenJobs }) {
+  const snap = useJobs();
+  const employer = snap ? employerFor(site, snap.feeds) : null;
+  const linkOnly = snap?.feeds.find((f) => f.employer === employer && f.linkOnly);
   const op = operator ? dataset.operators[operator] : undefined;
-  const { near, elsewhere } = splitByDistance(site.city, op?.openings?.items ?? []);
+  const near = snap && employer ? openingsNear(snap.jobs, employer, site.city, NEAR_MILES) : [];
+  const nearCities = new Set(citiesWithin(site.city, NEAR_MILES));
+  const allNear = snap ? snap.jobs.filter((j) => j.city !== null && nearCities.has(j.city)).length : 0;
   return (
     <>
-      {!operator ? (
-        <p className="note">Public sources don&apos;t name who runs this site yet, so we can&apos;t list its openings.</p>
-      ) : (
-      <section>
-        <h3>Openings at {operator} near this site</h3>
-        {op?.careersNote ? (
-          <p className="note">{op.careersNote}</p>
-        ) : (
+      <section data-testid="site-openings">
+        <h3>Open jobs nearby</h3>
+        {!operator && !employer && (
+          <p className="note">Public sources don&apos;t name who runs this site yet, so we can&apos;t list its own openings.</p>
+        )}
+        {snap === undefined && <p className="muted">Loading open jobs…</p>}
+        {snap === null && <p className="note">We couldn&apos;t load open jobs just now. Try again in a few minutes.</p>}
+        {snap && employer && linkOnly && (
+          <p className="note">
+            {employer}&apos;s job board doesn&apos;t allow automated reading, so we can&apos;t count its openings.{" "}
+            <a href={linkOnly.careersUrl} target="_blank" rel="noopener noreferrer">
+              See {employer} jobs on its own site
+            </a>
+          </p>
+        )}
+        {snap && employer && !linkOnly && (
           <>
-            {near.length > 0 ? (
+            <p>
+              {near.length} opening{near.length === 1 ? "" : "s"} at {employer} within {NEAR_MILES} miles of {site.city}
+            </p>
+            {near.length > 0 && (
               <ul className="jobs">
-                {near.map((j) => (
-                  <li key={j.url}>
+                {near.slice(0, 5).map((j) => (
+                  <li key={j.id}>
                     <a href={j.url} target="_blank" rel="noopener noreferrer">
                       {j.title}
                     </a>
-                    <span className="muted">
-                      {j.location}
-                      {j.team ? ` · ${j.team}` : ""}
-                    </span>
+                    <span className="muted">{j.city}</span>
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className="note">No openings near this site found when we last checked.</p>
             )}
-            {elsewhere.length > 0 && <p className="muted">{elsewhere.length} more {operator} openings in other places.</p>}
-            {op?.openings && (
-              <p className="muted">Checked {op.openings.checked}. Openings change often, so use the link below for the live list.</p>
-            )}
-            {op?.careers ? (
-              <a className="button" href={op.careers.url} target="_blank" rel="noopener noreferrer">
-                All {operator} jobs
-              </a>
+            <JobsLink className="button" view={{ employer, near: site.city }} onOpenJobs={onOpenJobs}>
+              See all {employer} jobs
+            </JobsLink>
+            <p className="muted">
+              Job postings name a city, not a building, so these may be for any {employer} site nearby. {freshnessLabel(snap.fetchedAt)}.
+            </p>
+          </>
+        )}
+        {snap && !employer && operator && (
+          <>
+            {op?.careersNote ? (
+              <p className="note">{op.careersNote}</p>
+            ) : op?.careers ? (
+              <p className="note">
+                {operator} doesn&apos;t publish a job feed we can read yet.{" "}
+                <a href={op.careers.url} target="_blank" rel="noopener noreferrer">
+                  All {operator} jobs
+                </a>
+              </p>
             ) : (
-              <p className="note">We haven&apos;t verified {operator}&apos;s careers page yet.</p>
+              <p className="note">{operator} doesn&apos;t publish a job feed we can read yet.</p>
             )}
           </>
         )}
+        {snap && (
+          <p>
+            <JobsLink view={{ near: site.city }} onOpenJobs={onOpenJobs}>
+              All data center jobs near {site.city} ({allNear})
+            </JobsLink>
+          </p>
+        )}
       </section>
-      )}
       <section>
         <h3>Data center jobs anywhere</h3>
         <p className="muted">Common roles at data centers, across all operators.</p>
@@ -130,9 +190,19 @@ function JobsSection({ site, operator }: { site: Site; operator: string | null }
   );
 }
 
-export default function SitePanel({ site, onClose }: { site: Site; onClose: () => void }) {
-  const [tab, setTab] = useState<Section>("overview");
-  useEffect(() => setTab("overview"), [site.id]);
+export default function SitePanel({
+  site,
+  initialTab = "overview",
+  onClose,
+  onOpenJobs,
+}: {
+  site: Site;
+  initialTab?: Section;
+  onClose: () => void;
+  onOpenJobs: OpenJobs;
+}) {
+  const [tab, setTab] = useState<Section>(initialTab);
+  useEffect(() => setTab(initialTab), [site.id, initialTab]);
 
   const who = runBy(site);
   const operator = site.facts.operator ? String(site.facts.operator.value) : null;
@@ -193,14 +263,15 @@ export default function SitePanel({ site, onClose }: { site: Site; onClose: () =
 
         {tab === "jobs" ? (
           <>
-            {entries.length > 0 && (
-              <dl className="facts">
-                {entries.map(([k, f]) => (
-                  <FactRow key={k} name={k} fact={f} />
-                ))}
-              </dl>
-            )}
-            <JobsSection site={site} operator={operator} />
+            <dl className="facts">
+              {entries.map(([k, f]) => (
+                <FactRow key={k} name={k} fact={f} />
+              ))}
+              {missing.map((k) => (
+                <MissingRow key={k} name={k} />
+              ))}
+            </dl>
+            <JobsSection site={site} operator={operator} onOpenJobs={onOpenJobs} />
           </>
         ) : (
           (entries.length > 0 || missing.length > 0) && (

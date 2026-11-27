@@ -14,6 +14,8 @@ export default defineConfig({
   ],
   webServer: {
     command: `npx next start -p ${PORT}`,
+    // Jobs come from a fixed snapshot in tests, never from live job boards.
+    env: { JOBS_FIXTURE: "tests/fixtures/jobs.json" },
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

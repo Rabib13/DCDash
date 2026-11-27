@@ -18,6 +18,8 @@ export type Source = {
 
 export type Fact = {
   value: string | number;
+  /** The high end when a source gives a range, like 19 to 21. `value` holds the low end. */
+  upTo?: number;
   /** Keys into the dataset's `sources` map. Every fact needs at least one. */
   sources: string[];
   /** Exact words from the source, when the value is a paraphrase or a number. */
@@ -45,21 +47,11 @@ export type SiteDocument = {
   sources: string[];
 };
 
-/** A job posting copied from the operator's own job board on the `checked` date. */
-export type JobOpening = {
-  title: string;
-  location: string;
-  team?: string;
-  url: string;
-};
-
 export type Operator = {
   /** Shown instead of jobs when the operator's job board can't be linked, e.g. it is down. */
   careersNote?: string;
   /** The operator's own careers page or job board. */
   careers?: { url: string; sources: string[] };
-  /** Snapshot of openings read from the careers page. Always link out for the live list. */
-  openings?: { checked: string; sources: string[]; items: JobOpening[] };
 };
 
 export type Dataset = {
@@ -71,3 +63,28 @@ export type Dataset = {
 };
 
 export type Confidence = "confirmed" | "reported" | "not_disclosed";
+
+/** A sourced way into data center work: an apprenticeship, college program or free training. */
+export type Pathway = {
+  id: string;
+  name: string;
+  provider: string;
+  kind: "apprenticeship" | "college" | "training";
+  city: string;
+  /** The program's own page. */
+  url: string;
+  /** Words from that page, so every listing can be checked. */
+  quote: string;
+  paid?: boolean;
+  /** No tuition or class fees. */
+  free?: boolean;
+  pay?: string;
+  cost?: string;
+  length?: string;
+  who?: string;
+  /** Application timing, when the page states it. */
+  status?: string;
+  more?: { label: string; url: string }[];
+  /** The day the page was last read. */
+  checked: string;
+};

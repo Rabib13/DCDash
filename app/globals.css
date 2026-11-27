@@ -29,7 +29,9 @@ body { background: var(--land); color: var(--ink); overflow: hidden; }
 /* Keep the zoom buttons clear of the site panel. */
 @media (min-width: 641px) { .map-wrap--panel .maplibregl-ctrl-bottom-right { right: 444px; } }
 
-.topbar { position: fixed; top: 12px; left: 16px; z-index: 5; }
+.topbar { position: fixed; top: 12px; left: 16px; right: 16px; z-index: 5; display: flex; flex-wrap: wrap; gap: 8px; pointer-events: none; }
+.topbar > * { pointer-events: auto; }
+.topbar__link { border: none; cursor: pointer; font-family: inherit; background: var(--surface); box-shadow: var(--shadow); border-radius: 12px; height: 48px; display: flex; align-items: center; padding: 0 16px; font-weight: 600; font-size: 15px; color: var(--ink); text-decoration: none; }
 .brand { background: var(--surface); box-shadow: var(--shadow); border-radius: 12px; height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 14px; font-weight: 700; font-size: 17px; }
 .badge { font-weight: 600; font-size: 11px; color: var(--ink-3); border: 1px solid var(--line); border-radius: 999px; padding: 4px 7px; }
 
@@ -77,6 +79,8 @@ h3 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing
 @media (max-width: 640px) {
   .tab { font-size: 12px; padding: 4px 2px; }
   .panel { top: auto; left: 8px; right: 8px; width: auto; height: 70%; }
+  /* The jobs sheet is shorter, so the circles stay in view above it. */
+  .panel--jobs { height: 48%; }
 }
 
 .tabs { display: flex; gap: 0; padding: 4px 4px 0; border-bottom: 1px solid var(--line); flex-shrink: 0; }
@@ -91,3 +95,99 @@ h3 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing
 .jobs .muted { display: block; margin: 0; }
 .button { display: inline-flex; align-items: center; min-height: 40px; margin-top: 8px; padding: 0 14px; border-radius: 10px; background: var(--ink); color: #fff; font-size: 13.5px; font-weight: 600; text-decoration: none; }
 section .muted { margin-top: 6px; }
+
+/* Jobs layer: circles on the map and the jobs panel beside it. */
+.headline { font-size: 20px; font-weight: 700; margin: 8px 0 0; }
+.feed-problems { list-style: none; margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; min-height: 36px; }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.selects { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0; }
+.selects label { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; font-weight: 600; color: var(--ink-2); flex: 1 1 220px; min-width: 0; }
+.selects select { font: inherit; font-size: 14px; font-weight: 400; color: var(--ink); padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); min-height: 40px; width: 100%; }
+.joblist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.joblist li { padding: 10px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
+.joblist a { color: var(--op); font-weight: 600; font-size: 15px; }
+.joblist .muted { margin: 0; }
+.careers { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0; list-style: none; font-size: 14px; }
+.careers a { color: var(--op); }
+.table-wrap { overflow-x: auto; }
+.filing-table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+.filing-table th, .filing-table td { text-align: left; padding: 8px 6px; border-top: 1px solid var(--line); vertical-align: top; }
+.filing-table thead th { font-size: 12px; color: var(--ink-2); border-top: 0; }
+.filing-table tbody th { font-weight: 600; }
+.filing-table tbody th .muted { display: block; font-weight: 400; }
+.filing-table a { color: var(--op); display: block; }
+
+.topbar__link[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.map-wrap--jobs .marker { opacity: 0.3; }
+.map-wrap--jobs .marker__ring { transform: scale(0.7); }
+.map-wrap--jobs .marker:hover { opacity: 1; }
+.jobbubble { padding: 0; border: none; border-radius: 50%; cursor: pointer; display: grid; place-items: center; box-shadow: var(--shadow); z-index: 2; transition: opacity 0.15s; }
+.jobbubble__count { width: calc(100% - 12px); height: calc(100% - 12px); border-radius: 50%; background: var(--surface); display: grid; place-items: center; font-weight: 700; font-size: 13px; color: var(--ink); }
+.jobbubble:hover, .jobbubble--selected { z-index: 3; }
+.jobbubble--selected { outline: 3px solid var(--ink); outline-offset: 2px; }
+.jobbubble--faded { opacity: 0.45; }
+/* A faint halo for jobs that also list other places: present, but not counted in the number. */
+.jobbubble--elsewhere { box-shadow: 0 0 0 5px rgba(120, 120, 120, 0.22), var(--shadow); }
+.legend--jobs .swatch { border: none; }
+.chip__dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; flex-shrink: 0; }
+.chip[aria-pressed="true"] .chip__dot { box-shadow: 0 0 0 2px #fff; }
+.joblist li { position: relative; padding-left: 18px; }
+.joblist li > .chip__dot { position: absolute; left: 0; top: 16px; }
+.jobs-summary .headline { margin: 0; font-size: 18px; }
+.jobs-summary p { margin: 4px 0 0; line-height: 1.45; }
+.place-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.jobs-filings .stats { display: flex; gap: 12px; flex-wrap: wrap; }
+.jobs-filings .stats p { flex: 1 1 140px; margin: 0; background: var(--land); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.35; }
+.jobs-filings .stats strong { display: block; font-size: 20px; }
+.panel details summary { cursor: pointer; color: var(--op); font-weight: 600; font-size: 14px; min-height: 32px; display: flex; align-items: center; }
+.what-counts p { font-size: 13.5px; line-height: 1.5; }
+
+.topbar__link--quiet { background: var(--surface); color: var(--op); font-weight: 600; }
+/* The summary banner: top center on wide screens, under the top bar on phones. */
+.buildout { position: fixed; z-index: 5; top: 12px; left: 50%; transform: translateX(-50%); width: min(560px, calc(100% - 520px)); min-width: 380px; background: var(--surface); box-shadow: var(--shadow); border-radius: 14px; padding: 12px 14px; }
+.buildout__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.buildout__head h2 { font-size: 15px; margin: 0; }
+.buildout__head .close { width: 32px; height: 32px; }
+.buildout__stats { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.buildout__stat { display: flex; align-items: center; gap: 12px; justify-content: space-between; }
+.buildout__stat p { margin: 0; font-size: 13.5px; line-height: 1.4; }
+.buildout__stat .button { margin-top: 0; flex-shrink: 0; }
+.buildout__note { font-size: 12px; margin: 6px 0 0; }
+@media (max-width: 1000px) {
+  .buildout { left: 16px; right: 16px; transform: none; width: auto; min-width: 0; top: 68px; }
+}
+@media (max-width: 640px) {
+  .buildout { left: 8px; right: 8px; padding: 10px 12px; }
+  .buildout__stat { flex-direction: column; align-items: stretch; gap: 6px; }
+  .buildout__stat .button { justify-content: center; }
+}
+
+.button--quiet { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.pathways { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; }
+.pathways li { padding: 12px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; line-height: 1.4; }
+.pathways a { color: var(--op); }
+.pathways li > a { font-weight: 600; font-size: 15px; }
+.pathways__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.pathways__tags:empty { display: none; }
+.pathways__status { font-weight: 600; }
+.panel--jobs .tabs { flex-shrink: 0; }
+.pathways__tags .tag:not([class*="tag--"]) { background: var(--land); color: var(--ink-2); }
+
+.buildout-pill { position: fixed; z-index: 5; top: 12px; left: 50%; transform: translateX(-50%); height: 40px; padding: 0 16px; border: none; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow); font: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 1000px) { .buildout-pill { top: 68px; left: 16px; transform: none; } }
+@media (max-width: 640px) { .buildout-pill { left: 8px; } }
+
+/* Job circles sit under the site markers by default, so every site stays tappable; with the jobs panel open they come forward. */
+.marker { z-index: 1; }
+.jobbubble { z-index: 0; }
+.map-wrap--jobs .jobbubble, .map-wrap--far .jobbubble { z-index: 2; }
+.map-wrap--jobs .jobbubble:hover, .map-wrap--jobs .jobbubble--selected { z-index: 3; }
+.map-wrap:not(.map-wrap--jobs) .jobbubble { opacity: 0.85; }
+.swatch--jobs { border: 3px solid #2f6fdf; border-right-color: #e0a100; border-bottom-color: #8a5a2b; }
+.buildout__stat--note p { font-size: 12.5px; }
+.benefits, .local-benefits { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; }
+.benefits li, .local-benefits li { padding: 12px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; line-height: 1.4; }
+.benefits a, .local-benefits a { color: var(--op); }
+.benefits__site { align-self: flex-start; background: none; border: none; padding: 0; font: inherit; font-weight: 600; font-size: 15px; color: var(--op); cursor: pointer; text-align: left; text-decoration: underline; }

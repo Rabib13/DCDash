@@ -83,6 +83,26 @@ export const CITY_CENTER: Record<string, [number, number]> = {
   Newark: [-122.04, 37.53],
   Pittsburg: [-121.885, 38.028],
   Fairfield: [-122.04, 38.249],
+  // Cities where jobs are posted but no site on the map sits yet. Approximate city centers.
+  "South San Francisco": [-122.408, 37.655],
+  Cupertino: [-122.032, 37.323],
+  "Redwood City": [-122.236, 37.485],
+  "San Mateo": [-122.313, 37.563],
+  "Menlo Park": [-122.182, 37.453],
+  "Los Altos": [-122.114, 37.385],
+  "Union City": [-122.019, 37.596],
+  "San Leandro": [-122.156, 37.725],
+  Berkeley: [-122.273, 37.872],
+  Richmond: [-122.348, 37.936],
+  Concord: [-122.031, 37.978],
+  "Walnut Creek": [-122.065, 37.91],
+  Pleasanton: [-121.875, 37.662],
+  Dublin: [-121.936, 37.702],
+  "Morgan Hill": [-121.654, 37.13],
+  Vallejo: [-122.257, 38.104],
+  "Santa Rosa": [-122.714, 38.44],
+  Brisbane: [-122.4, 37.681],
+  Burlingame: [-122.366, 37.584],
 };
 
 /**
@@ -137,7 +157,8 @@ export const FACT_LABEL: Record<string, string> = {
   environmental_review: "Environmental review",
   energy_commission: "Energy Commission",
   air_permit: "Air permit",
-  local_jobs: "Jobs at this site",
+  construction_jobs: "Construction jobs (at peak)",
+  permanent_jobs: "Permanent jobs",
   community_benefits: "Community benefits",
 };
 
@@ -162,7 +183,8 @@ const FACT_SECTION: Record<string, Section> = {
   environmental_review: "environment",
   energy_commission: "environment",
   air_permit: "environment",
-  local_jobs: "jobs",
+  construction_jobs: "jobs",
+  permanent_jobs: "jobs",
   community_benefits: "community",
 };
 
@@ -175,6 +197,33 @@ export const SECTION_EXPECTED: Record<Section, string[]> = {
   overview: ["operator", "capacity_mw", "ai_use"],
   power: ["utility", "power_source", "water"],
   environment: ["environmental_review", "air_permit"],
-  jobs: ["local_jobs"],
+  jobs: ["construction_jobs", "permanent_jobs"],
   community: ["community_benefits"],
 };
+
+/** Construction and permanent jobs the sites' filings expect, added up, with how many sites state each. */
+export function jobTotals(sites: Site[]) {
+  const sum = (key: string) => {
+    const vals = sites.map((s) => s.facts[key]?.value).filter((v): v is number => typeof v === "number");
+    return { total: vals.reduce((a, b) => a + b, 0), sites: vals.length };
+  };
+  return { construction: sum("construction_jobs"), permanent: sum("permanent_jobs"), siteCount: sites.length };
+}
+
+/** The job feed employer for a site: its operator, else its owner, matched by name or alias. */
+export function employerFor(site: Site, feeds: { employer: string; aliases?: string[] }[]): string | null {
+  for (const key of ["operator", "owner"]) {
+    const name = site.facts[key]?.value;
+    if (name == null) continue;
+    const hit = feeds.find((f) => f.employer === name || f.aliases?.includes(String(name)));
+    if (hit) return hit.employer;
+  }
+  return null;
+}
+
+/** A fact's value as shown to visitors: numbers with commas, ranges as "19 to 21". */
+export function factValueText(fact: Fact): string {
+  const n = (v: number) => v.toLocaleString("en-US");
+  if (typeof fact.value !== "number") return String(fact.value);
+  return fact.upTo != null ? `${n(fact.value)} to ${n(fact.upTo)}` : n(fact.value);
+}

@@ -1,0 +1,136 @@
+[
+  {
+    "employer": "Digital Realty",
+    "kind": "oracle",
+    "board": "https://hdep.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX",
+    "careersUrl": "https://www.digitalrealty.com/about/careers"
+  },
+  {
+    "employer": "Equinix",
+    "kind": "link",
+    "careersUrl": "https://careers.equinix.com/"
+  },
+  {
+    "employer": "Vantage Data Centers",
+    "kind": "link",
+    "careersUrl": "https://vantage-dc.com/company/careers/"
+  },
+  {
+    "employer": "Stack Infrastructure",
+    "aliases": [
+      "STACK Infrastructure"
+    ],
+    "kind": "workday",
+    "board": "https://stackinfra.wd108.myworkdayjobs.com/STACK_AMER",
+    "careersUrl": "https://www.stackinfra.com/about/careers/"
+  },
+  {
+    "employer": "Goodman Group",
+    "kind": "greenhouse",
+    "board": "goodmanau",
+    "careersUrl": "https://www.goodman.com/careers"
+  },
+  {
+    "employer": "Prologis",
+    "kind": "link",
+    "careersUrl": "https://www.prologis.com/careers"
+  },
+  {
+    "employer": "Amazon Web Services",
+    "kind": "amazon",
+    "board": "data center",
+    "careersUrl": "https://www.amazon.jobs/en/search?base_query=data+center",
+    "titleExclude": "annapurna|neuron|verification|asic|physical design|pd methodology|manufactur|board|printed circuit|mainstream compute|nitro|system development engineer|software|\\bsoc\\b|program manager"
+  },
+  {
+    "employer": "Microsoft",
+    "aliases": [
+      "Microsoft Corporation"
+    ],
+    "kind": "link",
+    "careersUrl": "https://apply.careers.microsoft.com/careers?query=datacenter"
+  },
+  {
+    "employer": "Lawrence Livermore National Laboratory",
+    "kind": "smartrecruiters",
+    "board": "LLNL",
+    "titleFilter": "electrician|mechanic\\b|hvac|facilit|power|hpc|data ?cent|network|stationary|boiler",
+    "careersUrl": "https://www.llnl.gov/join-our-team/careers/find-your-job",
+    "titleExclude": "intern\\b|internship|postdoc|space|optomech|laser|nuclear|ignition|pulsed|radar|computational"
+  },
+  {
+    "employer": "Silicon Valley Power",
+    "kind": "neogov",
+    "board": "cityofsantaclaraca",
+    "department": "Electric Utility",
+    "careersUrl": "https://www.governmentjobs.com/careers/cityofsantaclaraca"
+  },
+  {
+    "employer": "Rosendin",
+    "kind": "link",
+    "careersUrl": "https://rosendin.wd1.myworkdayjobs.com/en-US/Careers"
+  },
+  {
+    "employer": "Cupertino Electric",
+    "kind": "jobvite-xml",
+    "board": "cei:qCzaVfw0",
+    "careersUrl": "https://www.cei.com/careers/current-openings",
+    "titleFilter": "electric|foreman|apprentice|journey|substation|voltage|data cent|superintendent|project engineer|estimator|technician|safety"
+  },
+  {
+    "employer": "DPR Construction",
+    "kind": "eightfold",
+    "board": "https://careers.dpr.com/api/pcsx/search?domain=dpr.com&query=&location=",
+    "careersUrl": "https://careers.dpr.com/careers"
+  },
+  {
+    "employer": "OpenAI",
+    "kind": "ashby",
+    "board": "openai",
+    "careersUrl": "https://openai.com/careers",
+    "titleFilter": "data ?cent|datacenter|\\bcompute\\b|capacity|fleet|\\bhpc\\b|\\bgpu\\b|cluster|power|energy|cooling|thermal|electrical|mechanical|commission|cabling|construction|supply chain|sourcing|network|interconnect|optic|collective communication|facilit|infrastructure|hardware",
+    "titleExclude": "robotic|consumer devices|merchant|channel lead|champion|computer use|identity|search|privacy|evaluation|evals|safeguards|monetization|brand|caching|agent|chatgpt|claude app|analytics platform|ci/cd|product infrastructure|traffic|ip infrastructure|\\beda\\b|motor|battery|dynamometer|pcba|\\blab\\b|laboratory|data infrastructure|counsel|accounting|accounts payable|finance|fp&a|marketing|recruiter|people business|account executive|(?<!data center )security"
+  },
+  {
+    "employer": "Anthropic",
+    "kind": "greenhouse",
+    "board": "anthropic",
+    "careersUrl": "https://www.anthropic.com/careers",
+    "titleFilter": "data ?cent|datacenter|\\bcompute\\b|capacity|fleet|\\bhpc\\b|\\bgpu\\b|cluster|power|energy|cooling|thermal|electrical|mechanical|commission|cabling|construction|supply chain|sourcing|network|interconnect|optic|collective communication|facilit|infrastructure|hardware",
+    "titleExclude": "robotic|consumer devices|merchant|channel lead|champion|computer use|identity|search|privacy|evaluation|evals|safeguards|monetization|brand|caching|agent|chatgpt|claude app|analytics platform|ci/cd|product infrastructure|traffic|ip infrastructure|\\beda\\b|motor|battery|dynamometer|pcba|\\blab\\b|laboratory|data infrastructure|counsel|accounting|accounts payable|finance|fp&a|marketing|recruiter|people business|account executive|(?<!data center )security"
+  },
+  {
+    "employer": "CoreWeave",
+    "kind": "greenhouse",
+    "board": "coreweave",
+    "careersUrl": "https://www.coreweave.com/careers",
+    "titleFilter": "data ?cent|datacenter|\\bcompute\\b|capacity|fleet|\\bhpc\\b|\\bgpu\\b|cluster|power|energy|cooling|thermal|electrical|mechanical|commission|cabling|construction|supply chain|sourcing|network|interconnect|optic|collective communication|facilit|infrastructure|hardware",
+    "titleExclude": "robotic|consumer devices|merchant|channel lead|champion|computer use|identity|search|privacy|evaluation|evals|safeguards|monetization|brand|caching|agent|chatgpt|claude app|analytics platform|ci/cd|product infrastructure|traffic|ip infrastructure|\\beda\\b|motor|battery|dynamometer|pcba|\\blab\\b|laboratory|data infrastructure|counsel|accounting|accounts payable|finance|fp&a|marketing|recruiter|people business|account executive|(?<!data center )security"
+  },
+  {
+    "employer": "Lambda",
+    "kind": "ashby",
+    "board": "lambda",
+    "careersUrl": "https://lambda.ai/careers",
+    "titleFilter": "data ?cent|datacenter|\\bcompute\\b|capacity|fleet|\\bhpc\\b|\\bgpu\\b|cluster|power|energy|cooling|thermal|electrical|mechanical|commission|cabling|construction|supply chain|sourcing|network|interconnect|optic|collective communication|facilit|infrastructure|hardware",
+    "titleExclude": "robotic|consumer devices|merchant|channel lead|champion|computer use|identity|search|privacy|evaluation|evals|safeguards|monetization|brand|caching|agent|chatgpt|claude app|analytics platform|ci/cd|product infrastructure|traffic|ip infrastructure|\\beda\\b|motor|battery|dynamometer|pcba|\\blab\\b|laboratory|data infrastructure|counsel|accounting|accounts payable|finance|fp&a|marketing|recruiter|people business|account executive|(?<!data center )security"
+  },
+  {
+    "employer": "xAI",
+    "kind": "greenhouse",
+    "board": "xai",
+    "careersUrl": "https://job-boards.greenhouse.io/xai",
+    "titleFilter": "data ?cent|datacenter|\\bcompute\\b|capacity|fleet|\\bhpc\\b|\\bgpu\\b|cluster|power|energy|cooling|thermal|electrical|mechanical|commission|cabling|construction|supply chain|sourcing|network|interconnect|optic|collective communication|facilit|infrastructure|hardware",
+    "titleExclude": "robotic|consumer devices|merchant|channel lead|champion|computer use|identity|search|privacy|evaluation|evals|safeguards|monetization|brand|caching|agent|chatgpt|claude app|analytics platform|ci/cd|product infrastructure|traffic|ip infrastructure|\\beda\\b|motor|battery|dynamometer|pcba|\\blab\\b|laboratory|data infrastructure|counsel|accounting|accounts payable|finance|fp&a|marketing|recruiter|people business|account executive|(?<!data center )security"
+  },
+  {
+    "employer": "Meta",
+    "kind": "link",
+    "careersUrl": "https://www.metacareers.com/jobs"
+  },
+  {
+    "employer": "NVIDIA",
+    "kind": "link",
+    "careersUrl": "https://www.nvidia.com/en-us/about-nvidia/careers/"
+  }
+]

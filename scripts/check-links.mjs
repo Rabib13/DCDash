@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 /** Every link a visitor can click, with where it appears. Each url is listed once. */
-export function collectLinks(data) {
+export function collectLinks(data, feeds = [], pathways = []) {
   const seen = new Map();
   const add = (url, where) => {
     if (url && !seen.has(url)) seen.set(url, { url, where });
@@ -13,9 +13,13 @@ export function collectLinks(data) {
   for (const [key, s] of Object.entries(data.sources ?? {})) add(s.url, `source ${key}`);
   for (const [name, op] of Object.entries(data.operators ?? {})) {
     if (op.careers) add(op.careers.url, `operator ${name} careers`);
-    for (const job of op.openings?.items ?? []) add(job.url, `operator ${name} job "${job.title}"`);
   }
+  for (const f of feeds) add(f.careersUrl, `job feed ${f.employer} careers`);
   for (const site of data.sites ?? []) for (const doc of site.documents ?? []) add(doc.url, `site ${site.id} document`);
+  for (const p of pathways) {
+    add(p.url, `pathway ${p.id}`);
+    for (const m of p.more ?? []) add(m.url, `pathway ${p.id} link`);
+  }
   return [...seen.values()];
 }
 
@@ -44,7 +48,10 @@ export async function statusOf(url, fetchImpl = fetch) {
 
 async function main() {
   const data = JSON.parse(readFileSync(new URL("../data/sites.json", import.meta.url), "utf8"));
-  const links = collectLinks(data);
+  const feeds = JSON.parse(readFileSync(new URL("../data/job-feeds.json", import.meta.url), "utf8"));
+  const pathways = JSON.parse(readFileSync(new URL("../data/pathways.json", import.meta.url), "utf8"));
+  const local = JSON.parse(readFileSync(new URL("../data/local-benefits.json", import.meta.url), "utf8"));
+  const links = collectLinks(data, feeds, [...pathways, ...local]);
   const results = await Promise.all(links.map(async (l) => ({ ...l, status: await statusOf(l.url) })));
   const dead = results.filter((r) => classify(r.status) === "dead");
   const unknown = results.filter((r) => classify(r.status) === "unknown");

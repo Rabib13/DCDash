@@ -1,0 +1,138 @@
+{
+  "fetchedAt": "2026-11-27T16:00:00Z",
+  "feeds": [
+    {
+      "employer": "Digital Realty",
+      "careersUrl": "https://careers.digitalrealty.example/",
+      "ok": true,
+      "count": 4,
+      "refreshedAt": "2026-11-27T16:00:00Z"
+    },
+    {
+      "employer": "Equinix",
+      "careersUrl": "https://careers.equinix.example/",
+      "ok": true,
+      "count": 3,
+      "refreshedAt": "2026-11-27T16:00:00Z"
+    },
+    {
+      "employer": "Microsoft",
+      "aliases": [
+        "Microsoft Corporation"
+      ],
+      "careersUrl": "https://careers.microsoft.example/",
+      "ok": true,
+      "count": 1,
+      "refreshedAt": "2026-11-27T16:00:00Z"
+    },
+    {
+      "employer": "Vantage Data Centers",
+      "careersUrl": "https://careers.vantage.example/",
+      "ok": false,
+      "count": 1,
+      "refreshedAt": "2026-11-26T10:00:00Z",
+      "error": "HTTP 503"
+    },
+    {
+      "employer": "CoreSite",
+      "careersUrl": "https://careers.coresite.example/",
+      "ok": false,
+      "count": 0,
+      "error": "HTTP 500"
+    },
+    {
+      "employer": "Prologis",
+      "careersUrl": "https://careers.prologis.example/",
+      "ok": true,
+      "count": 0,
+      "linkOnly": true
+    }
+  ],
+  "jobs": [
+    {
+      "id": "dlr-1",
+      "employer": "Digital Realty",
+      "title": "Data Center Technician",
+      "location": "Santa Clara, CA",
+      "city": "Santa Clara",
+      "url": "https://careers.digitalrealty.example/job/1",
+      "posted": "2026-11-20",
+      "category": "operations"
+    },
+    {
+      "id": "dlr-2",
+      "employer": "Digital Realty",
+      "title": "Critical Facilities Engineer",
+      "location": "San Jose, CA",
+      "city": "San Jose",
+      "url": "https://careers.digitalrealty.example/job/2",
+      "posted": "2026-11-18",
+      "category": "facilities"
+    },
+    {
+      "id": "dlr-3",
+      "employer": "Digital Realty",
+      "title": "Electrician",
+      "location": "Santa Clara, CA",
+      "city": "Santa Clara",
+      "url": "https://careers.digitalrealty.example/job/3",
+      "category": "electrical"
+    },
+    {
+      "id": "dlr-4",
+      "employer": "Digital Realty",
+      "title": "Security Officer",
+      "location": "Hayward, CA",
+      "city": "Hayward",
+      "url": "https://careers.digitalrealty.example/job/4",
+      "category": "security"
+    },
+    {
+      "id": "eqx-1",
+      "employer": "Equinix",
+      "title": "HVAC Technician",
+      "location": "San Jose, CA",
+      "city": "San Jose",
+      "url": "https://careers.equinix.example/job/1",
+      "posted": "2026-11-25",
+      "category": "mechanical"
+    },
+    {
+      "id": "eqx-2",
+      "employer": "Equinix",
+      "title": "Network Engineer",
+      "location": "Sunnyvale, CA",
+      "city": "Sunnyvale",
+      "url": "https://careers.equinix.example/job/2",
+      "category": "network"
+    },
+    {
+      "id": "msft-1",
+      "employer": "Microsoft",
+      "title": "Datacenter Construction Project Manager",
+      "location": "San Jose, California, United States",
+      "city": "San Jose",
+      "url": "https://careers.microsoft.example/job/1",
+      "category": "construction"
+    },
+    {
+      "id": "van-1",
+      "employer": "Vantage Data Centers",
+      "title": "Data Center Technician",
+      "location": "Santa Clara, CA",
+      "city": "Santa Clara",
+      "url": "https://careers.vantage.example/job/1",
+      "category": "operations"
+    },
+    {
+      "id": "eqx-3",
+      "employer": "Equinix",
+      "title": "Data Center Capacity Analyst",
+      "location": "San Jose, CA; Dallas, TX",
+      "city": "San Jose",
+      "url": "https://careers.equinix.example/job/3",
+      "category": "operations",
+      "alsoElsewhere": true
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+[
+  {
+    "id": "santa-clara-housing-fees",
+    "place": "Santa Clara",
+    "value": "about $4 million in affordable housing fees paid by data center developers since 2019",
+    "quote": "the estimated $4 million in affordable housing funds the city has received from data center developers since 2019",
+    "url": "https://www.kqed.org/news/12103316/santa-clara-californias-capital-of-data-centers-weighs-more-regulations",
+    "publisher": "KQED",
+    "published": "2026-10-08",
+    "checked": "2026-11-27"
+  },
+  {
+    "id": "santa-clara-aws-power-deal",
+    "place": "Santa Clara",
+    "value": "about $1.7 million a year to the city's general fund from Silicon Valley Power's deal to power an Amazon data center",
+    "quote": "The agreement will funnel approximately $1.7 million a year into the city's general fund.",
+    "url": "https://www.svvoice.com/svp-makes-deal-with-amazon-to-power-data-center/",
+    "publisher": "The Silicon Valley Voice",
+    "published": "2024-07-11",
+    "checked": "2026-11-27"
+  },
+  {
+    "id": "hayward-benefits-plan",
+    "place": "Hayward",
+    "value": "every new data center application must include a Community Benefits Plan",
+    "quote": "Hayward requires that all new applications for data centers include a Sustainability Plan and a Community Benefits Plan.",
+    "url": "https://hayward-ca.gov/index%2ephp/business/for-developers/data-center-development-applications",
+    "publisher": "City of Hayward",
+    "checked": "2026-11-27"
+  },
+  {
+    "id": "hayward-aws-fund",
+    "place": "Hayward",
+    "value": "a $100,000 AWS community fund, with grants of up to $10,000",
+    "quote": "created to give back to communities in which AWS has built and operates company infrastructure",
+    "url": "https://hayward-ca.gov/discover/news/nov23/aws-launches-100000-hayward-community-fund",
+    "publisher": "City of Hayward",
+    "published": "2023-11-02",
+    "status": "Applications closed in December 2023.",
+    "checked": "2026-11-27"
+  },
+  {
+    "id": "san-jose-reliability-fee",
+    "place": "San José",
+    "value": "a proposed one-time fee of $50,000 per megawatt for new data centers, to make up for their extra demand on the grid",
+    "quote": "a new energy reliability fee to make up for increased demand, at $50,000 per megawatt.",
+    "url": "https://sanjosespotlight.com/san-jose-planning-commission-recommends-data-center-standards/",
+    "publisher": "San José Spotlight",
+    "published": "2026-11-20",
+    "status": "Proposed. The City Council votes on Dec 8 and 15, 2026.",
+    "checked": "2026-11-27"
+  }
+]

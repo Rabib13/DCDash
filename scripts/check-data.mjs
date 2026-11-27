@@ -15,6 +15,85 @@ export const STAGES = new Set([
 /** Sites larger than this go on the map even without AI evidence (Rabib, 2026-11-27). */
 export const MIN_MW = 20;
 
+/** Facts holding job counts stated in a site's filings. */
+export const JOB_COUNT_FACTS = new Set(["construction_jobs", "permanent_jobs"]);
+/** Facts that must quote a dated source: job plans and community benefits. */
+const QUOTED_FACTS = new Set([...JOB_COUNT_FACTS, "community_benefits"]);
+
+export const FEED_KINDS = new Set(["greenhouse", "lever", "ashby", "smartrecruiters", "workday", "oracle", "amazon", "eightfold", "neogov", "jobvite-xml", "link"]);
+
+/** Rules for data/job-feeds.json, the employers whose public job feeds the jobs page reads. */
+export function checkFeeds(feeds) {
+  const errors = [];
+  const names = new Set();
+  for (const [i, f] of (Array.isArray(feeds) ? feeds : []).entries()) {
+    const where = `feed ${f.employer || `#${i}`}`;
+    if (!f.employer) errors.push(`${where}: needs an employer`);
+    if (names.has(f.employer)) errors.push(`${where}: listed twice`);
+    names.add(f.employer);
+    if (!FEED_KINDS.has(f.kind)) errors.push(`${where}: unknown kind "${f.kind}"`);
+    if (!f.board && f.kind !== "link") errors.push(`${where}: needs a board`);
+    else if (f.kind === "workday" && !/^https:\/\/[a-z0-9-]+\.wd\d+\.myworkdayjobs\.com\/[^/]+/i.test(f.board))
+      errors.push(`${where}: Workday board must be like https://name.wd1.myworkdayjobs.com/Site`);
+    for (const k of ["titleFilter", "titleExclude"]) {
+      if (f[k] === undefined) continue;
+      try {
+        new RegExp(f[k], "i");
+      } catch {
+        errors.push(`${where}: ${k} is not a valid pattern`);
+      }
+    }
+    if (typeof f.careersUrl !== "string" || !f.careersUrl.startsWith("https://")) errors.push(`${where}: careersUrl must be https`);
+    else if (isTrackingLink(f.careersUrl)) errors.push(`${where}: careersUrl is a tracking link`);
+  }
+  if (!Array.isArray(feeds)) errors.push("job feeds must be a list");
+  return errors;
+}
+
+const PATHWAY_KINDS = new Set(["apprenticeship", "college", "training"]);
+
+/** Ways into data center work, in data/pathways.json: each from the program's own page, quoted and dated. */
+export function checkPathways(list) {
+  const errors = [];
+  const ids = new Set();
+  for (const [i, p] of (Array.isArray(list) ? list : []).entries()) {
+    const where = `pathway ${p.id || `#${i}`}`;
+    if (!p.id) errors.push(`${where}: needs an id`);
+    if (ids.has(p.id)) errors.push(`${where}: listed twice`);
+    ids.add(p.id);
+    if (!p.name) errors.push(`${where}: needs a name`);
+    if (!p.provider) errors.push(`${where}: needs a provider`);
+    if (!p.city) errors.push(`${where}: needs a city`);
+    if (!PATHWAY_KINDS.has(p.kind)) errors.push(`${where}: unknown kind "${p.kind}"`);
+    if (typeof p.url !== "string" || !p.url.startsWith("https://")) errors.push(`${where}: url must be https`);
+    if (!p.quote || typeof p.quote !== "string") errors.push(`${where}: needs a quote from its page`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(p.checked ?? "")) errors.push(`${where}: checked must be a date (YYYY-MM-DD)`);
+    if ((p.more ?? []).some((m) => typeof m?.url !== "string" || !m.url.startsWith("https://"))) errors.push(`${where}: more links must be https`);
+  }
+  if (!Array.isArray(list)) errors.push("pathways must be a list");
+  return errors;
+}
+
+/** Citywide money and rules tied to data centers, in data/local-benefits.json: each quoted from a named source. */
+export function checkLocalBenefits(list) {
+  const errors = [];
+  const ids = new Set();
+  for (const [i, b] of (Array.isArray(list) ? list : []).entries()) {
+    const where = `local benefit ${b.id || `#${i}`}`;
+    if (!b.id) errors.push(`${where}: needs an id`);
+    if (ids.has(b.id)) errors.push(`${where}: listed twice`);
+    ids.add(b.id);
+    if (!b.place) errors.push(`${where}: needs a place`);
+    if (!b.value) errors.push(`${where}: needs a value`);
+    if (!b.quote) errors.push(`${where}: needs a quote from its source`);
+    if (!b.publisher) errors.push(`${where}: needs a publisher`);
+    if (typeof b.url !== "string" || !b.url.startsWith("https://")) errors.push(`${where}: url must be https`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(b.checked ?? "")) errors.push(`${where}: checked must be a date (YYYY-MM-DD)`);
+  }
+  if (!Array.isArray(list)) errors.push("local benefits must be a list");
+  return errors;
+}
+
 const TRACKING_HOSTS = new Set(["to.indeed.com"]);
 const TRACKING_PARAMS = ["from", "utm_source", "utm_medium", "utm_campaign", "tk"];
 
@@ -65,6 +144,15 @@ export function checkData(data) {
     for (const [name, fact] of Object.entries(site.facts ?? {})) {
       if (fact.value === undefined || fact.value === null || fact.value === "") errors.push(`${where}.${name}: empty value`);
       checkRefs(`${where}.${name}`, fact.sources);
+      if ("upTo" in fact && !(typeof fact.upTo === "number" && typeof fact.value === "number" && fact.upTo > fact.value))
+        errors.push(`${where}.${name}: upTo must be a number above value`);
+      // Job counts are plans in a filing: a number, in the filing's own words, from a dated document.
+      if (JOB_COUNT_FACTS.has(name) && typeof fact.value !== "number") errors.push(`${where}.${name}: must be a number`);
+      if (QUOTED_FACTS.has(name)) {
+        if (!fact.quote) errors.push(`${where}.${name}: needs a quote from the ${JOB_COUNT_FACTS.has(name) ? "filing" : "source"}`);
+        for (const ref of fact.sources ?? [])
+          if (sources[ref] && !sources[ref].published) errors.push(`${where}.${name}: source "${ref}" needs a published date`);
+      }
     }
     const { lat, lon, precision } = site.location ?? {};
     if ((lat == null) !== (lon == null)) errors.push(`${where}: lat and lon must both be set or both be null`);
@@ -80,14 +168,8 @@ export function checkData(data) {
       checkJobUrl(`operator ${name}.careers`, op.careers.url);
       checkRefs(`operator ${name}.careers`, op.careers.sources);
     }
-    if (op.openings) {
-      checkRefs(`operator ${name}.openings`, op.openings.sources);
-      if (!op.openings.checked) errors.push(`operator ${name}.openings: needs a checked date`);
-      for (const job of op.openings.items ?? []) {
-        checkJobUrl(`operator ${name}: job "${job.title}"`, job.url);
-        if (!job.title || !job.location) errors.push(`operator ${name}: every job needs a title and location`);
-      }
-    }
+    // Openings are read live from job feeds (data/job-feeds.json), never copied into the data.
+    if (op.openings) errors.push(`operator ${name}: openings go stale, list the employer in data/job-feeds.json instead`);
   }
 
   return errors;
